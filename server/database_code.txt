@@ -1,0 +1,100 @@
+Instructions for setting up local database
+
+1. Download mysql and run local mysql server
+
+2. Connect to mysql server by "mysql -u root -p"
+
+3. Create and use the database
+
+CREAT DATABASE music_app;
+USE app;
+
+4. Initialize tables
+
+CREATE TABLE tbl_user
+(
+    user_id          INT AUTO_INCREMENT,
+    email            VARCHAR(50) NOT NULL UNIQUE,
+    username         VARCHAR(20) NOT NULL UNIQUE,
+  
+    /* To be implemented later 
+     * -- 10 characters appended to user password before hashing
+     * salt                  CHAR(10) NOT NULL,
+
+     * -- 256-bit(64 characters) SHA2 hashing used to hash password
+     * hashed_password  CHAR(64) NOT NULL,
+     */
+
+    password         VARCHAR(30) NOT NULL,
+
+    PRIMARY KEY(user_id)
+);
+
+CREATE TABLE tbl_user_info
+(
+    user_id               INT PRIMARY KEY,
+    following_count       INT DEFAULT 0,
+    follower_count        INT DEFAULT 0,
+    profile_picture_path  VARCHAR(50),
+
+    FOREIGN KEY (user_id) REFERENCES user(user_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE tbl_post
+(
+    post_id        INT PRIMARY KEY,
+    user_id        INT NOT NULL UNIQUE,
+    date           TIMESTAMP NOT NULL,
+    content        VARCHAR(100),
+    tags           VARCHAR(100),
+    song_id        INT NOT NULL,
+    clip_path      VARCHAR (50) NOT NULL,
+    like_count     INT DEFAULT 0,
+    comment_count  INT DEFAULT 0,
+
+    FOREIGN KEY (user_id) REFERENCES user(user_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE tbl_song_info
+(
+    song_id       INT PRIMARY KEY,
+    artist        VARCHAR(50) NOT NULL,
+    release_date  DATE,
+    album         VARCHAR(50)
+);
+
+5. Create procedure to store user rows to tables
+DELIMITER !
+CREATE PROCEDURE sp_create_user(
+    IN input_email VARCHAR(50),
+    IN input_username VARCHAR(20),
+    IN input_password VARCHAR(30)
+)
+BEGIN
+    IF (select exists (select 1 from tbl_user where username = input_username)) THEN
+        select 'Username Exists';
+    ELSE
+        insert into tbl_user
+        (
+            email,
+            username,
+            password
+        )
+        values
+        (
+            input_email,
+            input_username,
+            input_password
+        );
+    END IF;
+END!
+DELIMITER ;
+
+
+6. Insert dummy values to the table
+
+7. References
+https://code.tutsplus.com/tutorials/creating-a-web-app-from-scratch-using-python-flask-and-mysql--cms-22972
+
