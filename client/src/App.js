@@ -1,26 +1,31 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Route, Switch, Router, Redirect } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
+
+import Layout from './hoc/Layout/Layout';
+import UserPage from './containers/UserPage/UserPage';
+import SignUpPage from './containers/SignUpPage/SignUpPage';
+import SignInPage from './containers/SignInPage/SignInPage';
+import Feed from './containers/Feed/Feed';
 
 class App extends Component {
   render() {
+    const routes = (
+      <Switch>
+        <Route path="/signup" component={SignUpPage}/>
+        <Route path="/signin" component={SignInPage}/>
+        <Route path="/:username" component={UserPage}/>
+        <Route path="/" component={Feed}/>
+        <Redirect to="/"/>
+      </Switch>
+    );
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <Router history={createBrowserHistory()}>
+        <Layout>
+          {routes}
+        </Layout>
+      </Router>
     );
   }
 }
