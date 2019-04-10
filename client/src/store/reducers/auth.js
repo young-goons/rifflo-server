@@ -1,9 +1,11 @@
 import * as actionTypes from '../actions/actionTypes';
 
 const initialState = {
+    isAuthenticating: false,
     isAuthenticated: false,
     error: null,
-    authRedirectPath: '/'
+    authRedirectPath: '/',
+    userInfo: null
 };
 
 const authSuccess = (state, action) => {
@@ -18,7 +20,8 @@ const authFail = (state, action) => {
     return {
         ...state,
         isAuthenticated: false,
-        error: action.error
+        error: action.error,
+        userInfo: null
     };
 };
 
@@ -30,10 +33,20 @@ const setAuthRedirectPath = (state, action) => {
 };
 
 const signOut = (state, action) => {
+    window.localStorage.removeItem('accessToken');
+    window.localStorage.removeItem('refreshToken');
     return {
         ...state,
         error: action.error,
-        isAuthenticated: false
+        isAuthenticated: false,
+        userInfo: null
+    };
+};
+
+const loadUserInfo = (state, action) => {
+    return {
+        ...state,
+        userInfo: action.userInfo
     };
 };
 
@@ -43,6 +56,7 @@ const reducer = (state = initialState, action) => {
         case actionTypes.AUTH_FAIL: return authFail(state, action);
         case actionTypes.SET_AUTH_REDIRECT_PATH: return setAuthRedirectPath(state, action);
         case actionTypes.SIGN_OUT: return signOut(state, action);
+        case actionTypes.LOAD_USER_INFO: return loadUserInfo(state, action);
         default:
             return state;
     }

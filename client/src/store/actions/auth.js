@@ -1,8 +1,12 @@
+import axios from 'axios';
+
 import * as actionTypes from './actionTypes';
 
-export const authSuccess = () => {
+export const authSuccess = (accessToken, refreshToken) => {
     return {
         type: actionTypes.AUTH_SUCCESS,
+        accessToken: accessToken,
+        refreshToken: refreshToken
     };
 };
 
@@ -27,14 +31,38 @@ export const signOut = (error) => {
     };
 };
 
-export const auth = (email, password) => {
-    return dispatch => {
-        // authenticate using axios
+export const loadUserInfo = (userInfo) => {
+    return {
+        type: actionTypes.LOAD_USER_INFO,
+        userInfo: userInfo
     };
 };
 
-export const signOut = () => {
+export const auth = (email, password) => {
     return dispatch => {
-        // signout using axios
+        let url = "http://127.0.0.1:5000/signin";
+        const user = {
+            email: email,
+            password: password
+        };
+        axios({method: 'POST', url: url, params: user})
+            .then(response => {
+                window.localStorage.setItem('accessToken', response.data.user.access_token);
+                window.localStorage.setItem('refreshToken', response.data.user.refresh_token);
+                dispatch(authSuccess(response.data.user.access_token, response.data.user.refresh_token));
+                console.log(response);
+                url =  "http://127.0.0.1:5000/user/info/" + response.data.user.user_id;
+                const headers = {
+                    'Authorization': 'Bearer ' + response.data.user.access_token
+                };
+                return axios({method: 'GET', url: url, headers: headers});
+            })
+            .then(response => {
+                dispatch(loadUserInfo(response.data.user));
+                console.log(response.data.user)
+            })
+            .catch(error => {
+                dispatch(authFail(error));
+            })
     };
 };

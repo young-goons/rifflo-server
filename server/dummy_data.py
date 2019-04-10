@@ -2,7 +2,8 @@ user = {
     'user_id': 1,
     'email': 'abc@gmail.com',
     'username': 'abc',
-    'password': '123'
+    'password': '123',
+    'birthday': 'YYYY.MM.DD'
 }
 
 post1 = {

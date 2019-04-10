@@ -2,6 +2,7 @@ import re
 import datetime
 
 from flask import Flask, request, jsonify, abort, make_response
+from flask_cors import CORS, cross_origin
 from flask_jwt_extended import JWTManager
 from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 jwt_required, jwt_refresh_token_required, get_jwt_identity)
@@ -9,6 +10,7 @@ from flask_jwt_extended import (create_access_token, create_refresh_token,
 import dummy_data
 
 app = Flask(__name__)
+CORS(app)
 app.config['JWT_SECRET_KEY'] = 'abcdef'
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(days=1)
 
@@ -31,15 +33,22 @@ def sign_up():
 @app.route('/signin', methods=['POST'])
 def sign_in():
     # validate user
-    # get userinfo from database
+    email = request.args.get('email')
+    password = request.args.get('password')
     user = dummy_data.user
     user_id = user['user_id']
+    username = user['username']
 
-    access_token = create_access_token(identity=user_id)
-    refresh_token = create_refresh_token(identity=user_id)
-    user['token'] = access_token
-    user['refresh'] = refresh_token
-    return make_response(jsonify({'success': True, 'data': user}), 200)
+    access_token = create_access_token(identity={'userId': user_id, 'username': username})
+    refresh_token = create_refresh_token(identity={'userId': user_id, 'username': username})
+    user['access_token'] = access_token
+    user['refresh_token'] = refresh_token
+    return make_response(jsonify({'success': True, 'user': user}), 200)
+
+
+@app.route('/signout', methods=['POST'])
+def sign_out():
+    return make_response(jsonify({'success': True}), 200)
 
 
 @app.route('/refresh', methods=['POST'])
@@ -47,9 +56,9 @@ def sign_in():
 def refresh():
     curr_user_id = get_jwt_identity()
     ret = {
-        'token': create_access_token(identity=curr_user_id)
+        'token': create_access_token(identity={})
     }
-    return make_response(jsonify({'data': ret}), 200)
+    return make_response(jsonify({ret}), 200)
 
 
 @app.route('/user/info/<int:user_id>', methods=['GET'])
@@ -57,9 +66,9 @@ def refresh():
 def get_user_info(user_id):
     # check if the identity of the token is equal to the identity of the request parameter
     # TODO: distinguish public and private info
-    if user_id == get_jwt_identity():
+    if user_id == get_jwt_identity()['userId']:
         user = dummy_data.user
-        return make_response(jsonify({'data': user}), 200)
+        return make_response(jsonify({'user': user}), 200)
     else:
         return make_response(jsonify({'msg': 'No authentication on requested data'}), 400)
 
@@ -75,7 +84,7 @@ def get_user_posts():
 def get_user_feed():
     """ Obtains the list of post_ids to appear on the user feed """
     post_id_list = [dummy_data.post2]
-    return make_response(jsonify({'data': post_id_list}), 200)
+    return make_response(jsonify({'post_id_list': post_id_list}), 200)
 
 
 @app.route('/posts/<id_list>', methods=['GET'])
@@ -88,7 +97,7 @@ def get_posts(id_list):
         abort(400)
     post_id_list = [int(i) for i in id_list.split(',')]
     post_list = post_id_list
-    return make_response(jsonify({'data': post_list}), 200)
+    return make_response(jsonify({'post_list': post_list}), 200)
 
 
 @app.route('/user/upload/post', methods=['POST'])
