@@ -18,11 +18,11 @@ class Feed extends Component {
     componentDidMount() {
         if (!this.state.isFeedLoaded) {
             console.log("initial feed load")
-            this.loadFeed(this.loadFeedPosts);
+            this.loadFeed(true, this.loadFeedPosts);
         }
     }
 
-    loadFeed = (callback) => {
+    loadFeed = (isNewLoad, callback) => {
         const url = "http://127.0.0.1:5000/user/feed";
         const requestHeaders = {
             'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
@@ -30,11 +30,28 @@ class Feed extends Component {
         console.log("load feed");
         axios({method: 'GET', url: url, headers: requestHeaders})
             .then(response => {
-                console.log(response);
-                this.setState({
-                    feedPostIdArr: response.data.postIdArr,
-                    isFeedLoaded: true
-                }, callback);
+                console.log(response.data.postIdArr);
+                let updatedState;
+                if (isNewLoad) {
+                    updatedState = {
+                        feedPostIdArr: response.data.postIdArr,
+                        isFeedLoaded: true,
+                        feedPostIdx: 0,
+                        postArr: []
+                    };
+                } else {
+                    updatedState = {
+                        feedPostIdArr: this.state.feedPostIdArr.concat(response.data.postIdArr),
+                        isFeedLoaded: true
+                    };
+                }
+                this.setState(updatedState, callback);
+                // this.setState({
+                //     feedPostIdArr: response.data.postIdArr,
+                //     isFeedLoaded: true,
+                //     feedPostIdx: 0,
+                //     postArr: []
+                // }, callback);
             })
             .catch(error => {
                 alert(error);
@@ -42,12 +59,16 @@ class Feed extends Component {
     };
 
     loadFeedPostsHandler = () => {
-        console.log(this.state.feedPostIdx, this.numPosts, this.state.feedPostIdArr.length);
+        console.log(this.state.feedPostIdx, this.state.feedPostIdArr.length);
         if (this.state.feedPostIdx + this.numPosts > this.state.feedPostIdArr.length) {
-            this.setState({
-                feedPostIdx: 0
-            }, this.loadFeed(this.loadFeedPosts));
-            // this.loadFeed(this.loadFeedPosts);
+            // reload feed post ids
+            // this.setState({
+            //     // feedPostIdx: 0,
+            //     // feedPostIdArr: [],
+            //     // postArr: [],
+            // }, this.loadFeed(this.loadFeedPosts));
+            console.log("load additional feeds");
+            this.loadFeed(false, this.loadFeedPosts);
         } else {
             this.loadFeedPosts();
         }
@@ -70,7 +91,7 @@ class Feed extends Component {
         const url = "http://127.0.0.1:5000/posts/" + postIds.join(',');
         axios({method: 'GET', url: url})
             .then(response => {
-                console.log(response.data.postArr);
+                console.log(response.data);
                 this.setState({
                     postArr: this.state.postArr.concat(response.data.postArr),
                     feedPostIdx: this.state.feedPostIdx + this.numPosts
@@ -83,6 +104,7 @@ class Feed extends Component {
 
     render() {
         const postDivArr = this.state.postArr.map((post) => {
+            console.log(post);
             return (
                 <div key={post.post_id}>
                     <Post
@@ -97,10 +119,11 @@ class Feed extends Component {
         return (
             <div>
                 Feed
-                <button onClick={() => this.loadFeedPostsHandler(2)}>
+                { postDivArr }
+                <button onClick={() => this.loadFeedPostsHandler()}>
                     Show More
                 </button>
-                <button>
+                <button onClick={() => this.loadFeed(true, this.loadFeedPosts)}>
                     Refresh
                 </button>
             </div>

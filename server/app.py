@@ -1,5 +1,6 @@
 import re
 import datetime
+import random
 
 from flask import Flask, request, jsonify, abort, make_response
 from flask_cors import CORS, cross_origin
@@ -88,6 +89,7 @@ def get_user_feed():
         and sends the list of ids to the client """
     user_id = get_jwt_identity()['userId']
     post_id_list = dummy_data.user_feed[user_id]
+    random.shuffle(post_id_list)
     return make_response(jsonify({'postIdArr': post_id_list}), 200)
 
 
@@ -100,7 +102,7 @@ def get_posts(id_list):
     if not re.match(r'^\d+(?:,\d+)*,?$', id_list):
         abort(400)
     post_id_list = [int(i) for i in id_list.split(',')]
-    post_list = post_id_list
+    post_list = list(map(lambda x: dummy_data.posts[x], post_id_list))
     return make_response(jsonify({'postArr': post_list}), 200)
 
 

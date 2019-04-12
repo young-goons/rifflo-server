@@ -4,16 +4,16 @@ const Post = (props) => {
     return (
         <div>
             <div>
-                {this.props.username}
+                {props.username}
             </div>
             <div>
-                {this.props.date}
+                {props.date}
             </div>
             <div>
-                {this.props.content}
+                {props.content}
             </div>
             <div>
-                {this.props.tags}
+                {props.tags}
             </div>
         </div>
     )
