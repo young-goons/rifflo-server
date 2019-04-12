@@ -78,7 +78,7 @@ def get_user_posts(user_id):
     """ Obtains the list of ids of the posts that the user has posted """
     # TODO: add shuffle option
     post_id_list = dummy_data.user_posts[user_id]
-    return make_response(jsonify({'postIdList': post_id_list}), 200)
+    return make_response(jsonify({'postIdArr': post_id_list}), 200)
 
 
 @app.route('/user/feed', methods=['GET'])
@@ -88,8 +88,7 @@ def get_user_feed():
         and sends the list of ids to the client """
     user_id = get_jwt_identity()['userId']
     post_id_list = dummy_data.user_feed[user_id]
-    print(post_id_list)
-    return make_response(jsonify({'post_id_list': post_id_list}), 200)
+    return make_response(jsonify({'postIdArr': post_id_list}), 200)
 
 
 @app.route('/posts/<id_list>', methods=['GET'])
@@ -102,7 +101,7 @@ def get_posts(id_list):
         abort(400)
     post_id_list = [int(i) for i in id_list.split(',')]
     post_list = post_id_list
-    return make_response(jsonify({'post_list': post_list}), 200)
+    return make_response(jsonify({'postArr': post_list}), 200)
 
 
 @app.route('/user/upload/post', methods=['POST'])

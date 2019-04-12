@@ -51,7 +51,7 @@ export const auth = (email, password) => {
                 window.localStorage.setItem('refreshToken', response.data.user.refresh_token);
                 dispatch(authSuccess(response.data.user.access_token, response.data.user.refresh_token));
                 console.log(response);
-                url =  "http://127.0.0.1:5000/user/info/" + response.data.user.user_id;
+                url =  "http://127.0.0.1:5000/user/" + response.data.user.user_id + "/info";
                 const headers = {
                     'Authorization': 'Bearer ' + response.data.user.access_token
                 };

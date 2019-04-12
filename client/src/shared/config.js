@@ -1,0 +1,1 @@
+export const FEED_POSTS_LOAD_NUM = 2; // number of posts to load at once

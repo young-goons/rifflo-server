@@ -2,6 +2,11 @@
 
 Run "npm start" to run the client on localhost
 
+# TODOs
+
+* Improve error handling
+* Handle refresh token
+
 # References
 
 * https://gitlab.com/openpatch/authentification
