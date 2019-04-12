@@ -35,7 +35,7 @@ def sign_in():
     # validate user
     email = request.args.get('email')
     password = request.args.get('password')
-    user = dummy_data.user
+    user = dummy_data.users[1]
     user_id = user['user_id']
     username = user['username']
 
@@ -43,7 +43,7 @@ def sign_in():
     refresh_token = create_refresh_token(identity={'userId': user_id, 'username': username})
     user['access_token'] = access_token
     user['refresh_token'] = refresh_token
-    return make_response(jsonify({'success': True, 'user': user}), 200)
+    return make_response(jsonify({'user': user}), 200)
 
 
 @app.route('/signout', methods=['POST'])
@@ -61,29 +61,34 @@ def refresh():
     return make_response(jsonify({ret}), 200)
 
 
-@app.route('/user/info/<int:user_id>', methods=['GET'])
+@app.route('/user/<int:user_id>/info', methods=['GET'])
 @jwt_required
 def get_user_info(user_id):
     # check if the identity of the token is equal to the identity of the request parameter
     # TODO: distinguish public and private info
     if user_id == get_jwt_identity()['userId']:
-        user = dummy_data.user
+        user = dummy_data.users[user_id]
         return make_response(jsonify({'user': user}), 200)
     else:
         return make_response(jsonify({'msg': 'No authentication on requested data'}), 400)
 
 
-@app.route('/user/posts', methods=['GET'])
-def get_user_posts():
-    """ Obtains the list of post_ids that the user has posted """
-    post_id_list = [dummy_data.post1, dummy_data.post2]
-    return make_response(jsonify({'data': post_id_list}), 200)
+@app.route('/user/<int:user_id>/posts', methods=['GET'])
+def get_user_posts(user_id):
+    """ Obtains the list of ids of the posts that the user has posted """
+    # TODO: add shuffle option
+    post_id_list = dummy_data.user_posts[user_id]
+    return make_response(jsonify({'postIdList': post_id_list}), 200)
 
 
 @app.route('/user/feed', methods=['GET'])
+@jwt_required
 def get_user_feed():
-    """ Obtains the list of post_ids to appear on the user feed """
-    post_id_list = [dummy_data.post2]
+    """ Obtains the list of post_ids to appear on the user feed
+        and sends the list of ids to the client """
+    user_id = get_jwt_identity()['userId']
+    post_id_list = dummy_data.user_feed[user_id]
+    print(post_id_list)
     return make_response(jsonify({'post_id_list': post_id_list}), 200)
 
 
@@ -101,8 +106,14 @@ def get_posts(id_list):
 
 
 @app.route('/user/upload/post', methods=['POST'])
+@jwt_required
 def upload_post():
-    pass
+    user = get_jwt_identity()
+    user_id = user['userId']
+    content = request.args.get('content')
+    tags = request.args.get('tags')
+    post_id = 3
+    return make_response(jsonify({'postId': post_id}), 200)
 
 
 @app.errorhandler(400)
