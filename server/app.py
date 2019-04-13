@@ -162,6 +162,7 @@ def get_user_feed():
     """ Obtains the list of post_ids to appear on the user feed
         and sends the list of ids to the client """
     user_id = get_jwt_identity()['userId']
+    print('Feed user_id: ', user_id)
     # obtain the list of ids of all the posts shared by other users for now...
     with connection.cursor() as cursor:
         sql = 'SELECT post_id FROM tbl_post WHERE user_id != %s'
@@ -171,13 +172,13 @@ def get_user_feed():
     for row in query_result:
         post_id_list.append(row[0])
     random.shuffle(post_id_list)
+    print("Feed post ids: ", post_id_list)
     return make_response(jsonify({'postIdArr': post_id_list}), 200)
 
 # TODO - error handling
 #      - add option to include or exclude music clips
 #      - empty id_list - return null
 @app.route('/posts/<id_list>', methods=['GET'])
-@jwt_required
 def get_posts(id_list):
     """
     Returns a dictionary {post_id: post_info} where post_info is fetched from db
@@ -185,13 +186,20 @@ def get_posts(id_list):
     """
     if not re.match(r'^\d+(?:,\d+)*,?$', id_list):
         abort(400)
-    post_id_list = [(int(i)) for i in id_list.split(',')]
+    post_ids = [int(i) for i in id_list.split(',')]
+    print(post_ids)
+    print(id_list)
     with connection.cursor() as cursor:
+        # TODO - there must be a better way of putting multiple ids in IN () clause
         sql = 'SELECT post_id, user_id, upload_date, content, tags, song_id, clip_path, song_name, artist ' \
-              'FROM (SELECT * FROM tbl_post WHERE post_id IN (%s)) tbl_post_id NATURAL JOIN tbl_song_info'
-        # cursor.execute(sql, (','.join(str(i) for i in post_id_list)))
-        cursor.executemany(sql, post_id_list)
+              'FROM (SELECT * FROM tbl_post WHERE post_id  IN (' + id_list + ')) tbl_post_id NATURAL JOIN tbl_song_info'
+        cursor.execute(sql)
+        # sql = 'SELECT post_id, user_id, upload_date, content, tags, song_id, clip_path, song_name, artist ' \
+        #       'FROM (SELECT * FROM tbl_post WHERE post_id IN %s) tbl_post_id NATURAL JOIN tbl_song_info'
+        # print(sql)
+        # cursor.execute(sql, params=post_ids)
         query_result = cursor.fetchall()
+    print(query_result)
     post_dict = {}
     for row in query_result:
         post_data = {

@@ -73,8 +73,8 @@ CREATE TABLE tbl_song_info
     PRIMARY KEY(song_id)
 );
 
-
 6. Insert dummy values to the table
+
 
 7. References
 https://code.tutsplus.com/tutorials/creating-a-web-app-from-scratch-using-python-flask-and-mysql--cms-22972
