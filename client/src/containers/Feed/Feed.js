@@ -22,6 +22,13 @@ class Feed extends Component {
         }
     }
 
+    /**
+     * Load ids of posts on the feed
+     * @param isNewLoad True if initializing feedPostIdArr again
+     *                  False if obtaining new feedPostIdArr and concatenating
+     * @param callback  callback function to load the first this.numPosts
+     *                  of ids in the feedPostIdArr
+     */
     loadFeed = (isNewLoad, callback) => {
         const url = "http://127.0.0.1:5000/user/feed";
         const requestHeaders = {
@@ -46,12 +53,6 @@ class Feed extends Component {
                     };
                 }
                 this.setState(updatedState, callback);
-                // this.setState({
-                //     feedPostIdArr: response.data.postIdArr,
-                //     isFeedLoaded: true,
-                //     feedPostIdx: 0,
-                //     postArr: []
-                // }, callback);
             })
             .catch(error => {
                 alert(error);
@@ -61,13 +62,6 @@ class Feed extends Component {
     loadFeedPostsHandler = () => {
         console.log(this.state.feedPostIdx, this.state.feedPostIdArr.length);
         if (this.state.feedPostIdx + this.numPosts > this.state.feedPostIdArr.length) {
-            // reload feed post ids
-            // this.setState({
-            //     // feedPostIdx: 0,
-            //     // feedPostIdArr: [],
-            //     // postArr: [],
-            // }, this.loadFeed(this.loadFeedPosts));
-            console.log("load additional feeds");
             this.loadFeed(false, this.loadFeedPosts);
         } else {
             this.loadFeedPosts();
@@ -76,7 +70,6 @@ class Feed extends Component {
 
     /**
      * Load post contents of posts in this.props.feedPostIdArr
-     * @param numPosts      Number of posts to fetch
      */
     loadFeedPosts = () => {
         // assume that postIds in feedPostIdArr are valid to fetch
