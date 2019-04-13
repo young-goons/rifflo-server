@@ -79,16 +79,16 @@ class Feed extends Component {
 
         // TODO: Do something if this.state.feedPostidArr
 
-        const postIds = this.state.feedPostIdArr.slice(this.state.feedPostIdx,
+        const postIdArr = this.state.feedPostIdArr.slice(this.state.feedPostIdx,
             this.state.feedPostIdx + this.numPosts);
-        const url = "http://127.0.0.1:5000/posts/" + postIds.join(',');
+        const url = "http://127.0.0.1:5000/posts/" + postIdArr.join(',');
         axios({method: 'GET', url: url})
             .then(response => {
                 console.log(response.data);
                 const postArr = [];
-                for (let i = 0; i < postIds.length; i++) {
-                    if (postIds[i] in response.data.posts) {
-                        postArr.push(response.data.posts[postIds[i]]);
+                for (let i = 0; i < postIdArr.length; i++) {
+                    if (postIdArr[i] in response.data.posts) {
+                        postArr.push(response.data.posts[postIdArr[i]]);
                     }
                 }
                 this.setState({
@@ -104,12 +104,11 @@ class Feed extends Component {
     render() {
         console.log(this.state.postArr);
         const postDivArr = this.state.postArr.map((post, idx) => {
-            console.log(post);
             return (
                 <div key={idx}>
                     <Post
                         username={post.username}
-                        date={post.date}
+                        date={post.uploadDate}
                         content={post.content}
                         tags={post.tags}
                     />

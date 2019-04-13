@@ -130,11 +130,23 @@ def get_user_info(user_id):
         return make_response(jsonify({'msg': 'No authentication on requested data'}), 400)
 
 
-@app.route('/user/<int:user_id>/posts', methods=['GET'])
-def get_user_posts(user_id):
+# TODO: private and public options
+# TODO: add shuffle option
+@app.route('/user/<username>/posts', methods=['GET'])
+@jwt_required
+def get_user_posts(username):
     """ Obtains the list of ids of the posts that the user has posted """
-    # TODO: add shuffle option
-    post_id_list = dummy_data.user_posts[user_id]
+    shuffle = request.args.get('shuffle')
+    with connection.cursor() as cursor:
+        sql = 'SELECT post_id FROM tbl_post NATURAL JOIN ' \
+              '(SELECT user_id, username FROM tbl_user WHERE username = %s) tbl_user_username'
+        cursor.execute(sql, (username))
+        query_result = cursor.fetchall()
+    post_id_list = []
+    for row in query_result:
+        post_id_list.append(row[0])
+    if shuffle:
+        random.shuffle(post_id_list)
     return make_response(jsonify({'postIdArr': post_id_list}), 200)
 
 
@@ -152,16 +164,18 @@ def get_user_feed():
     post_id_list = []
     for row in query_result:
         post_id_list.append(row[0])
-    # post_id_list = dummy_data.user_feed[user_id]
     random.shuffle(post_id_list)
     return make_response(jsonify({'postIdArr': post_id_list}), 200)
 
 # TODO - error handling
+#      - add option to include or exclude music clips
+#      - empty id_list - return null
 @app.route('/posts/<id_list>', methods=['GET'])
+@jwt_required
 def get_posts(id_list):
     """
+    Returns a dictionary {post_id: post_info} where post_info is fetched from db
     :param id_list: list of integer ids separated by ,
-    :return:
     """
     if not re.match(r'^\d+(?:,\d+)*,?$', id_list):
         abort(400)
