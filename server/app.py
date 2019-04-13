@@ -11,7 +11,6 @@ from flask_jwt_extended import (create_access_token, create_refresh_token,
 import pymysql
 
 from authentication import hash_password, verify_password
-import dummy_data
 
 app = Flask(__name__)
 CORS(app)
@@ -29,6 +28,17 @@ def unauthorized_response(callback):
         'message': 'Missing Authorization Header'
     }), 401)
 
+# TODO - to be implemented later
+@app.route('/refresh', methods=['POST'])
+@jwt_refresh_token_required
+def refresh():
+    curr_user_id = get_jwt_identity()
+    ret = {
+        'token': create_access_token(identity={})
+    }
+    return make_response(jsonify({ret}), 200)
+
+
 # TODO - check if the username or something already exists
 #      - Error handling
 #      - what if tbl_user_info does not get filled
@@ -44,6 +54,7 @@ def sign_up():
         user_id = cursor.lastrowid
         user_info_rowcnt = 0
         if user_id:
+            # create a row in tbl_user_info for the newly registered user
             sql = "INSERT INTO tbl_user_info (user_id) " \
                   "VALUES (%s)"
             user_info_rowcnt = cursor.execute(sql, (user_id))
@@ -57,7 +68,6 @@ def sign_up():
 # TODO - action when signin is denied i.e. when wrong password e.t.c
 @app.route('/signin', methods=['POST'])
 def sign_in():
-    # validate user
     email = request.args.get('email')
     password = request.args.get('password')
     with connection.cursor() as cursor:
@@ -74,6 +84,7 @@ def sign_in():
         'username': query_result[0][1],
     }
 
+    # validate user password
     stored_password = query_result[0][2]
     if verify_password(stored_password, password):
         access_token = create_access_token(identity={'userId': user['user_id'],
@@ -92,19 +103,14 @@ def sign_out():
     return make_response(jsonify({'success': True}), 200)
 
 
-@app.route('/refresh', methods=['POST'])
-@jwt_refresh_token_required
-def refresh():
-    curr_user_id = get_jwt_identity()
-    ret = {
-        'token': create_access_token(identity={})
-    }
-    return make_response(jsonify({ret}), 200)
-
 # TODO: distinguish public and private info
 @app.route('/user/<int:user_id>/info', methods=['GET'])
 @jwt_required
 def get_user_info(user_id):
+    """
+    Fetches and returns user information stored in tbl_user_info
+    :param user_id: user_id of request
+    """
     # check if the identity of the token is equal to the identity of the request parameter
     if user_id == get_jwt_identity()['userId']:
         with connection.cursor() as cursor:
@@ -212,6 +218,9 @@ def upload_song():
 @app.route('/user/upload/post', methods=['POST'])
 @jwt_required
 def upload_post():
+    """
+    Uploads the post whose content is received from user who is identified through jwt token
+    """
     user = get_jwt_identity()
     user_id = user['userId']
     content = request.args.get('content')
