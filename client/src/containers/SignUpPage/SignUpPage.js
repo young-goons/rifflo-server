@@ -34,7 +34,7 @@ class SignUpPage extends Component {
     };
 
     // TODO: confirm password, check no same email or username exists
-    
+
     signUpHandler = () => {
         const url = "http://127.0.0.1:5000/signup";
         const newUser = {

@@ -31,37 +31,55 @@ def unauthorized_response(callback):
 
 # TODO - check if the username or something already exists
 #      - Error handling
+#      - what if tbl_user_info does not get filled
 @app.route('/signup', methods=['POST'])
 def sign_up():
     email = request.args.get('email')
     username = request.args.get('username')
     password = request.args.get('password')
-    print("email: ", email, " username: ", username, " password: ", password)
     with connection.cursor() as cursor:
-        sql = "INSERT INTO tbl_user (email, username, password)" \
+        sql = "INSERT INTO tbl_user (email, username, password) " \
               "VALUES (%s, %s, %s)"
-        rows_affected = cursor.execute(sql, (email, username, hash_password(password)))
-    if rows_affected == 1:
+        cursor.execute(sql, (email, username, hash_password(password)))
+        user_id = cursor.lastrowid
+
+    if user_id:
         connection.commit()
         return make_response(jsonify({'success': True}), 200)
     else:
         return make_response(jsonify({'msg': "New user not added"}), 400)
 
-
+# TODO - action when signin is denied i.e. when wrong password e.t.c
 @app.route('/signin', methods=['POST'])
 def sign_in():
     # validate user
     email = request.args.get('email')
     password = request.args.get('password')
-    user = dummy_data.users[1]
-    user_id = user['user_id']
-    username = user['username']
+    with connection.cursor() as cursor:
+        sql = "SELECT user_id, username, password FROM tbl_user " \
+              "WHERE email = %s"
+        cursor.execute(sql, (email))
+        query_result = cursor.fetchall()
 
-    access_token = create_access_token(identity={'userId': user_id, 'username': username})
-    refresh_token = create_refresh_token(identity={'userId': user_id, 'username': username})
-    user['access_token'] = access_token
-    user['refresh_token'] = refresh_token
-    return make_response(jsonify({'user': user}), 200)
+    if len(query_result) != 1:
+        return make_response(jsonify({'msg': "Error while fetching user data"}), 400)
+
+    user = {
+        'user_id': query_result[0][0],
+        'username': query_result[0][1],
+    }
+
+    stored_password = query_result[0][2]
+    if verify_password(stored_password, password):
+        access_token = create_access_token(identity={'userId': user['user_id'],
+                                                     'username': user['username']})
+        refresh_token = create_refresh_token(identity={'userId': user['user_id'],
+                                                       'username': user['username']})
+        user['access_token'] = access_token
+        user['refresh_token'] = refresh_token
+        return make_response(jsonify({'user': user}), 200)
+    else:
+        return make_response(jsonify({'msg': 'Wrong Password'}), 400)
 
 
 @app.route('/signout', methods=['POST'])
@@ -78,14 +96,30 @@ def refresh():
     }
     return make_response(jsonify({ret}), 200)
 
-
+# TODO: distinguish public and private info
 @app.route('/user/<int:user_id>/info', methods=['GET'])
 @jwt_required
 def get_user_info(user_id):
     # check if the identity of the token is equal to the identity of the request parameter
-    # TODO: distinguish public and private info
     if user_id == get_jwt_identity()['userId']:
-        user = dummy_data.users[user_id]
+        with connection.cursor() as cursor:
+            sql = "SELECT user_id, username, email, following_count, follower_count, " \
+                  "profile_picture_path FROM tbl_user NATURAL JOIN tbl_user_info " \
+                  "WHERE user_id = %s"
+            cursor.execute(sql, (user_id))
+            query_result = cursor.fetchall()
+
+        if len(query_result) != 1:
+            return make_response(jsonify({'msg': 'Error fetching user info data'}), 400)
+
+        user = {
+            'user_id': query_result[0][0],
+            'username': query_result[0][1],
+            'email': query_result[0][2],
+            'following_count': query_result[0][3],
+            'follower_count': query_result[0][4],
+            'profile_picture_path': query_result[0][5]
+        }
         return make_response(jsonify({'user': user}), 200)
     else:
         return make_response(jsonify({'msg': 'No authentication on requested data'}), 400)

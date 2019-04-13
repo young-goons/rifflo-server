@@ -11,10 +11,10 @@ USE app;
 
 4. Initialize tables
 
-DROP TABLE IF EXISTS tbl_user;
-DROP TABLE IF EXISTS tbl_user_info;
 DROP TABLE IF EXISTS tbl_post;
+DROP TABLE IF EXISTS tbl_user_info;
 DROP TABLE IF EXISTS tbl_song_info;
+DROP TABLE IF EXISTS tbl_user;
 
 CREATE TABLE tbl_user
 (
@@ -36,7 +36,7 @@ CREATE TABLE tbl_user_info
     user_id               INT PRIMARY KEY,
     following_count       INT DEFAULT 0,
     follower_count        INT DEFAULT 0,
-    profile_picture_path  VARCHAR(50),
+    profile_picture_path  VARCHAR(50) DEFAULT '',
 
     FOREIGN KEY (user_id) REFERENCES tbl_user(user_id)
       ON DELETE CASCADE ON UPDATE CASCADE
