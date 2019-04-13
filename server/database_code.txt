@@ -46,7 +46,7 @@ CREATE TABLE tbl_post
 (
     post_id        INT AUTO_INCREMENT,
     user_id        INT NOT NULL,
-    date           TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    upload_date    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     content        VARCHAR(100),
     tags           VARCHAR(100),
     song_id        INT NOT NULL,

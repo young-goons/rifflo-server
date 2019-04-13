@@ -44,7 +44,7 @@ def sign_up():
         user_id = cursor.lastrowid
         user_info_rowcnt = 0
         if user_id:
-            sql = "INSERT INTO tbl_user_info (user_id)" \
+            sql = "INSERT INTO tbl_user_info (user_id) " \
                   "VALUES (%s)"
             user_info_rowcnt = cursor.execute(sql, (user_id))
 
@@ -61,8 +61,8 @@ def sign_in():
     email = request.args.get('email')
     password = request.args.get('password')
     with connection.cursor() as cursor:
-        sql = "SELECT user_id, username, password FROM tbl_user " \
-              "WHERE email = %s"
+        sql = 'SELECT user_id, username, password FROM tbl_user ' \
+              'WHERE email = %s'
         cursor.execute(sql, (email))
         query_result = cursor.fetchall()
 
@@ -108,9 +108,9 @@ def get_user_info(user_id):
     # check if the identity of the token is equal to the identity of the request parameter
     if user_id == get_jwt_identity()['userId']:
         with connection.cursor() as cursor:
-            sql = "SELECT user_id, username, email, following_count, follower_count, " \
-                  "profile_picture_path FROM tbl_user NATURAL JOIN tbl_user_info " \
-                  "WHERE user_id = %s"
+            sql = 'SELECT user_id, username, email, following_count, follower_count, ' \
+                  'profile_picture_path FROM tbl_user NATURAL JOIN' \
+                  '(SELECT * FROM tbl_user_info WHERE user_id = %s) tbl_user_info_id'
             cursor.execute(sql, (user_id))
             query_result = cursor.fetchall()
 
@@ -144,11 +144,19 @@ def get_user_feed():
     """ Obtains the list of post_ids to appear on the user feed
         and sends the list of ids to the client """
     user_id = get_jwt_identity()['userId']
-    post_id_list = dummy_data.user_feed[user_id]
+    # obtain the list of ids of all the posts shared by other users for now...
+    with connection.cursor() as cursor:
+        sql = 'SELECT post_id FROM tbl_post WHERE user_id != %s'
+        cursor.execute(sql, (user_id))
+        query_result = cursor.fetchall()
+    post_id_list = []
+    for row in query_result:
+        post_id_list.append(row[0])
+    # post_id_list = dummy_data.user_feed[user_id]
     random.shuffle(post_id_list)
     return make_response(jsonify({'postIdArr': post_id_list}), 200)
 
-
+# TODO - error handling
 @app.route('/posts/<id_list>', methods=['GET'])
 def get_posts(id_list):
     """
@@ -157,9 +165,28 @@ def get_posts(id_list):
     """
     if not re.match(r'^\d+(?:,\d+)*,?$', id_list):
         abort(400)
-    post_id_list = [int(i) for i in id_list.split(',')]
-    post_list = list(map(lambda x: dummy_data.posts[x], post_id_list))
-    return make_response(jsonify({'postArr': post_list}), 200)
+    post_id_list = [(int(i)) for i in id_list.split(',')]
+    with connection.cursor() as cursor:
+        sql = 'SELECT post_id, user_id, upload_date, content, tags, song_id, clip_path, song_name, artist ' \
+              'FROM (SELECT * FROM tbl_post WHERE post_id IN (%s)) tbl_post_id NATURAL JOIN tbl_song_info'
+        # cursor.execute(sql, (','.join(str(i) for i in post_id_list)))
+        cursor.executemany(sql, post_id_list)
+        query_result = cursor.fetchall()
+    post_dict = {}
+    for row in query_result:
+        post_data = {
+            'userId': row[1],
+            'uploadDate': row[2],
+            'content': row[3],
+            'tags': row[4],
+            'songId': row[5],
+            'clipPath': row[6],
+            'songName': row[7],
+            'artist': row[8]
+        }
+        post_dict[row[0]] = post_data
+
+    return make_response(jsonify({'posts': post_dict}), 200)
 
 
 @app.route('/user/upload/song', methods=['POST'])

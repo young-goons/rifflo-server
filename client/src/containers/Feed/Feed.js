@@ -85,8 +85,14 @@ class Feed extends Component {
         axios({method: 'GET', url: url})
             .then(response => {
                 console.log(response.data);
+                const postArr = [];
+                for (let i = 0; i < postIds.length; i++) {
+                    if (postIds[i] in response.data.posts) {
+                        postArr.push(response.data.posts[postIds[i]]);
+                    }
+                }
                 this.setState({
-                    postArr: this.state.postArr.concat(response.data.postArr),
+                    postArr: this.state.postArr.concat(postArr),
                     feedPostIdx: this.state.feedPostIdx + this.numPosts
                 });
             })
@@ -96,10 +102,11 @@ class Feed extends Component {
     };
 
     render() {
-        const postDivArr = this.state.postArr.map((post) => {
+        console.log(this.state.postArr);
+        const postDivArr = this.state.postArr.map((post, idx) => {
             console.log(post);
             return (
-                <div key={post.post_id}>
+                <div key={idx}>
                     <Post
                         username={post.username}
                         date={post.date}
