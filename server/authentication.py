@@ -4,6 +4,7 @@ import binascii
 
 SHA_N_ITERATIONS = 200000
 
+
 def hash_password(password):
     """
     Hash a password to store in the database.

@@ -27,7 +27,7 @@ class SignInPage extends Component {
     };
 
     render () {
-        const authForm = (
+        const signInForm = (
             <div>
                 <div>
                     <span>Email</span>
@@ -52,10 +52,11 @@ class SignInPage extends Component {
                 </div>
             </div>
         );
+
         return (
             <div>
                 Sign In Page
-                {authForm}
+                {signInForm}
             </div>
         );
     }

@@ -1,22 +1,26 @@
 import re
 import datetime
 import random
+import os
 
 from flask import Flask, request, jsonify, abort, make_response
 from flask_cors import CORS, cross_origin
 from flask_jwt_extended import JWTManager
 from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 jwt_required, jwt_refresh_token_required, get_jwt_identity)
+import pymysql
 
+from authentication import hash_password, verify_password
 import dummy_data
 
 app = Flask(__name__)
 CORS(app)
 app.config['JWT_SECRET_KEY'] = 'abcdef'
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(days=1)
-
 jwt = JWTManager(app)
 
+connection = pymysql.connect(host='localhost', port=3306, user='root',
+                             passwd=os.environ['db_password'], db='music_app')
 
 @jwt.unauthorized_loader
 def unauthorized_response(callback):
@@ -25,10 +29,23 @@ def unauthorized_response(callback):
         'message': 'Missing Authorization Header'
     }), 401)
 
-
-@app.route('/signup')
+# TODO - check if the username or something already exists
+#      - Error handling
+@app.route('/signup', methods=['POST'])
 def sign_up():
-    pass
+    email = request.args.get('email')
+    username = request.args.get('username')
+    password = request.args.get('password')
+    print("email: ", email, " username: ", username, " password: ", password)
+    with connection.cursor() as cursor:
+        sql = "INSERT INTO tbl_user (email, username, password)" \
+              "VALUES (%s, %s, %s)"
+        rows_affected = cursor.execute(sql, (email, username, hash_password(password)))
+    if rows_affected == 1:
+        connection.commit()
+        return make_response(jsonify({'success': True}), 200)
+    else:
+        return make_response(jsonify({'msg': "New user not added"}), 400)
 
 
 @app.route('/signin', methods=['POST'])
