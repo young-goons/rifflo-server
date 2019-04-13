@@ -42,8 +42,13 @@ def sign_up():
               "VALUES (%s, %s, %s)"
         cursor.execute(sql, (email, username, hash_password(password)))
         user_id = cursor.lastrowid
+        user_info_rowcnt = 0
+        if user_id:
+            sql = "INSERT INTO tbl_user_info (user_id)" \
+                  "VALUES (%s)"
+            user_info_rowcnt = cursor.execute(sql, (user_id))
 
-    if user_id:
+    if user_id and user_info_rowcnt:
         connection.commit()
         return make_response(jsonify({'success': True}), 200)
     else:
@@ -157,6 +162,12 @@ def get_posts(id_list):
     return make_response(jsonify({'postArr': post_list}), 200)
 
 
+@app.route('/user/upload/song', methods=['POST'])
+@jwt_required
+def upload_song():
+    pass
+
+
 @app.route('/user/upload/post', methods=['POST'])
 @jwt_required
 def upload_post():
@@ -164,8 +175,29 @@ def upload_post():
     user_id = user['userId']
     content = request.args.get('content')
     tags = request.args.get('tags')
-    post_id = 3
-    return make_response(jsonify({'postId': post_id}), 200)
+
+    # temporary data for now
+    clip_path = ''
+    song_name = "abc"
+    artist = "def"
+
+    with connection.cursor() as cursor:
+        sql = "INSERT INTO tbl_song_info (song_name, artist)" \
+              "VALUES (%s, %s)"
+        cursor.execute(sql, (song_name, artist))
+        song_id = cursor.lastrowid
+        post_id = None
+        if song_id:
+            sql = "INSERT INTO tbl_post (user_id, content, tags, song_id, clip_path)" \
+                  "VALUES (%s, %s, %s, %s, %s)"
+            cursor.execute(sql, (user_id, content, tags, song_id, clip_path))
+            post_id = cursor.lastrowid
+
+    if song_id and post_id:
+        connection.commit()
+        return make_response(jsonify({'postId': post_id, 'songId': song_id}), 200)
+    else:
+        return make_response(jsonify({'msg': 'Error uploading post and song'}), 400)
 
 
 @app.errorhandler(400)
