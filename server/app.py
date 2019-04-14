@@ -138,7 +138,7 @@ def get_user_info(user_id):
 
 # TODO: private and public options
 # TODO: add shuffle option
-@app.route('/user/<username>/posts', methods=['GET'])
+@app.route('/user/<string:username>/posts', methods=['GET'])
 @jwt_required
 def get_user_posts(username):
     """ Obtains the list of ids of the posts that the user has posted """
@@ -179,38 +179,37 @@ def get_user_feed():
 #      - add option to include or exclude music clips
 #      - empty id_list - return null
 @app.route('/posts/<id_list>', methods=['GET'])
+@jwt_required
 def get_posts(id_list):
     """
     Returns a dictionary {post_id: post_info} where post_info is fetched from db
+    id_list must not be an empty string
     :param id_list: list of integer ids separated by ,
     """
     if not re.match(r'^\d+(?:,\d+)*,?$', id_list):
         abort(400)
     post_ids = [int(i) for i in id_list.split(',')]
-    print(post_ids)
-    print(id_list)
     with connection.cursor() as cursor:
         # TODO - there must be a better way of putting multiple ids in IN () clause
-        sql = 'SELECT post_id, user_id, upload_date, content, tags, song_id, clip_path, song_name, artist ' \
-              'FROM (SELECT * FROM tbl_post WHERE post_id  IN (' + id_list + ')) tbl_post_id NATURAL JOIN tbl_song_info'
+        sql = 'SELECT post_id, user_id, username, upload_date, content, tags, ' \
+              'song_id, clip_path, song_name, artist ' \
+              'FROM (SELECT * FROM tbl_post WHERE post_id  IN ({})) tbl_post_id ' \
+              'NATURAL JOIN (SELECT user_id, username FROM tbl_user) tbl_user_id ' \
+              'NATURAL JOIN tbl_song_info'.format(id_list)
         cursor.execute(sql)
-        # sql = 'SELECT post_id, user_id, upload_date, content, tags, song_id, clip_path, song_name, artist ' \
-        #       'FROM (SELECT * FROM tbl_post WHERE post_id IN %s) tbl_post_id NATURAL JOIN tbl_song_info'
-        # print(sql)
-        # cursor.execute(sql, params=post_ids)
         query_result = cursor.fetchall()
-    print(query_result)
     post_dict = {}
     for row in query_result:
         post_data = {
             'userId': row[1],
-            'uploadDate': row[2],
-            'content': row[3],
-            'tags': row[4],
-            'songId': row[5],
-            'clipPath': row[6],
-            'songName': row[7],
-            'artist': row[8]
+            'username': row[2],
+            'uploadDate': row[3],
+            'content': row[4],
+            'tags': row[5],
+            'songId': row[6],
+            'clipPath': row[7],
+            'songName': row[8],
+            'artist': row[9]
         }
         post_dict[row[0]] = post_data
 

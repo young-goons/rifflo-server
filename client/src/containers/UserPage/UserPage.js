@@ -31,24 +31,27 @@ class UserPage extends Component {
         let postIdArr;
         axios({method: 'GET', url: userPostUrl, headers: requestHeaders})
             .then(response => {
-                console.log(response.data);
                 postIdArr = response.data.postIdArr;
+                if (postIdArr.length === 0) {
+                    return;
+                }
                 const postUrl = "http://127.0.0.1:5000/posts/" + postIdArr.join(',');
                 return axios({method: 'GET', url: postUrl, headers: requestHeaders});
             })
             .then(response => {
-                console.log(response.data);
-                const postArr = [];
-                for (let i = 0; i < postIdArr.length; i++) {
-                    if (postIdArr[i] in response.data.posts) {
-                        postArr.push(response.data.posts[postIdArr[i]]);
+                if (response) {
+                    const postArr = [];
+                    for (let i = 0; i < postIdArr.length; i++) {
+                        if (postIdArr[i] in response.data.posts) {
+                            postArr.push(response.data.posts[postIdArr[i]]);
+                        }
                     }
+                    console.log(postArr);
+                    this.setState({
+                        isUserPageLoaded: true,
+                        postArr: postArr
+                    })
                 }
-                console.log(postArr);
-                this.setState({
-                    isUserPageLoaded: true,
-                    postArr: postArr
-                })
             })
             .catch(error => {
                 alert(error);
