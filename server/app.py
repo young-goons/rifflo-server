@@ -28,16 +28,16 @@ def unauthorized_response(callback):
         'message': 'Missing Authorization Header'
     }), 401)
 
-# TODO - to be implemented later
+# TODO - add token blacklist and use the refreshing functionality
 @app.route('/refresh', methods=['POST'])
 @jwt_refresh_token_required
 def refresh():
-    curr_user_id = get_jwt_identity()
+    curr_user = get_jwt_identity()
     ret = {
-        'token': create_access_token(identity={})
+        'access_token': create_access_token(identity={'userId': curr_user['userId'],
+                                                      'username': curr_user['username']})
     }
     return make_response(jsonify({ret}), 200)
-
 
 # TODO - check if the username or something already exists
 #      - Error handling
@@ -136,17 +136,56 @@ def get_user_info(user_id):
         return make_response(jsonify({'msg': 'No authentication on requested data'}), 400)
 
 
-# TODO: private and public options
-# TODO: add shuffle option
-@app.route('/user/<string:username>/posts', methods=['GET'])
+@app.route('/user/<string:username>')
+def get_user_exists(username):
+    """
+    Fetches existence of user of the input username and returns user_id if exists
+    :param username: username to check existence of
+    """
+    with connection.cursor() as cursor:
+        sql = 'SELECT user_id, username FROM tbl_user ' \
+              'WHERE username = %s'
+        cursor.execute(sql, username)
+        query_result = cursor.fetchone()
+    if query_result is not None:
+        return make_response(jsonify({'userId': query_result[0]}), 200)
+    else:
+        return make_response(jsonify({'userId': None}), 200)
+
+
+"""
+Not sure about whether to use username or user_id for the api endpoint
+for fetching user's posts
+"""
+
+# # TODO: private and public options
+# @app.route('/user/<string:username>/posts', methods=['GET'])
+# @jwt_required
+# def get_user_posts(username):
+#     """ Obtains the list of ids of the posts that the user has posted """
+#     shuffle = request.args.get('shuffle')
+#     with connection.cursor() as cursor:
+#         sql = 'SELECT post_id FROM tbl_post NATURAL JOIN ' \
+#               '(SELECT user_id, username FROM tbl_user WHERE username = %s) tbl_user_username'
+#         cursor.execute(sql, (username))
+#         query_result = cursor.fetchall()
+#     post_id_list = []
+#     for row in query_result:
+#         post_id_list.append(row[0])
+#     if shuffle:
+#         random.shuffle(post_id_list)
+#     return make_response(jsonify({'postIdArr': post_id_list}), 200)
+
+
+@app.route('/user/<int:user_id>/posts', methods=['GET'])
 @jwt_required
-def get_user_posts(username):
+def get_user_posts(user_id):
     """ Obtains the list of ids of the posts that the user has posted """
     shuffle = request.args.get('shuffle')
     with connection.cursor() as cursor:
         sql = 'SELECT post_id FROM tbl_post NATURAL JOIN ' \
-              '(SELECT user_id, username FROM tbl_user WHERE username = %s) tbl_user_username'
-        cursor.execute(sql, (username))
+              '(SELECT user_id, username FROM tbl_user WHERE user_id = %s) tbl_user_id'
+        cursor.execute(sql, (user_id))
         query_result = cursor.fetchall()
     post_id_list = []
     for row in query_result:

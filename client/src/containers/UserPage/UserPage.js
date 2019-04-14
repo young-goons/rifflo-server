@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 
 import Post from '../../components/Post/Post';
+import NoUserPage from '../../components/ErrorPage/NoUserPage/NoUserPage';
 import PostEditor from './PostEditor/PostEditor';
 import { parseJWT } from '../../shared/utils';
 
@@ -10,7 +11,8 @@ class UserPage extends Component {
     state = {
         jwtIdentity: null,
         isUserPageLoaded: false,
-        postArr: []
+        postArr: [],
+        userId: null
     };
 
     componentDidMount() {
@@ -18,10 +20,28 @@ class UserPage extends Component {
         if (accessToken && this.state.jwtIdentity === null) {
             this.setState({jwtIdentity: parseJWT(accessToken)['identity']});
         }
+
         if (!this.state.isUserPageLoaded) {
-            this.loadUserPosts();
+            if (this.state.userId) {
+                this.loadUserPosts();
+            } else {
+                this.getUserId();
+            }
         }
     }
+
+    getUserId = () => {
+        const userExistsUrl = "http://127.0.0.1:5000/user/" + this.props.match.params.username;
+        axios({method: 'GET', url: userExistsUrl})
+            .then(response => {
+                console.log(response.data);
+                if (response.data.userId) {
+                    this.setState({userId: response.data.userId});
+                } else {
+                    this.setState({isUserPageLoaded: true});
+                }
+            })
+    };
 
     loadUserPosts = () => {
         const userPostUrl = "http://127.0.0.1:5000/user/" + this.props.match.params.username + "/posts";
@@ -78,11 +98,23 @@ class UserPage extends Component {
                 <PostEditor/>
             );
         }
+
+        let userPageDiv;
+        if (this.state.userId === null) {
+            userPageDiv = <NoUserPage/>;
+        } else {
+            userPageDiv = (
+                <div>
+                    User Page of {username}
+                    {postDivArr}
+                    {postUploadDiv}
+                </div>
+            );
+        }
+
         return (
             <div>
-                User Page of {username}
-                {postDivArr}
-                {postUploadDiv}
+                {userPageDiv}
             </div>
         );
     }
