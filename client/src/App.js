@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { Route, Switch, Router, Redirect } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
+import { Container } from 'semantic-ui-react';
 
 import Layout from './hoc/Layout/Layout';
 import UserPage from './containers/UserPage/UserPage';
-import SignUpPage from './containers/SignUpPage/SignUpPage';
-import SignInPage from './containers/SignInPage/SignInPage';
+import SignUpPage from './containers/AuthPage/SignUpPage';
+import SignInPage from './containers/AuthPage/SignInPage';
 import Feed from './containers/Feed/Feed';
 
 class App extends Component {
@@ -22,9 +23,9 @@ class App extends Component {
 
     return (
       <Router history={createBrowserHistory()}>
-        <Layout>
+        <Container style={{ height: '100%' }}>
           {routes}
-        </Layout>
+        </Container>
       </Router>
     );
   }
