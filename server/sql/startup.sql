@@ -1,21 +1,15 @@
-Instructions for setting up local database
+DROP DATABASE IF EXISTS app_dev;
+CREATE DATABASE app_dev;
+USE app_dev;
 
-1. Download mysql and run local mysql server
 
-2. Connect to mysql server by "mysql -u root -p"
-
-3. Create and use the database
-
-CREAT DATABASE music_app;
-USE app;
-
-4. Initialize tables
-
+-- Create the database schema.
 DROP TABLE IF EXISTS tbl_post;
-DROP TABLE IF EXISTS tbl_user_info;
 DROP TABLE IF EXISTS tbl_song_info;
+DROP TABLE IF EXISTS tbl_user_info;
 DROP TABLE IF EXISTS tbl_user;
 
+-- Create user tables.
 CREATE TABLE tbl_user
 (
     user_id    INT AUTO_INCREMENT,
@@ -42,6 +36,19 @@ CREATE TABLE tbl_user_info
       ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- Create song tables.
+CREATE TABLE tbl_song_info
+(
+    song_id       INT AUTO_INCREMENT,
+    song_name     VARCHAR(50) NOT NULL,
+    artist        VARCHAR(50) NOT NULL,
+    release_date  DATE,
+    album         VARCHAR(50),
+
+    PRIMARY KEY(song_id)
+);
+
+-- Create post tables.
 CREATE TABLE tbl_post
 (
     post_id        INT AUTO_INCREMENT,
@@ -61,21 +68,3 @@ CREATE TABLE tbl_post
     FOREIGN KEY (song_id) REFERENCES tbl_song_info(song_id)
       ON DELETE CASCADE ON UPDATE CASCADE
 );
-
-CREATE TABLE tbl_song_info
-(
-    song_id       INT AUTO_INCREMENT,
-    song_name     VARCHAR(50) NOT NULL,
-    artist        VARCHAR(50) NOT NULL,
-    release_date  DATE,
-    album         VARCHAR(50),
-
-    PRIMARY KEY(song_id)
-);
-
-6. Insert dummy values to the table
-
-
-7. References
-https://code.tutsplus.com/tutorials/creating-a-web-app-from-scratch-using-python-flask-and-mysql--cms-22972
-
