@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from "axios";
+import { Redirect } from 'react-router-dom';
 
 import Post from '../../components/Post/Post';
 import { FEED_POSTS_LOAD_NUM } from "../../shared/config";
+import styles from './Feed.module.css';
 
 class Feed extends Component {
     state = {
@@ -16,7 +18,8 @@ class Feed extends Component {
     numPosts = FEED_POSTS_LOAD_NUM;
 
     componentDidMount() {
-        if (!this.state.isFeedLoaded) {
+        // TODO: need to try to authenticate?
+        if (this.props.isAuthenticated && !this.state.isFeedLoaded) {
             console.log("initial feed load")
             this.loadFeed(true, this.loadFeedPosts);
         }
@@ -102,6 +105,10 @@ class Feed extends Component {
     };
 
     render() {
+        let authRedirect = null;
+        if (!this.props.isAuthenticated) {
+            authRedirect = <Redirect to="/signin"/>;
+        }
         console.log(this.state.postArr);
         const postDivArr = this.state.postArr.map((post, idx) => {
             return (
@@ -115,7 +122,7 @@ class Feed extends Component {
                 </div>
             )
         });
-        return (
+        const feedDiv = (
             <div>
                 Feed
                 { postDivArr }
@@ -127,17 +134,23 @@ class Feed extends Component {
                 </button>
             </div>
         );
+        return (
+            <div className={styles.containerDiv}>
+                { authRedirect }
+                { feedDiv }
+            </div>
+        )
     }
 }
 
-// const mapStateToProps = state => {
-//     return {
-//         isFeedLoaded: state.feed.isFeedLoaded,
-//         feedPostIdArr: state.feed.feedPostIdArr,
-//         feedPostIdx: state.feed.feedPostIdx
-//     };
-// };
-//
+const mapStateToProps = state => {
+    return {
+        isAuthenticated: state.auth.isAuthenticated,
+        authRedirectPath: state.auth.authRedirectPath,
+        userInfo: state.auth.userInfo
+    };
+};
+
 // const mapDispatchToProps = dispatch => {
 //     return {
 //         onLoadFeed: () => dispatch(loadFeed()),
@@ -146,5 +159,4 @@ class Feed extends Component {
 //     };
 // };
 
-// export default connect(mapStateToProps, mapDispatchToProps)(Feed);
-export default Feed;
+export default connect(mapStateToProps)(Feed);

@@ -31,7 +31,7 @@ class UserPage extends Component {
     }
 
     getUserId = () => {
-        const userExistsUrl = "http://127.0.0.1:5000/user/" + this.props.match.params.username;
+        const userExistsUrl = "http://127.0.0.1:5000/user/id/username" + this.props.match.params.username;
         axios({method: 'GET', url: userExistsUrl})
             .then(response => {
                 console.log(response.data);

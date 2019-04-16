@@ -12,3 +12,7 @@ Run "app.py" to start the server
 # Authentication
 
 * https://www.vitoshacademy.com/hashing-passwords-in-python/
+
+# TODOs
+
+* check if same username and email exists

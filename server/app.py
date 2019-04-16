@@ -95,7 +95,7 @@ def sign_in():
         user['refresh_token'] = refresh_token
         return make_response(jsonify({'user': user}), 200)
     else:
-        return make_response(jsonify({'msg': 'Wrong Password'}), 400)
+        return make_response(jsonify({'user': None}), 200)
 
 
 @app.route('/signout', methods=['POST'])
@@ -136,16 +136,31 @@ def get_user_info(user_id):
         return make_response(jsonify({'msg': 'No authentication on requested data'}), 400)
 
 
-@app.route('/user/<string:username>')
-def get_user_exists(username):
+@app.route('/user/id/username/<string:username>', methods=['GET'])
+def get_user_exists_by_username(username):
     """
     Fetches existence of user of the input username and returns user_id if exists
     :param username: username to check existence of
     """
     with connection.cursor() as cursor:
-        sql = 'SELECT user_id, username FROM tbl_user ' \
-              'WHERE username = %s'
+        sql = 'SELECT user_id FROM tbl_user WHERE username = %s'
         cursor.execute(sql, username)
+        query_result = cursor.fetchone()
+    if query_result is not None:
+        return make_response(jsonify({'userId': query_result[0]}), 200)
+    else:
+        return make_response(jsonify({'userId': None}), 200)
+
+
+@app.route('/user/id/email/<string:email>', methods=['GET'])
+def get_user_exists_by_email(email):
+    """
+    Fetches existence of user of the input email and returns username if exists
+    :param email: email to check existence of
+    """
+    with connection.cursor() as cursor:
+        sql = 'SELECT user_id FROM tbl_user WHERE email = %s'
+        cursor.execute(sql, email)
         query_result = cursor.fetchone()
     if query_result is not None:
         return make_response(jsonify({'userId': query_result[0]}), 200)
@@ -218,7 +233,6 @@ def get_user_feed():
 #      - add option to include or exclude music clips
 #      - empty id_list - return null
 @app.route('/posts/<id_list>', methods=['GET'])
-@jwt_required
 def get_posts(id_list):
     """
     Returns a dictionary {post_id: post_info} where post_info is fetched from db
