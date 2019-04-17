@@ -42,14 +42,14 @@ class SignInPage extends Component {
 
     render () {
         let authRedirect = null;
-        if (this.props.isAuthenticated) {
+        if (this.props.isAuthenticated && this.props.userInfo) {
             authRedirect = <Redirect to={this.props.authRedirectPath}/>;
         }
         let warningDiv = <div></div>;
         if (!this.state.emailExists) {
             warningDiv = (
                 <div className={styles.authWarningDiv}>
-                    <Message attached="bottom" warning>
+                    <Message attached="bottom" negative>
                         Email is not registered
                     </Message>
                 </div>
@@ -57,7 +57,7 @@ class SignInPage extends Component {
         } else if (this.props.wrongPassword) {
             warningDiv = (
                 <div className={styles.authWarningDiv}>
-                    <Message attached="bottom" warning>
+                    <Message attached="bottom" negative>
                         Wrong password
                     </Message>
                 </div>
@@ -133,7 +133,8 @@ const mapStateToProps = state => {
         error: state.auth.error,
         isAuthenticated: state.auth.isAuthenticated,
         authRedirectPath: state.auth.authRedirectPath,
-        wrongPassword: state.auth.wrongPassword
+        wrongPassword: state.auth.wrongPassword,
+        userInfo: state.auth.userInfo
     };
 };
 

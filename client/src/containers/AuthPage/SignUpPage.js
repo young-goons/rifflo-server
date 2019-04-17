@@ -5,7 +5,7 @@ import { NavLink, Redirect } from 'react-router-dom';
 import { Button, Form, Grid, Icon, Image, Segment, Message } from 'semantic-ui-react';
 
 import styles from './AuthPage.module.css';
-import {auth} from "../../store/actions/auth";
+import { auth } from "../../store/actions/auth";
 
 class SignUpPage extends Component {
     state = {
@@ -91,14 +91,14 @@ class SignUpPage extends Component {
 
     render() {
         let authRedirect = null;
-        if (this.props.isAuthenticated) {
+        if (this.props.isAuthenticated && this.props.userInfo) {
             authRedirect = <Redirect to="/"/>;
         }
         let warningDiv = <div></div>;
         if (this.state.passwordMatchWarning) {
             warningDiv = (
                 <div className={styles.authWarningDiv}>
-                    <Message attached="bottom" warning>
+                    <Message attached="bottom" negative>
                         Passwords do not match
                     </Message>
                 </div>
@@ -106,7 +106,7 @@ class SignUpPage extends Component {
         } else if (this.state.emailExists) {
             warningDiv = (
                 <div className={styles.authWarningDiv}>
-                    <Message attached="bottom" warning>
+                    <Message attached="bottom" negative>
                         Email is already registered
                     </Message>
                 </div>
@@ -114,7 +114,7 @@ class SignUpPage extends Component {
         } else if (this.state.usernameExists) {
             warningDiv = (
                 <div className={styles.authWarningDiv}>
-                    <Message attached="bottom" warning>
+                    <Message attached="bottom" negative>
                         Username is already used
                     </Message>
                 </div>
@@ -174,12 +174,12 @@ class SignUpPage extends Component {
                     </Segment>
                     <div className={styles.orDiv}>Or</div>
                     <div className={styles.facebookButtonDiv}>
-                        <Button color="white" fluid size="large">
+                        <Button color="facebook" fluid size="large">
                             <Icon name="facebook" size="small"/> Sign Up with Facebook
                         </Button>
                     </div>
                     <div className={styles.googleButtonDiv}>
-                        <Button color="white" fluid size="large">
+                        <Button color="google plus" fluid size="large">
                             <Icon name="google" size="small"/> Sign Up with Google
                         </Button>
                     </div>
@@ -203,7 +203,8 @@ const mapStateToProps = state => {
     return {
         error: state.auth.error,
         isAuthenticated: state.auth.isAuthenticated,
-        authRedirectPath: state.auth.authRedirectPath
+        authRedirectPath: state.auth.authRedirectPath,
+        userInfo: state.auth.userInfo
     };
 };
 

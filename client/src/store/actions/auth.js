@@ -56,7 +56,6 @@ export const auth = (email, password) => {
                 if (response.data.user) {
                     window.localStorage.setItem('accessToken', response.data.user.access_token);
                     window.localStorage.setItem('refreshToken', response.data.user.refresh_token);
-                    dispatch(authSuccess(response.data.user.access_token, response.data.user.refresh_token));
                     console.log(response);
                     url =  "http://127.0.0.1:5000/user/" + response.data.user.user_id + "/info";
                     const headers = {
@@ -71,6 +70,7 @@ export const auth = (email, password) => {
             .then(response => {
                 if (response) {
                     dispatch(loadUserInfo(response.data.user));
+                    dispatch(authSuccess(response.data.user.access_token, response.data.user.refresh_token));
                     console.log(response.data.user)
                 }
             })

@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import { connect } from 'react-redux';
 import axios from "axios";
 import { Redirect } from 'react-router-dom';
 
 import Post from '../../components/Post/Post';
+import SiteHeader from '../SiteHeader/SiteHeader';
 import { FEED_POSTS_LOAD_NUM } from "../../shared/config";
 import styles from './Feed.module.css';
 
@@ -16,6 +17,8 @@ class Feed extends Component {
     };
 
     numPosts = FEED_POSTS_LOAD_NUM;
+
+    contextRef = createRef();
 
     componentDidMount() {
         // TODO: need to try to authenticate?
@@ -38,6 +41,7 @@ class Feed extends Component {
             'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
         };
         console.log("load feed");
+        // if expired
         axios({method: 'GET', url: url, headers: requestHeaders})
             .then(response => {
                 console.log(response.data.postIdArr);
@@ -135,7 +139,8 @@ class Feed extends Component {
             </div>
         );
         return (
-            <div className={styles.containerDiv}>
+            <div className={styles.containerDiv} ref={this.contextRef}>
+                <SiteHeader contextRef={this.contextRef}/>
                 { authRedirect }
                 { feedDiv }
             </div>
