@@ -25,3 +25,9 @@
 # Authentication
 
 * https://www.vitoshacademy.com/hashing-passwords-in-python/
+
+# To Do
+
+* SQL injection?
+* Refactor API endpoints (posts)
+* SQLAlchemy instead of raw SQL queries
