@@ -2,8 +2,9 @@ import React, { Component, createRef } from 'react';
 import { connect } from 'react-redux';
 import axios from "axios";
 import { Redirect } from 'react-router-dom';
+import { Container } from 'semantic-ui-react';
 
-import Post from '../../components/Post/Post';
+import Post from './Post/Post';
 import SiteHeader from '../SiteHeader/SiteHeader';
 import { FEED_POSTS_LOAD_NUM } from "../../shared/config";
 import styles from './Feed.module.css';
@@ -41,7 +42,6 @@ class Feed extends Component {
             'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
         };
         console.log("load feed");
-        // if expired
         axios({method: 'GET', url: url, headers: requestHeaders})
             .then(response => {
                 console.log(response.data.postIdArr);
@@ -109,11 +109,14 @@ class Feed extends Component {
     };
 
     render() {
+        console.log(this.props.isAuthenticated);
         let authRedirect = null;
+        let siteHeader = null;
         if (!this.props.isAuthenticated) {
             authRedirect = <Redirect to="/signin"/>;
+        } else {
+            siteHeader = <SiteHeader contextRef={this.contextRef}/>;
         }
-        console.log(this.state.postArr);
         const postDivArr = this.state.postArr.map((post, idx) => {
             return (
                 <div key={idx}>
@@ -127,8 +130,7 @@ class Feed extends Component {
             )
         });
         const feedDiv = (
-            <div>
-                Feed
+            <div className={styles.feedDiv}>
                 { postDivArr }
                 <button onClick={() => this.loadFeedPostsHandler()}>
                     Show More
@@ -140,8 +142,8 @@ class Feed extends Component {
         );
         return (
             <div className={styles.containerDiv} ref={this.contextRef}>
-                <SiteHeader contextRef={this.contextRef}/>
                 { authRedirect }
+                { siteHeader }
                 { feedDiv }
             </div>
         )

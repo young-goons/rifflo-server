@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
-import Post from '../../components/Post/Post';
+import Post from '../Feed/Post/Post';
 import NoUserPage from '../../components/ErrorPage/NoUserPage/NoUserPage';
 import PostEditor from './PostEditor/PostEditor';
 import { parseJWT } from '../../shared/utils';
@@ -31,7 +31,7 @@ class UserPage extends Component {
     }
 
     getUserId = () => {
-        const userExistsUrl = "http://127.0.0.1:5000/user/id/username" + this.props.match.params.username;
+        const userExistsUrl = "http://127.0.0.1:5000/user/id/username/" + this.props.match.params.username;
         axios({method: 'GET', url: userExistsUrl})
             .then(response => {
                 console.log(response.data);

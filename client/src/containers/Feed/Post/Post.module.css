@@ -1,0 +1,81 @@
+.postDiv {
+    border: solid grey 1px;
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+    text-align: left;
+    width: 40em;
+}
+
+.postHeaderDiv {
+
+}
+
+.profileImgDiv {
+    margin-top: 5px;
+}
+
+.profileImgColumn {
+    /*margin-bottom: -1em;*/
+}
+
+.headerInfoColumn {
+    margin-left: -1.5em;
+    margin-top:0.2em;
+}
+
+.songInfoRow {
+    margin-top: 0.4em;
+}
+
+.playBarColumn {
+    margin-left: -1em;
+}
+
+.tagsRow {
+    margin-top: -1.5em;
+}
+
+.tagsSpan {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 1.5em;
+    color: deepskyblue;
+}
+
+.actionRow {
+    margin-top: -1em;
+}
+
+.actionLabel {
+    color: lightslategray;
+}
+
+.contentRow {
+    margin-top: -1.5em;
+}
+
+.contentSpan {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 400;
+    font-size: 1.5em;
+}
+
+.commentHeaderRow {
+    margin-top: -1em;
+}
+
+.dateRow {
+    margin-top: -1.5em;
+}
+
+.dateSpan {
+    color: lightslategray;
+}
+
+.playIcon, .actionIcon  {
+    cursor: pointer;
+}
+
+.usernameSpan {
+    color: black;
+}

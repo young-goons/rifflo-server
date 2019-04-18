@@ -42,8 +42,7 @@ class SignUpPage extends Component {
         });
     };
 
-    // TODO: confirm password, check no same email or username exists
-
+    // TODO: check email format and email confirmation(?)
     signUpHandler = () => {
         if (this.state.password === this.state.passwordConfirm) {
             this.setState({passwordMatchWarning: false});
@@ -121,7 +120,7 @@ class SignUpPage extends Component {
             )
         }
         const signUpDiv = (
-            <Grid centered columns={2} verticalAlign="middle" style={{height: '100%'}}>
+            <Grid centered columns={3} verticalAlign="middle" style={{height: '100%'}}>
                 <Grid.Column className={styles.signUpForm}>
                     <Image src='https://store.storeimages.cdn-apple.com/4981/as-images.apple.com/is/image/AppleInc/aos/published/images/M/RR/MRRH2/MRRH2?wid=445&hei=445&fmt=jpeg&qlt=95&op_usm=0.5,0.5&.v=1525909183709' size='tiny' centered />
                     <div className={styles.signUpHeader}>
@@ -166,7 +165,9 @@ class SignUpPage extends Component {
                                 value={this.state.passwordConfirm}
                                 onChange={this.passwordConfirmInputHandler}
                             />
-                            <Button color="blue" fluid size="large" onClick={this.signUpHandler}>
+                            <Button
+                                color="blue" fluid size="large"
+                                onClick={this.signUpHandler}>
                                 Sign Up
                             </Button>
                         </Form>

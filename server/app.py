@@ -15,6 +15,7 @@ from authentication import hash_password, verify_password
 app = Flask(__name__)
 CORS(app)
 app.config['JWT_SECRET_KEY'] = 'abcdef'
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(days=1)
 jwt = JWTManager(app)
 
 connection = pymysql.connect(host='localhost', port=3306, user='root',

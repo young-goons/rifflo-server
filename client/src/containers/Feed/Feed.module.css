@@ -1,3 +1,9 @@
 .containerDiv {
     height: 100%;
+    text-align: center;
+}
+
+.feedDiv {
+    width: 40em;
+    display: inline-block;
 }

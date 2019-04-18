@@ -5,8 +5,6 @@ import * as actionTypes from './actionTypes';
 export const authSuccess = (accessToken, refreshToken) => {
     return {
         type: actionTypes.AUTH_SUCCESS,
-        accessToken: accessToken,
-        refreshToken: refreshToken
     };
 };
 
@@ -44,6 +42,23 @@ export const loadUserInfo = (userInfo) => {
     };
 };
 
+export const loadUser = (user_id) => {
+    return dispatch => {
+        const url = "http://127.0.0.1:5000/user/" + user_id + "/info";
+        const headers = {
+            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
+        };
+        axios({method: 'GET', url: url, headers: headers})
+            .then(response => {
+                dispatch(loadUserInfo(response.data.user));
+                dispatch(authSuccess());
+            })
+            .catch(error => {
+                alert(error);
+            })
+    };
+};
+
 export const auth = (email, password) => {
     return dispatch => {
         let url = "http://127.0.0.1:5000/signin";
@@ -70,7 +85,7 @@ export const auth = (email, password) => {
             .then(response => {
                 if (response) {
                     dispatch(loadUserInfo(response.data.user));
-                    dispatch(authSuccess(response.data.user.access_token, response.data.user.refresh_token));
+                    dispatch(authSuccess());
                     console.log(response.data.user)
                 }
             })
@@ -78,4 +93,25 @@ export const auth = (email, password) => {
                 dispatch(authFail(error));
             })
     };
+};
+
+/**
+ * Refreshes authentication. Assumes there exists refreshToken in localStorage.
+ */
+export const authRefresh = (callback) => {
+    return dispatch => {
+        const url = "http://127.0.0.1:5000/refresh";
+        const headers = {
+            'Authorization': 'Bearer ' + localStorage.getItem('refreshToken')
+        };
+        axios({method: 'GET', url: url, headers: headers})
+            .then(response => {
+                window.localStorage.setItem('accessToken', response.data.access_token)
+                dispatch(authSuccess());
+                callback();
+            })
+            .catch(error => {
+                console.log(error);
+            })
+    }
 };

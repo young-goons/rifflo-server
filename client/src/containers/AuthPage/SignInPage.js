@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { NavLink, Redirect } from 'react-router-dom';
-import {Button, Form, Grid, Message, Icon, Image, Segment} from 'semantic-ui-react';
+import { Button, Form, Grid, Message, Icon, Image, Segment } from 'semantic-ui-react';
 
 import { auth } from '../../store/actions/auth';
 import styles from './AuthPage.module.css';
@@ -41,6 +41,7 @@ class SignInPage extends Component {
     };
 
     render () {
+        console.log(this.props.isAuthenticated);
         let authRedirect = null;
         if (this.props.isAuthenticated && this.props.userInfo) {
             authRedirect = <Redirect to={this.props.authRedirectPath}/>;
@@ -64,7 +65,7 @@ class SignInPage extends Component {
             )
         }
         const signInDiv = (
-            <Grid centered columns={2} verticalAlign="middle" style={{height: '100%'}}>
+            <Grid centered columns={3} verticalAlign="middle" style={{height: '100%'}}>
                 <Grid.Column className={styles.signInForm}>
                     <Image src='https://store.storeimages.cdn-apple.com/4981/as-images.apple.com/is/image/AppleInc/aos/published/images/M/RR/MRRH2/MRRH2?wid=445&hei=445&fmt=jpeg&qlt=95&op_usm=0.5,0.5&.v=1525909183709' size='tiny' centered />
                     <div className={styles.signInHeader}>
