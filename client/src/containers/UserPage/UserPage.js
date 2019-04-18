@@ -2,27 +2,25 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
+import SiteHeader from '../SiteHeader/SiteHeader';
 import Post from '../Feed/Post/Post';
 import NoUserPage from '../../components/ErrorPage/NoUserPage/NoUserPage';
 import PostEditor from './PostEditor/PostEditor';
-import { parseJWT } from '../../shared/utils';
+import styles from './UserPage.module.css';
 
 class UserPage extends Component {
     state = {
-        jwtIdentity: null,
         isUserPageLoaded: false,
         postArr: [],
-        userId: null
+        userId: null,
+        authUserInfo: this.props.userInfo
     };
 
     componentDidMount() {
-        const accessToken = window.localStorage.getItem('accessToken');
-        if (accessToken && this.state.jwtIdentity === null) {
-            this.setState({jwtIdentity: parseJWT(accessToken)['identity']});
-        }
-
-        if (!this.state.isUserPageLoaded) {
+        // necessary ???
+        if (!this.state.isUserPageLoaded && this.props.userInfo) {
             if (this.state.userId) {
+                console.log("loading user posts in componentDidMount");
                 this.loadUserPosts();
             } else {
                 this.getUserId();
@@ -30,27 +28,46 @@ class UserPage extends Component {
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        console.log(this.state.authUserInfo);
+        if (nextProps.userInfo) {
+            console.log(nextProps.userInfo);
+            this.setState({authUserInfo: nextProps.userInfo});
+            this.getUserId();
+        }
+    }
+
+    componentDidUpdate() {
+        if (!this.state.isUserPageLoaded && this.state.userId && this.state.authUserInfo) {
+            console.log("load user posts");
+            this.loadUserPosts();
+        }
+    }
+
     getUserId = () => {
         const userExistsUrl = "http://127.0.0.1:5000/user/id/username/" + this.props.match.params.username;
         axios({method: 'GET', url: userExistsUrl})
             .then(response => {
-                console.log(response.data);
+                console.log(response);
                 if (response.data.userId) {
+                    console.log("userid begin set");
                     this.setState({userId: response.data.userId});
                 } else {
+                    console.log('userid does not exist');
                     this.setState({isUserPageLoaded: true});
                 }
             })
     };
 
     loadUserPosts = () => {
-        const userPostUrl = "http://127.0.0.1:5000/user/" + this.props.match.params.username + "/posts";
+        const userPostUrl = "http://127.0.0.1:5000/user/" + this.state.userId + "/posts";
         const requestHeaders = {
             'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
         };
         let postIdArr;
         axios({method: 'GET', url: userPostUrl, headers: requestHeaders})
             .then(response => {
+                console.log(response);
                 postIdArr = response.data.postIdArr;
                 if (postIdArr.length === 0) {
                     return;
@@ -60,6 +77,7 @@ class UserPage extends Component {
             })
             .then(response => {
                 if (response) {
+                    console.log(response);
                     const postArr = [];
                     for (let i = 0; i < postIdArr.length; i++) {
                         if (postIdArr[i] in response.data.posts) {
@@ -92,17 +110,23 @@ class UserPage extends Component {
                 </div>
             );
         });
+
+        let siteHeader = null;
         let postUploadDiv = <div></div>;
-        if (this.state.jwtIdentity != null && this.state.jwtIdentity.username === username) {
-            postUploadDiv = (
-                <PostEditor/>
-            );
+        if (this.props.userInfo) {
+            siteHeader = <SiteHeader userInfo={this.props.userInfo}/>;
+            if (this.props.userInfo.username === username) {
+                postUploadDiv = (
+                    <PostEditor/>
+                );
+            }
         }
 
         let userPageDiv;
         if (this.state.userId === null) {
             userPageDiv = <NoUserPage/>;
         } else {
+            console.log(this.props.userInfo);
             userPageDiv = (
                 <div>
                     User Page of {username}
@@ -113,8 +137,9 @@ class UserPage extends Component {
         }
 
         return (
-            <div>
-                {userPageDiv}
+            <div className={styles.containerDiv} ref={this.contextRef}>
+                { siteHeader }
+                { userPageDiv }
             </div>
         );
     }

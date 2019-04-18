@@ -10,17 +10,13 @@ class SiteHeader extends Component {
         searchString: ''
     };
 
-    signOutHandler = () => {
-
-    };
-
     render() {
         return (
             <Sticky context={this.props.contextRef} >
                 <div className={styles.stickyDiv}>
                     <Grid verticalAlign="middle">
                         <Grid.Column width={4} textAlign="right">
-                            App Name
+                            <a href="/">App Name</a>
                         </Grid.Column>
                         <Grid.Column width={8}>
                             <Search size="tiny" placeholder="Search Users & Playlists"/>
@@ -53,4 +49,5 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps)(SiteHeader);
+// export default connect(mapStateToProps)(SiteHeader);
+export default SiteHeader;

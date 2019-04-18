@@ -21,16 +21,17 @@ class PostEditor extends Component {
         })
     };
 
+    // TODO: error handling (if the content is too long)
     sharePostHandler = () => {
         const url = "http://127.0.0.1:5000/user/upload/post";
-        const requestParams = {
+        const requestData = {
             content: this.state.content,
             tags: this.state.tags
         };
         const requestHeaders = {
             'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
         };
-        axios({method: 'POST', url: url, params: requestParams, headers: requestHeaders})
+        axios({method: 'POST', url: url, data: requestData, headers: requestHeaders})
             .then(response => {
                 console.log(response);
                 alert("Shared successfully");

@@ -52,6 +52,7 @@ export const loadUser = (user_id) => {
             .then(response => {
                 dispatch(loadUserInfo(response.data.user));
                 dispatch(authSuccess());
+                console.log("User loaded");
             })
             .catch(error => {
                 alert(error);

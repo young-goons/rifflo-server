@@ -115,7 +115,7 @@ class Feed extends Component {
         if (!this.props.isAuthenticated) {
             authRedirect = <Redirect to="/signin"/>;
         } else {
-            siteHeader = <SiteHeader contextRef={this.contextRef}/>;
+            siteHeader = <SiteHeader contextRef={this.contextRef} userInfo={this.props.userInfo}/>;
         }
         const postDivArr = this.state.postArr.map((post, idx) => {
             return (
