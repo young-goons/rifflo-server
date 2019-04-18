@@ -2,6 +2,7 @@ import re
 import datetime
 import random
 import os
+import json
 
 from flask import Flask, request, jsonify, abort, make_response
 from flask_cors import CORS, cross_origin
@@ -283,9 +284,10 @@ def upload_post():
     """
     user = get_jwt_identity()
     user_id = user['userId']
-    content = request.args.get('content')
-    tags = request.args.get('tags')
-
+    data = json.loads(request.data)
+    content = data['content']
+    tags = data['tags']
+    
     # temporary data for now
     clip_path = ''
     song_name = "abc"
