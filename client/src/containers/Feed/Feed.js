@@ -158,12 +158,4 @@ const mapStateToProps = state => {
     };
 };
 
-// const mapDispatchToProps = dispatch => {
-//     return {
-//         onLoadFeed: () => dispatch(loadFeed()),
-//         onLoadFeedPostsSuccess: (numPosts) => dispatch(loadFeedPostsSuccess(numPosts)),
-//         onLoadFeedPostsFail: (error) => dispatch(loadFeedPostsFail(error))
-//     };
-// };
-
 export default connect(mapStateToProps)(Feed);

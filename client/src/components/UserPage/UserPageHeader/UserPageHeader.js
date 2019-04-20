@@ -9,7 +9,7 @@ const UserPageHeader = (props) => {
     return (
         <Grid>
             <Grid.Row>
-                <div className={styles.usernameDiv}>{props.userInfo.username}</div>
+                <div className={styles.usernameDiv}>{props.username}</div>
                 <img src={profileImg} className={styles.profileImg}/>
                 <Grid.Column width={16}>
                     <div className={styles.backgroundImgDiv}>

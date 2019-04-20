@@ -49,8 +49,11 @@ const signOut = (state, action) => {
     return {
         ...state,
         error: action.error,
+        isAuthenticating: false,
         isAuthenticated: false,
-        userInfo: null
+        userInfo: null,
+        wrongPassword: null,
+        authRedirectPath: '/',
     };
 };
 

@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { Sticky, Grid, Search, Icon, Dropdown } from 'semantic-ui-react';
 
 import styles from './SiteHeader.module.css';
+import { signOut } from '../../store/actions/auth';
 
 class SiteHeader extends Component {
     state = {
@@ -11,7 +12,7 @@ class SiteHeader extends Component {
     };
 
     signOutClickHandler = () => {
-
+        this.props.onSignOut();
     };
 
     render() {
@@ -62,11 +63,11 @@ class SiteHeader extends Component {
     }
 }
 
-const mapStateToProps = state => {
+const mapDispatchToProps = dispatch => {
     return {
-        userInfo: state.auth.userInfo
+        onSignOut: () => dispatch(signOut())
     };
 };
 
-// export default connect(mapStateToProps)(SiteHeader);
-export default SiteHeader;
+export default connect(null, mapDispatchToProps)(SiteHeader);
+// export default SiteHeader;

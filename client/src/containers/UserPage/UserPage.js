@@ -127,6 +127,7 @@ class UserPage extends Component {
             }
         }
 
+        // TODO: retrieve info of the owner of the user page
         let userPageDiv;
         if (this.state.userId === null) {
             userPageDiv = <NoUserPage/>;
@@ -134,7 +135,7 @@ class UserPage extends Component {
             console.log(this.props.userInfo);
             userPageDiv = (
                 <div className={styles.userPageContainerDiv}>
-                    <UserPageHeader userInfo={this.props.userInfo}/>
+                    <UserPageHeader username={this.props.match.params.username}/>
                     <div className={styles.userPageContentDiv}>
                         {postUploadDiv}
                         {postDivArr}
