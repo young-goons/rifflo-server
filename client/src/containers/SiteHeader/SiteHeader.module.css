@@ -23,6 +23,14 @@
     text-align: left;
 }
 
+.dropdownItemSpan:hover {
+    cursor: pointer;
+}
+
+.settingsColumn:hover {
+    cursor: pointer;
+}
+
 .settingsColumn:hover .dropdownContent {
     display: block;
 }

@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import { Grid, Column, Container } from 'semantic-ui-react';
 
 import SiteHeader from '../SiteHeader/SiteHeader';
 import Post from '../Feed/Post/Post';
+import UserPageHeader from '../../components/UserPage/UserPageHeader/UserPageHeader';
+import PostList from './SharedPost/SharedPost';
 import NoUserPage from '../../components/ErrorPage/NoUserPage/NoUserPage';
 import PostEditor from './PostEditor/PostEditor';
 import styles from './UserPage.module.css';
@@ -98,13 +101,15 @@ class UserPage extends Component {
 
     render() {
         const username = this.props.match.params.username;
+
+        // TODO: psuedo-randomize the order
         const postDivArr = this.state.postArr.map((post, idx) => {
+            console.log(post);
             return (
-                <div key = {idx}>
-                    <Post
-                        username={username}
-                        date={post.uploadDate}
-                        content={post.content}
+                <div key={idx} className={styles.postListDiv}>
+                    <PostList
+                        songName={post.songName}
+                        artist={post.artist}
                         tags={post.tags}
                     />
                 </div>
@@ -128,10 +133,12 @@ class UserPage extends Component {
         } else {
             console.log(this.props.userInfo);
             userPageDiv = (
-                <div>
-                    User Page of {username}
-                    {postDivArr}
-                    {postUploadDiv}
+                <div className={styles.userPageContainerDiv}>
+                    <UserPageHeader userInfo={this.props.userInfo}/>
+                    <div className={styles.userPageContentDiv}>
+                        {postUploadDiv}
+                        {postDivArr}
+                    </div>
                 </div>
             );
         }
