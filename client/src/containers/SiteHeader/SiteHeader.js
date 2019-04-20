@@ -1,13 +1,17 @@
 import React, { Component, createRef } from 'react';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
-import { Sticky, Grid, Segment, Search, Icon } from 'semantic-ui-react';
+import { Sticky, Grid, Search, Icon, Dropdown } from 'semantic-ui-react';
 
 import styles from './SiteHeader.module.css';
 
 class SiteHeader extends Component {
     state = {
         searchString: ''
+    };
+
+    signOutClickHandler = () => {
+
     };
 
     render() {
@@ -33,6 +37,21 @@ class SiteHeader extends Component {
                                     <a href={"/" + this.props.userInfo.username}>
                                         <Icon name="user outline" size="large" />
                                     </a>
+                                </Grid.Column>
+                                <Grid.Column width={3} className={styles.settingsColumn}>
+                                    <Icon name="setting" size="large" className={styles.settingsIcon}/>
+                                    <div className={styles.dropdownContent}>
+                                        <span
+                                            className={styles.dropdownItemSpan}
+                                            onClick={this.signOutClickHandler}>Sign Out
+                                        </span>
+                                        <span className={styles.dropdownItemSpan}>
+                                            <a href="/help">Help</a>
+                                        </span>
+                                        <span className={styles.dropdownItemSpan}>
+                                            <a href="/contact">Contact</a>
+                                        </span>
+                                    </div>
                                 </Grid.Column>
                             </Grid>
                         </Grid.Column>
