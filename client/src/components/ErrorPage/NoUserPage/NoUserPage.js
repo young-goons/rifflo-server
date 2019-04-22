@@ -1,7 +1,7 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
 
 const NoUserPage = (props) => {
+    // TODO: if isAuthenticated === false: make a link to signin
     return (
         <div>
             Requested page does not exist!

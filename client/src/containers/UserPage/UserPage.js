@@ -22,8 +22,7 @@ class UserPage extends Component {
     };
 
     componentDidMount() {
-        // necessary ???
-        console.log(this.props.isAuthenticated);
+        console.log("component did mount in UserPage.js")
         if (!this.state.isUserPageLoaded && this.props.userInfo) {
             if (this.state.userId) {
                 console.log("loading user posts in componentDidMount");
@@ -35,13 +34,12 @@ class UserPage extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(this.props.isAuthenticated);
         if (nextProps.userInfo) {
             console.log(nextProps.userInfo);
             this.setState({authUserInfo: nextProps.userInfo});
             this.getUserId();
         }
-        if (nextProps.isAuthenticated === false) {
+        if (nextProps.isAuthenticated === false) { // signing out
             console.log("signout");
             this.setState({isSignedOut: true});
         }
@@ -132,7 +130,7 @@ class UserPage extends Component {
         // TODO: retrieve info of the owner of the user page
         let userPageDiv;
         if (this.state.userId === null) {
-            userPageDiv = <NoUserPage/>;
+            userPageDiv = <NoUserPage isAuthenticated={this.state.isAuthenticated}/>;
         } else {
             if (this.state.isSignedOut) {
                 userPageDiv = <Redirect to="/signin"/>
