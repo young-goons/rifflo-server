@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import { Grid, Column, Container } from 'semantic-ui-react';
 
@@ -16,11 +17,13 @@ class UserPage extends Component {
         isUserPageLoaded: false,
         postArr: [],
         userId: null,
-        authUserInfo: this.props.userInfo
+        authUserInfo: null,
+        isSignedOut: false
     };
 
     componentDidMount() {
         // necessary ???
+        console.log(this.props.isAuthenticated);
         if (!this.state.isUserPageLoaded && this.props.userInfo) {
             if (this.state.userId) {
                 console.log("loading user posts in componentDidMount");
@@ -32,11 +35,15 @@ class UserPage extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(this.state.authUserInfo);
+        console.log(this.props.isAuthenticated);
         if (nextProps.userInfo) {
             console.log(nextProps.userInfo);
             this.setState({authUserInfo: nextProps.userInfo});
             this.getUserId();
+        }
+        if (nextProps.isAuthenticated === false) {
+            console.log("signout");
+            this.setState({isSignedOut: true});
         }
     }
 
@@ -57,7 +64,7 @@ class UserPage extends Component {
                     this.setState({userId: response.data.userId});
                 } else {
                     console.log('userid does not exist');
-                    this.setState({isUserPageLoaded: true});
+                    this.setState({isUserPageLoaded: true, authUserInfo: null});
                 }
             })
     };
@@ -70,7 +77,6 @@ class UserPage extends Component {
         let postIdArr;
         axios({method: 'GET', url: userPostUrl, headers: requestHeaders})
             .then(response => {
-                console.log(response);
                 postIdArr = response.data.postIdArr;
                 if (postIdArr.length === 0) {
                     return;
@@ -80,14 +86,12 @@ class UserPage extends Component {
             })
             .then(response => {
                 if (response) {
-                    console.log(response);
                     const postArr = [];
                     for (let i = 0; i < postIdArr.length; i++) {
                         if (postIdArr[i] in response.data.posts) {
                             postArr.push(response.data.posts[postIdArr[i]]);
                         }
                     }
-                    console.log(postArr);
                     this.setState({
                         isUserPageLoaded: true,
                         postArr: postArr
@@ -101,10 +105,8 @@ class UserPage extends Component {
 
     render() {
         const username = this.props.match.params.username;
-
         // TODO: psuedo-randomize the order
         const postDivArr = this.state.postArr.map((post, idx) => {
-            console.log(post);
             return (
                 <div key={idx} className={styles.postListDiv}>
                     <PostList
@@ -132,16 +134,20 @@ class UserPage extends Component {
         if (this.state.userId === null) {
             userPageDiv = <NoUserPage/>;
         } else {
-            console.log(this.props.userInfo);
-            userPageDiv = (
-                <div className={styles.userPageContainerDiv}>
-                    <UserPageHeader username={this.props.match.params.username}/>
-                    <div className={styles.userPageContentDiv}>
-                        {postUploadDiv}
-                        {postDivArr}
+            if (this.state.isSignedOut) {
+                userPageDiv = <Redirect to="/signin"/>
+            } else {
+                console.log(this.props.userInfo);
+                userPageDiv = (
+                    <div className={styles.userPageContainerDiv}>
+                        <UserPageHeader username={this.props.match.params.username}/>
+                        <div className={styles.userPageContentDiv}>
+                            {postUploadDiv}
+                            {postDivArr}
+                        </div>
                     </div>
-                </div>
-            );
+                );
+            }
         }
 
         return (
@@ -155,7 +161,8 @@ class UserPage extends Component {
 
 const mapStateToProps = state => {
     return {
-        userInfo: state.auth.userInfo
+        userInfo: state.auth.userInfo,
+        isAuthenticated: state.auth.isAuthenticated
     };
 };
 
