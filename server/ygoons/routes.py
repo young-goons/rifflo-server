@@ -1,33 +1,16 @@
 import re
-import datetime
 import random
-import os
 import json
 
-from flask import Flask, request, jsonify, abort, make_response
-from flask_cors import CORS, cross_origin
-from flask_jwt_extended import JWTManager
+import flask
+from flask import request, jsonify, abort, make_response
 from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 jwt_required, jwt_refresh_token_required, get_jwt_identity)
-import pymysql
 
-from authentication import hash_password, verify_password
+from ygoons.authentication import hash_password, verify_password
 
-app = Flask(__name__)
-CORS(app)
-app.config['JWT_SECRET_KEY'] = 'abcdef'
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(days=1)
-jwt = JWTManager(app)
+from ygoons import app
 
-connection = pymysql.connect(host='localhost', port=3306, user='root',
-                             passwd=os.environ['db_password'], db='music_app')
-
-@jwt.unauthorized_loader
-def unauthorized_response(callback):
-    return make_response(jsonify({
-        'success': False,
-        'message': 'Missing Authorization Header'
-    }), 401)
 
 # TODO - add token blacklist and use the refreshing functionality
 @app.route('/refresh', methods=['POST'])
@@ -40,6 +23,7 @@ def refresh():
     }
     return make_response(jsonify({ret}), 200)
 
+
 # TODO - check if the username or something already exists
 #      - Error handling
 #      - what if tbl_user_info does not get filled
@@ -48,7 +32,7 @@ def sign_up():
     email = request.args.get('email')
     username = request.args.get('username')
     password = request.args.get('password')
-    with connection.cursor() as cursor:
+    with flask.g.pymysql_db.cursor() as cursor:
         sql = "INSERT INTO tbl_user (email, username, password) " \
               "VALUES (%s, %s, %s)"
         cursor.execute(sql, (email, username, hash_password(password)))
@@ -61,17 +45,18 @@ def sign_up():
             user_info_rowcnt = cursor.execute(sql, (user_id))
 
     if user_id and user_info_rowcnt:
-        connection.commit()
+        flask.g.pymysql_db.commit()
         return make_response(jsonify({'success': True}), 200)
     else:
         return make_response(jsonify({'msg': "New user not added"}), 400)
+
 
 # TODO - action when signin is denied i.e. when wrong password e.t.c
 @app.route('/signin', methods=['POST'])
 def sign_in():
     email = request.args.get('email')
     password = request.args.get('password')
-    with connection.cursor() as cursor:
+    with flask.g.pymysql_db.cursor() as cursor:
         sql = 'SELECT user_id, username, password FROM tbl_user ' \
               'WHERE email = %s'
         cursor.execute(sql, (email))
@@ -114,7 +99,7 @@ def get_user_info(user_id):
     """
     # check if the identity of the token is equal to the identity of the request parameter
     if user_id == get_jwt_identity()['userId']:
-        with connection.cursor() as cursor:
+        with flask.g.pymysql_db.cursor() as cursor:
             sql = 'SELECT user_id, username, email, following_count, follower_count, ' \
                   'profile_picture_path FROM tbl_user NATURAL JOIN' \
                   '(SELECT * FROM tbl_user_info WHERE user_id = %s) tbl_user_info_id'
@@ -143,7 +128,8 @@ def get_user_exists_by_username(username):
     Fetches existence of user of the input username and returns user_id if exists
     :param username: username to check existence of
     """
-    with connection.cursor() as cursor:
+
+    with flask.g.pymysql_db.cursor() as cursor:
         sql = 'SELECT user_id FROM tbl_user WHERE username = %s'
         cursor.execute(sql, username)
         query_result = cursor.fetchone()
@@ -159,7 +145,7 @@ def get_user_exists_by_email(email):
     Fetches existence of user of the input email and returns username if exists
     :param email: email to check existence of
     """
-    with connection.cursor() as cursor:
+    with flask.g.pymysql_db.cursor() as cursor:
         sql = 'SELECT user_id FROM tbl_user WHERE email = %s'
         cursor.execute(sql, email)
         query_result = cursor.fetchone()
@@ -169,36 +155,12 @@ def get_user_exists_by_email(email):
         return make_response(jsonify({'userId': None}), 200)
 
 
-"""
-Not sure about whether to use username or user_id for the api endpoint
-for fetching user's posts
-"""
-
-# # TODO: private and public options
-# @app.route('/user/<string:username>/posts', methods=['GET'])
-# @jwt_required
-# def get_user_posts(username):
-#     """ Obtains the list of ids of the posts that the user has posted """
-#     shuffle = request.args.get('shuffle')
-#     with connection.cursor() as cursor:
-#         sql = 'SELECT post_id FROM tbl_post NATURAL JOIN ' \
-#               '(SELECT user_id, username FROM tbl_user WHERE username = %s) tbl_user_username'
-#         cursor.execute(sql, (username))
-#         query_result = cursor.fetchall()
-#     post_id_list = []
-#     for row in query_result:
-#         post_id_list.append(row[0])
-#     if shuffle:
-#         random.shuffle(post_id_list)
-#     return make_response(jsonify({'postIdArr': post_id_list}), 200)
-
-
 @app.route('/user/<int:user_id>/posts', methods=['GET'])
 @jwt_required
 def get_user_posts(user_id):
     """ Obtains the list of ids of the posts that the user has posted """
     shuffle = request.args.get('shuffle')
-    with connection.cursor() as cursor:
+    with flask.g.pymysql_db.cursor() as cursor:
         sql = 'SELECT post_id FROM tbl_post NATURAL JOIN ' \
               '(SELECT user_id, username FROM tbl_user WHERE user_id = %s) tbl_user_id'
         cursor.execute(sql, (user_id))
@@ -219,7 +181,7 @@ def get_user_feed():
     user_id = get_jwt_identity()['userId']
     print('Feed user_id: ', user_id)
     # obtain the list of ids of all the posts shared by other users for now...
-    with connection.cursor() as cursor:
+    with flask.g.pymysql_db.cursor() as cursor:
         sql = 'SELECT post_id FROM tbl_post WHERE user_id != %s'
         cursor.execute(sql, (user_id))
         query_result = cursor.fetchall()
@@ -229,6 +191,7 @@ def get_user_feed():
     random.shuffle(post_id_list)
     print("Feed post ids: ", post_id_list)
     return make_response(jsonify({'postIdArr': post_id_list}), 200)
+
 
 # TODO - error handling
 #      - add option to include or exclude music clips
@@ -243,7 +206,7 @@ def get_posts(id_list):
     if not re.match(r'^\d+(?:,\d+)*,?$', id_list):
         abort(400)
     post_ids = [int(i) for i in id_list.split(',')]
-    with connection.cursor() as cursor:
+    with flask.g.pymysql_db.cursor() as cursor:
         # TODO - there must be a better way of putting multiple ids in IN () clause
         sql = 'SELECT post_id, user_id, username, upload_date, content, tags, ' \
               'song_id, clip_path, song_name, artist ' \
@@ -293,7 +256,7 @@ def upload_post():
     song_name = "abc"
     artist = "def"
 
-    with connection.cursor() as cursor:
+    with flask.g.pymysql_db.cursor() as cursor:
         sql = "INSERT INTO tbl_song_info (song_name, artist)" \
               "VALUES (%s, %s)"
         cursor.execute(sql, (song_name, artist))
@@ -306,16 +269,7 @@ def upload_post():
             post_id = cursor.lastrowid
 
     if song_id and post_id:
-        connection.commit()
+        flask.g.pymysql_db.commit()
         return make_response(jsonify({'postId': post_id, 'songId': song_id}), 200)
     else:
         return make_response(jsonify({'msg': 'Error uploading post and song'}), 400)
-
-
-@app.errorhandler(400)
-def bad_params(error):
-    return make_response(jsonify({'msg': 'Bad parameters'}), 400)
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
