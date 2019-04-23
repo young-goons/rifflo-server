@@ -1,0 +1,68 @@
+.clipPlayColumn {
+    /*margin-left: 5px;*/
+}
+
+.playIcon:hover {
+    cursor: pointer;
+}
+
+.playBar {
+    border: 1px solid black;
+    color: white;
+    margin-left: 5px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.postLikeCommentColumn {
+    display: inline;
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    weight: 400;
+    margin-left: -14px;
+    margin-right: -14px;
+}
+
+.postLikeDiv {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.postCommentDiv {
+    display: inline-block;
+}
+
+.likeNumSpan, .commentNumSpan {
+    color: lightslategray;
+    font-size: 1.2em;
+}
+
+.postListTagsColumn {
+    margin-left: -14px;
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    weight: 400;
+    font-size: 1.2em;
+    color: cornflowerblue;
+    margin-right: 14px;
+    overflow: hidden;
+}
+
+.postListFullPostColumn {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    weight: 400;
+    font-size: 1.1em;
+    color: slategray;
+}
+
+.songInfoLinkRow {
+    margin-top: -20px;
+    margin-bottom: -15px;
+}
+
+.songInfoColumn {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-size: 1.3em;
+}
+
+.songSpan {
+    color: dodgerblue;
+}

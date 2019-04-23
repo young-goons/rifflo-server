@@ -1,0 +1,67 @@
+.containerDiv {
+    height: 100%;
+}
+
+.signUpForm, .signInForm {
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+}
+
+.signUpHeader, .signInHeader {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 1.71428571rem;
+    text-align: center;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.signUpSubHeader, .signInSubHeader {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-align: center;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.passwordRecoveryDiv {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 400;
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.authWarningDiv {
+    margin-top: 0.7rem;
+}
+
+.orDiv {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 1.07412857rem;
+    margin-top: 0.3rem;
+    margin-bottom: 0.7rem;
+    text-align: center;
+}
+
+.facebookButtonDiv {
+    margin-bottom: 0.7rem;
+}
+
+.googleButtonDiv {
+    margin-bottom: 0.5rem;
+}
+
+.signInDiv, .signUpDiv {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 400;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.signInLink, .signUpLink {
+    padding-left: 1rem;
+}

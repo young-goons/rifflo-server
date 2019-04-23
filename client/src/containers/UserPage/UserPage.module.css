@@ -1,0 +1,24 @@
+.containerDiv {
+    height: 100%;
+    text-align: center;
+}
+
+.userPageContainerDiv {
+    width: 800px;
+    display: inline-block;
+    border-left: 2px solid silver;
+    border-right: 2px solid silver;
+    margin-top: 25px;
+    border-bottom: 2px solid silver;
+}
+
+.userPageContentDiv {
+    border-top: 2px solid silver;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.postListDiv {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}

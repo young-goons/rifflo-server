@@ -1,0 +1,36 @@
+.stickyDiv {
+    border: whitesmoke 1px solid;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    background: ghostwhite;
+}
+
+.dropdownContent {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    width: 90px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 5;
+}
+
+.dropdownItemSpan{
+    float: none;
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdownItemSpan:hover {
+    cursor: pointer;
+}
+
+.settingsColumn:hover {
+    cursor: pointer;
+}
+
+.settingsColumn:hover .dropdownContent {
+    display: block;
+}

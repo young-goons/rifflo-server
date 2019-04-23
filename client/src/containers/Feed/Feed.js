@@ -1,9 +1,13 @@
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import { connect } from 'react-redux';
 import axios from "axios";
+import { Redirect } from 'react-router-dom';
+import { Container } from 'semantic-ui-react';
 
-import Post from '../../components/Post/Post';
+import Post from './Post/Post';
+import SiteHeader from '../SiteHeader/SiteHeader';
 import { FEED_POSTS_LOAD_NUM } from "../../shared/config";
+import styles from './Feed.module.css';
 
 class Feed extends Component {
     state = {
@@ -15,8 +19,11 @@ class Feed extends Component {
 
     numPosts = FEED_POSTS_LOAD_NUM;
 
+    contextRef = createRef();
+
     componentDidMount() {
-        if (!this.state.isFeedLoaded) {
+        // TODO: need to try to authenticate?
+        if (this.props.isAuthenticated && !this.state.isFeedLoaded) {
             console.log("initial feed load")
             this.loadFeed(true, this.loadFeedPosts);
         }
@@ -102,7 +109,14 @@ class Feed extends Component {
     };
 
     render() {
-        console.log(this.state.postArr);
+        console.log(this.props.isAuthenticated);
+        let authRedirect = null;
+        let siteHeader = null;
+        if (!this.props.isAuthenticated) {
+            authRedirect = <Redirect to="/signin"/>;
+        } else {
+            siteHeader = <SiteHeader contextRef={this.contextRef} userInfo={this.props.userInfo}/>;
+        }
         const postDivArr = this.state.postArr.map((post, idx) => {
             return (
                 <div key={idx}>
@@ -115,9 +129,8 @@ class Feed extends Component {
                 </div>
             )
         });
-        return (
-            <div>
-                Feed
+        const feedDiv = (
+            <div className={styles.feedDiv}>
                 { postDivArr }
                 <button onClick={() => this.loadFeedPostsHandler()}>
                     Show More
@@ -127,24 +140,22 @@ class Feed extends Component {
                 </button>
             </div>
         );
+        return (
+            <div className={styles.containerDiv} ref={this.contextRef}>
+                { authRedirect }
+                { siteHeader }
+                { feedDiv }
+            </div>
+        )
     }
 }
 
-// const mapStateToProps = state => {
-//     return {
-//         isFeedLoaded: state.feed.isFeedLoaded,
-//         feedPostIdArr: state.feed.feedPostIdArr,
-//         feedPostIdx: state.feed.feedPostIdx
-//     };
-// };
-//
-// const mapDispatchToProps = dispatch => {
-//     return {
-//         onLoadFeed: () => dispatch(loadFeed()),
-//         onLoadFeedPostsSuccess: (numPosts) => dispatch(loadFeedPostsSuccess(numPosts)),
-//         onLoadFeedPostsFail: (error) => dispatch(loadFeedPostsFail(error))
-//     };
-// };
+const mapStateToProps = state => {
+    return {
+        isAuthenticated: state.auth.isAuthenticated,
+        authRedirectPath: state.auth.authRedirectPath,
+        userInfo: state.auth.userInfo
+    };
+};
 
-// export default connect(mapStateToProps, mapDispatchToProps)(Feed);
-export default Feed;
+export default connect(mapStateToProps)(Feed);

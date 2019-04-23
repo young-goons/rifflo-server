@@ -20,12 +20,14 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = config.JWT_ACCESS_TOKEN_EXPIRES
 jwt = JWTManager(app)
 
 # Connect to database
-with app.app_context():
+# with app.app_context():
+@app.before_request
+def before_request():
     connection = pymysql.connect(
-        host=config.DB_HOST, 
-        port=config.DB_PORT, 
+        host=config.DB_HOST,
+        port=config.DB_PORT,
         user=config.DB_USER,
-        passwd=config.DB_PASSWORD, 
+        passwd=config.DB_PASSWORD,
         db=config.DB_NAME
         )
     flask.g.pymysql_db = connection

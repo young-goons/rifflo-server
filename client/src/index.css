@@ -12,3 +12,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+html, body, #root, #app, #app>div {
+  height: 100%;
+}
+
+a {
+  color: black;
+}
+
+a:hover {
+  color: black;
+}
