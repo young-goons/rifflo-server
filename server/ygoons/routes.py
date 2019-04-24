@@ -273,3 +273,64 @@ def upload_post():
         return make_response(jsonify({'postId': post_id, 'songId': song_id}), 200)
     else:
         return make_response(jsonify({'msg': 'Error uploading post and song'}), 400)
+
+
+@app.route('/user/follow/<int:follow_user_id>', methods=['POST', 'DELETE'])
+@jwt_required
+def user_follow(follow_user_id):
+    """
+    For POST request, follow the user of given user_id
+    For DELETE request, unfollow the user of given user_id
+    :param follow_user_id: user_id of the target user
+    """
+    if request.method == 'POST':
+        pass
+    elif request.method == 'DELETE':
+        pass
+
+
+@app.route('/user/following', methods=['GET'])
+@jwt_required
+def get_following():
+    pass
+
+
+@app.route('/user/followers', methods=['GET'])
+@jwt_required
+def get_followers():
+    pass
+
+
+@app.route('/post/<int:post_id>/like', methods=['POST'])
+@jwt_required
+def post_like(post_id):
+    pass
+
+
+@app.route('/post/<int:post_id>/bookmark', methods=['POST'])
+@jwt_required
+def post_bookmark(post_id):
+    pass
+
+
+@app.route('/post/<int:post_id>/comment', methods=['GET', 'POST'])
+@jwt_required
+def post_comment(post_id):
+    """
+    For POST request, upload comment passed in as the body of POST request
+    For GET request, return the list of comment ids
+    :param post_id:
+    """
+    if request.method == 'GET':
+        pass
+    elif request.method == 'POST':
+        pass
+
+
+@app.route('/comment/<int:comment_id>/reply', methods=['GET', 'POST'])
+@jwt_required
+def comment_reply(comment_id):
+    if request.method == 'GET':
+        pass
+    elif request.method =='POST':
+        pass
