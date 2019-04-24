@@ -5,7 +5,8 @@ import json
 import flask
 from flask import request, jsonify, abort, make_response
 from flask_jwt_extended import (create_access_token, create_refresh_token,
-                                jwt_required, jwt_refresh_token_required, get_jwt_identity)
+                                jwt_required, jwt_refresh_token_required,
+                                get_jwt_identity)
 
 from ygoons.authentication import hash_password, verify_password
 
@@ -18,8 +19,11 @@ from ygoons import app
 def refresh():
     curr_user = get_jwt_identity()
     ret = {
-        'access_token': create_access_token(identity={'userId': curr_user['userId'],
-                                                      'username': curr_user['username']})
+        'access_token':
+        create_access_token(identity={
+            'userId': curr_user['userId'],
+            'username': curr_user['username']
+        })
     }
     return make_response(jsonify({ret}), 200)
 
@@ -63,7 +67,8 @@ def sign_in():
         query_result = cursor.fetchall()
 
     if len(query_result) != 1:
-        return make_response(jsonify({'msg': "Error while fetching user data"}), 400)
+        return make_response(
+            jsonify({'msg': "Error while fetching user data"}), 400)
 
     user = {
         'user_id': query_result[0][0],
@@ -73,10 +78,14 @@ def sign_in():
     # validate user password
     stored_password = query_result[0][2]
     if verify_password(stored_password, password):
-        access_token = create_access_token(identity={'userId': user['user_id'],
-                                                     'username': user['username']})
-        refresh_token = create_refresh_token(identity={'userId': user['user_id'],
-                                                       'username': user['username']})
+        access_token = create_access_token(identity={
+            'userId': user['user_id'],
+            'username': user['username']
+        })
+        refresh_token = create_refresh_token(identity={
+            'userId': user['user_id'],
+            'username': user['username']
+        })
         user['access_token'] = access_token
         user['refresh_token'] = refresh_token
         return make_response(jsonify({'user': user}), 200)
@@ -107,7 +116,8 @@ def get_user_info(user_id):
             query_result = cursor.fetchall()
 
         if len(query_result) != 1:
-            return make_response(jsonify({'msg': 'Error fetching user info data'}), 400)
+            return make_response(
+                jsonify({'msg': 'Error fetching user info data'}), 400)
 
         user = {
             'user_id': query_result[0][0],
@@ -119,7 +129,8 @@ def get_user_info(user_id):
         }
         return make_response(jsonify({'user': user}), 200)
     else:
-        return make_response(jsonify({'msg': 'No authentication on requested data'}), 400)
+        return make_response(
+            jsonify({'msg': 'No authentication on requested data'}), 400)
 
 
 @app.route('/user/id/username/<string:username>', methods=['GET'])
@@ -250,7 +261,7 @@ def upload_post():
     data = json.loads(request.data)
     content = data['content']
     tags = data['tags']
-    
+
     # temporary data for now
     clip_path = ''
     song_name = "abc"
@@ -270,9 +281,13 @@ def upload_post():
 
     if song_id and post_id:
         flask.g.pymysql_db.commit()
-        return make_response(jsonify({'postId': post_id, 'songId': song_id}), 200)
+        return make_response(jsonify({
+            'postId': post_id,
+            'songId': song_id
+        }), 200)
     else:
-        return make_response(jsonify({'msg': 'Error uploading post and song'}), 400)
+        return make_response(jsonify({'msg': 'Error uploading post and song'}),
+                             400)
 
 
 @app.route('/user/follow/<int:follow_user_id>', methods=['POST', 'DELETE'])
@@ -332,5 +347,5 @@ def post_comment(post_id):
 def comment_reply(comment_id):
     if request.method == 'GET':
         pass
-    elif request.method =='POST':
+    elif request.method == 'POST':
         pass

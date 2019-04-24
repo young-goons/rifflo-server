@@ -7,8 +7,8 @@ import pickle
 import itertools
 from urllib.parse import quote
 
-
 TOKEN = 'redacted'
+
 
 def get_spotify_id(track, artist, album=None, year=None):
     """Attempt to find the Spotify ID of a song.
@@ -37,19 +37,17 @@ def get_spotify_id(track, artist, album=None, year=None):
     # Query only for tracks, and only look at top search result
     query += '&type=track&limit=1'
 
-    r = requests.get(
-            f'https://api.spotify.com/v1/search?q={query}',
-            headers=
-            {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': f'Bearer {TOKEN}'
-            }
-    )
+    r = requests.get(f'https://api.spotify.com/v1/search?q={query}',
+                     headers={
+                         'Accept': 'application/json',
+                         'Content-Type': 'application/json',
+                         'Authorization': f'Bearer {TOKEN}'
+                     })
     j = json.loads(r.text)
     try:
         result_name = j['tracks']['items'][0]['name']
-        result_artists = list(map(lambda x: x['name'], j['tracks']['items'][0]['artists']))
+        result_artists = list(
+            map(lambda x: x['name'], j['tracks']['items'][0]['artists']))
         # print(result_name, result_artists)
         return j['tracks']['items'][0]['id']
     except IndexError:
@@ -58,6 +56,7 @@ def get_spotify_id(track, artist, album=None, year=None):
     except KeyError:
         sys.stderr.write('get_spotify_id: KeyError\n')
         return ''
+
 
 def get_audio_features(track_id):
     """Get audio features for a track.
@@ -68,30 +67,27 @@ def get_audio_features(track_id):
         dict: audio feature name -> value
     """
 
-    r = requests.get(
-            f'https://api.spotify.com/v1/audio-features/{track_id}',
-            headers=
-            {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': f'Bearer {TOKEN}'
-            }
-    )
+    r = requests.get(f'https://api.spotify.com/v1/audio-features/{track_id}',
+                     headers={
+                         'Accept': 'application/json',
+                         'Content-Type': 'application/json',
+                         'Authorization': f'Bearer {TOKEN}'
+                     })
     j = json.loads(r.text)
     return j
 
+
 def get_audio_feature_vec(audio_features):
     return np.array([
-        audio_features['danceability'],
-        audio_features['energy'],
-        audio_features['loudness'],
-        audio_features['acousticness'],
-        audio_features['instrumentalness'],
-        audio_features['liveness'],
+        audio_features['danceability'], audio_features['energy'],
+        audio_features['loudness'], audio_features['acousticness'],
+        audio_features['instrumentalness'], audio_features['liveness'],
         audio_features['valence']
     ])
 
+
 # TESTING
+
 
 def save_topsongs_features():
     l = []
@@ -120,18 +116,23 @@ def save_topsongs_features():
 
     pickle.dump(flist, open('save_topsongs.p', 'wb'))
 
+
 def topsongs_cosine():
     flist = pickle.load(open('save_topsongs.p', 'rb'))
-    track_features = list(map(lambda x: ((x[1], x[0]), get_audio_feature_vec(x[3])), flist))
+    track_features = list(
+        map(lambda x: ((x[1], x[0]), get_audio_feature_vec(x[3])), flist))
 
     similarity_list = []
     for ((s1, f1), (s2, f2)) in itertools.combinations(track_features, 2):
-        sim = np.dot(f1, f2)/np.linalg.norm(f1)/np.linalg.norm(f2)
+        sim = np.dot(f1, f2) / np.linalg.norm(f1) / np.linalg.norm(f2)
         similarity_list.append(((s1, s2), sim))
 
     similarity_list = sorted(similarity_list, key=lambda x: x[1], reverse=True)
     return similarity_list
+
+
 # END TESTING
+
 
 def get_audio_analysis(track_id):
     """Get audio analysis for a track.
@@ -142,14 +143,11 @@ def get_audio_analysis(track_id):
         TODO
     """
 
-    r = requests.get(
-            f'https://api.spotify.com/v1/audio-analysis/{track_id}',
-            headers=
-            {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': f'Bearer {TOKEN}'
-            }
-    )
+    r = requests.get(f'https://api.spotify.com/v1/audio-analysis/{track_id}',
+                     headers={
+                         'Accept': 'application/json',
+                         'Content-Type': 'application/json',
+                         'Authorization': f'Bearer {TOKEN}'
+                     })
     j = json.loads(r.text)
     return j

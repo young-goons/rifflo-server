@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def select_feed_posts(friend_posts, top_posts, limit=20):
     """Simple feed selection using popularity as a heuristic.
     Args:
@@ -22,11 +23,17 @@ def select_feed_posts(friend_posts, top_posts, limit=20):
 
     # Randomly select candidate posts from friend_posts
     # weighted by popularity
-    fposts = list(np.random.choice(fposts, size=min(limit, len(fposts)),
-        replace=False, p=fpop/sum(fpop)))
+    fposts = list(
+        np.random.choice(fposts,
+                         size=min(limit, len(fposts)),
+                         replace=False,
+                         p=fpop / sum(fpop)))
     # Do the same for top_posts
-    tposts = list(np.random.choice(tposts, size=min(limit, len(tposts)),
-        replace=False, p=tpop/sum(tpop)))
+    tposts = list(
+        np.random.choice(tposts,
+                         size=min(limit, len(tposts)),
+                         replace=False,
+                         p=tpop / sum(tpop)))
 
     fposts = list(reversed(fposts))
     tposts = list(reversed(tposts))
