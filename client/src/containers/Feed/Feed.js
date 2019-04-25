@@ -88,11 +88,10 @@ class Feed extends Component {
 
         const postIdArr = this.state.feedPostIdArr.slice(this.state.feedPostIdx,
             this.state.feedPostIdx + this.numPosts);
-        const url = "http://127.0.0.1:5000/posts/" + postIdArr.join(',');
+        let url = "http://127.0.0.1:5000/posts/" + postIdArr.join(',');
+        const postArr = [];
         axios({method: 'GET', url: url})
             .then(response => {
-                console.log(response.data);
-                const postArr = [];
                 for (let i = 0; i < postIdArr.length; i++) {
                     if (postIdArr[i] in response.data.posts) {
                         postArr.push(response.data.posts[postIdArr[i]]);
@@ -106,10 +105,10 @@ class Feed extends Component {
             .catch(error => {
                 alert(error);
             });
+
     };
 
     render() {
-        console.log(this.props.isAuthenticated);
         let authRedirect = null;
         let siteHeader = null;
         if (!this.props.isAuthenticated) {
@@ -121,6 +120,9 @@ class Feed extends Component {
             return (
                 <div key={idx}>
                     <Post
+                        postId={this.state.feedPostIdArr[idx]}
+                        currUserId={this.props.userInfo.userId}
+                        currUsername={this.props.userInfo.username}
                         username={post.username}
                         date={post.uploadDate}
                         content={post.content}

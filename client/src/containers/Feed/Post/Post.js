@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Grid, Image, Header, Icon, Container, Input } from 'semantic-ui-react';
+import axios from 'axios';
 
 import styles from './Post.module.css';
 import profileImg from '../../../default_profile_img.png';
@@ -7,12 +8,50 @@ import { convertDateToStr } from '../../../shared/utils';
 
 class Post extends Component {
     state = {
-        comment: ''
+        commentInput: '',
+        isLiked: null,
+        likeCnt: null,
+        commentCnt: null,
+        commentPreviewArr: null
     };
+
+    componentDidMount() {
+        // get the list of ids of users who liked the post
+        let url;
+        const headers = {
+            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
+        };
+        if (this.state.likeCnt === null && this.state.isLiked === null) {
+            url = "http://127.0.0.1:5000/post/" + this.props.postId + "/like";
+            axios({method: 'GET', url: url, headers: headers})
+                .then(response => {
+                    this.setState({
+                        likeCnt: response.data.users.length,
+                        isLiked: response.data.users.includes(this.props.currUserId)
+                    });
+                })
+                .catch(error => {
+                    alert(error);
+                })
+        }
+        if (this.state.commentCnt === null && this.state.commentPreviewArr === null) {
+            url = "http://127.0.0.1:5000/post/" + this.props.postId + "/comment";
+            axios({method: 'GET', url: url, headers: headers})
+                .then(response => {
+                    this.setState({
+                        commentCnt: response.data.commentCnt,
+                        commentPreviewArr: response.data.commentPreviewArr
+                    });
+                })
+                .catch(error => {
+                    alert(error);
+                })
+        }
+    }
 
     commentInputHandler = (event) => {
         this.setState({
-            comment: event.target.value
+            commentInput: event.target.value
         });
     };
 
@@ -22,7 +61,26 @@ class Post extends Component {
 
     likeClickHandler = () => {
         // add like functionality
-        alert("like clicked");
+        const url = "http://127.0.0.1:5000/post/" + this.props.postId + "/like";
+        const headers = {
+            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
+        };
+        let httpMethod;
+        if (this.state.isLiked) {
+            httpMethod = 'DELETE';
+        } else {
+            httpMethod = 'POST'
+        }
+        axios({method: httpMethod, url: url, headers: headers})
+            .then(response => {
+                this.setState({
+                    likeCnt: this.state.isLiked ? this.state.likeCnt - 1 : this.state.likeCnt + 1,
+                    isLiked: !this.state.isLiked,
+                });
+            })
+            .catch(error => {
+                alert(error);
+            });
     };
 
     bookmarkClickHandler = () => {
@@ -40,10 +98,56 @@ class Post extends Component {
     };
 
     commentPostHandler = () => {
-        alert("comment post");
+        const url = "http://127.0.0.1:5000/post/" + this.props.postId + "/comment";
+        const headers = {
+            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
+        };
+        const requestData = {
+            content: this.state.commentInput,
+        };
+        axios({method: 'POST', url: url, headers: headers, data: requestData})
+            .then(response => {
+                const newComment = {
+                    commentId: response.data.commentId,
+                    userId: this.props.currUserId,
+                    username: this.props.currUsername,
+                    commentContent: this.state.commentInput
+                };
+                this.setState ({
+                    commentInput: '',
+                    commentCnt: this.state.commentCnt + 1,
+                    commentPreviewArr: this.state.commentPreviewArr.concat([newComment])
+                })
+            })
+            .catch(error => {
+                alert(error);
+            });
     };
 
     render() {
+        let commentPreviewRow = null;
+        if (this.state.commentPreviewArr) {
+            if (this.state.commentPreviewArr.length > 0) {
+                const commentPreviewDiv = this.state.commentPreviewArr.map((comment, idx) => {
+                    return (
+                        <Grid.Row key={idx}>
+                            <span className={styles.commentUsernameSpan}>
+                                <a href={"/" + comment.username}>{comment.username}</a>
+                            </span>
+                            <span className={styles.commentContentSpan}>{comment.commentContent}</span>
+                        </Grid.Row>
+                    )
+                });
+                commentPreviewRow = (
+                    <Grid.Row className={styles.commentPreviewRow}>
+                        <Grid.Column>
+                            { commentPreviewDiv }
+                        </Grid.Column>
+                    </Grid.Row>
+                );
+            }
+        }
+
         return (
             <Container className={styles.postDiv}>
                 <div className={styles.postHeaderDiv}>
@@ -90,10 +194,12 @@ class Post extends Component {
                         <Grid.Row className={styles.actionRow}>
                             <Grid.Column width={6}>
                                 <Icon
-                                    name="heart outline" size="large" className={styles.actionIcon}
+                                    name={this.state.isLiked ? "heart" : "heart outline"} size="large" className={styles.actionIcon}
                                     onClick={this.likeClickHandler}
                                 />
-                                <span className={styles.actionLabel}>5 Like</span>
+                                <span className={styles.actionLabel}>
+                                    {this.state.likeCnt} {this.state.likeCnt <= 1 ? "Like" : "Likes"}
+                                </span>
                             </Grid.Column>
                             <Grid.Column width={6}>
                                 <Icon
@@ -118,20 +224,16 @@ class Post extends Component {
                                 />
                                 <span className={styles.actionLabel}
                                     onClick={this.commentClickHandler}
-                                >3 comments</span>
+                                >{this.state.commentCnt} {this.state.commentCnt <= 1 ? "comment" : "comments"}</span>
                             </Grid.Column>
                         </Grid.Row>
-                        <Grid.Row className={styles.commentPreviewRow}>
-                            <Grid.Column>
-                                {/*  commentpreview component */}
-                            </Grid.Column>
-                        </Grid.Row>
+                        { commentPreviewRow }
                         <Grid.Row className={styles.commentInputRow}>
                             <Grid.Column>
                                 <Input
                                     fluid size="small"
                                     placeholder="Write a comment"
-                                    value={this.state.comment}
+                                    value={this.state.commentInput}
                                     onChange={this.commentInputHandler}
                                     action={{
                                         content: 'post',

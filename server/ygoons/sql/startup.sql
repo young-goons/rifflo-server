@@ -15,6 +15,9 @@ DROP TABLE IF EXISTS tbl_comment;
 DROP TABLE IF EXISTS tbl_reply;
 DROP TABLE IF EXISTS tbl_bookmark;
 
+DROP VIEW IF EXISTS view_like_count;
+DROP VIEW IF EXISTS view_comment_count;
+
 -- Create user table.
 CREATE TABLE tbl_user
 (
@@ -103,6 +106,12 @@ CREATE TABLE tbl_like
       ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- Create view that stores like count of each post
+CREATE VIEW view_like_count AS
+SELECT tbl_post.post_id, COUNT(tbl_like.user_id) AS like_cnt FROM
+  tbl_post LEFT JOIN tbl_like ON tbl_post.post_id = tbl_like.post_id
+  GROUP BY post_id;
+
 -- Create comment table.
 CREATE TABLE tbl_comment
 (
@@ -121,6 +130,11 @@ CREATE TABLE tbl_comment
       ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- Create view that stores comment count of each post
+CREATE VIEW view_comment_count AS
+SELECT tbl_post.post_id, COUNT(tbl_comment.user_id) AS comment_cnt FROM
+  tbl_post LEFT JOIN tbl_comment ON tbl_post.post_id = tbl_comment.post_id
+  GROUP BY post_id;
 
 -- Create reply table
 CREATE TABLE tbl_reply

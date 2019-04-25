@@ -79,3 +79,24 @@
 .usernameSpan {
     color: black;
 }
+
+.commentPreviewRow {
+    margin-top: -1.2em;
+}
+
+.commentUsernameSpan {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 1.2em;
+    padding-right: 0.6em;
+}
+
+.commentContentSpan {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 400;
+    font-size: 1.2em;
+}
+
+.commentInputRow {
+    margin-top: -1em;
+}

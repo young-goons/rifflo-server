@@ -59,7 +59,7 @@ def sign_in():
     with flask.g.pymysql_db.cursor() as cursor:
         sql = 'SELECT user_id, username, password FROM tbl_user ' \
               'WHERE email = %s'
-        cursor.execute(sql, (email))
+        cursor.execute(sql, (email,))
         query_result = cursor.fetchall()
 
     if len(query_result) != 1:
@@ -103,14 +103,14 @@ def get_user_info(user_id):
             sql = 'SELECT user_id, username, email, following_count, follower_count, ' \
                   'profile_picture_path FROM tbl_user NATURAL JOIN' \
                   '(SELECT * FROM tbl_user_info WHERE user_id = %s) tbl_user_info_id'
-            cursor.execute(sql, (user_id))
+            cursor.execute(sql, (user_id,))
             query_result = cursor.fetchall()
 
         if len(query_result) != 1:
             return make_response(jsonify({'msg': 'Error fetching user info data'}), 400)
 
         user = {
-            'user_id': query_result[0][0],
+            'userId': query_result[0][0],
             'username': query_result[0][1],
             'email': query_result[0][2],
             'following_count': query_result[0][3],
@@ -179,7 +179,6 @@ def get_user_feed():
     """ Obtains the list of post_ids to appear on the user feed
         and sends the list of ids to the client """
     user_id = get_jwt_identity()['userId']
-    print('Feed user_id: ', user_id)
     # obtain the list of ids of all the posts shared by other users for now...
     with flask.g.pymysql_db.cursor() as cursor:
         sql = 'SELECT post_id FROM tbl_post WHERE user_id != %s'
@@ -189,7 +188,6 @@ def get_user_feed():
     for row in query_result:
         post_id_list.append(row[0])
     random.shuffle(post_id_list)
-    print("Feed post ids: ", post_id_list)
     return make_response(jsonify({'postIdArr': post_id_list}), 200)
 
 
@@ -208,9 +206,10 @@ def get_posts(id_list):
     post_ids = [int(i) for i in id_list.split(',')]
     with flask.g.pymysql_db.cursor() as cursor:
         # TODO - there must be a better way of putting multiple ids in IN () clause
+        # obtain information about the post
         sql = 'SELECT post_id, user_id, username, upload_date, content, tags, ' \
-              'song_id, clip_path, song_name, artist ' \
-              'FROM (SELECT * FROM tbl_post WHERE post_id  IN ({})) tbl_post_id ' \
+              '  song_id, clip_path, song_name, artist ' \
+              'FROM (SELECT * FROM tbl_post WHERE post_id IN ({})) tbl_post_id ' \
               'NATURAL JOIN (SELECT user_id, username FROM tbl_user) tbl_user_id ' \
               'NATURAL JOIN tbl_song_info'.format(id_list)
         cursor.execute(sql)
@@ -226,7 +225,9 @@ def get_posts(id_list):
             'songId': row[6],
             'clipPath': row[7],
             'songName': row[8],
-            'artist': row[9]
+            'artist': row[9],
+            # 'likeCnt': row[10],
+            # 'commentCnt': row[11]
         }
         post_dict[row[0]] = post_data
 
@@ -257,13 +258,13 @@ def upload_post():
     artist = "def"
 
     with flask.g.pymysql_db.cursor() as cursor:
-        sql = "INSERT INTO tbl_song_info (song_name, artist)" \
+        sql = "INSERT INTO tbl_song_info (song_name, artist) " \
               "VALUES (%s, %s)"
         cursor.execute(sql, (song_name, artist))
         song_id = cursor.lastrowid
         post_id = None
         if song_id:
-            sql = "INSERT INTO tbl_post (user_id, content, tags, song_id, clip_path)" \
+            sql = "INSERT INTO tbl_post (user_id, content, tags, song_id, clip_path) " \
                   "VALUES (%s, %s, %s, %s, %s)"
             cursor.execute(sql, (user_id, content, tags, song_id, clip_path))
             post_id = cursor.lastrowid
@@ -275,62 +276,202 @@ def upload_post():
         return make_response(jsonify({'msg': 'Error uploading post and song'}), 400)
 
 
-@app.route('/user/follow/<int:follow_user_id>', methods=['POST', 'DELETE'])
+# TODO: error-handling for insert? make sure insert is actually executed
+@app.route('/user/follow/<int:followed_user_id>', methods=['POST'])
 @jwt_required
-def user_follow(follow_user_id):
+def user_follow(followed_user_id):
     """
-    For POST request, follow the user of given user_id
-    For DELETE request, unfollow the user of given user_id
-    :param follow_user_id: user_id of the target user
+    Follow the user of given user_id
+    :param followed_user_id: user_id of the user to follow
     """
-    if request.method == 'POST':
-        pass
-    elif request.method == 'DELETE':
-        pass
+    curr_user = get_jwt_identity()
+    curr_user_id = curr_user['userId']
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'INSERT INTO tbl_follow (followed_id, follower_id) ' \
+              'VALUES (%s, %s)'
+        cursor.exectue(sql, (followed_user_id, curr_user_id))
+    return make_response(jsonify({'success': True}), 200)
 
 
-@app.route('/user/following', methods=['GET'])
+@app.route('/user/follow/<int:followed_user_id>', methods=['DELETE'])
 @jwt_required
-def get_following():
-    pass
+def user_unfollow(followed_user_id):
+    """
+    Unfollow the user of given user_id
+    :param followed_user_id: user_id of the user to unfollow
+    :return:
+    """
+    curr_user = get_jwt_identity()
+    curr_user_id = curr_user['userId']
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'DELETE FROM tbl_follow WHERE followed_id = %s AND follower_id = %s'
+        cursor.execute(sql, (followed_user_id, curr_user_id))
+    return make_response(jsonify({'success': True}), 200)
 
 
-@app.route('/user/followers', methods=['GET'])
+@app.route('/user/<int:user_id>/following', methods=['GET'])
+def get_following(user_id):
+    """
+    Obtain the list of ids of the users that the user of user_id is following
+    :param user_id:
+    """
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'SELECT followed_id, username FROM ' \
+              '(SELECT followed_id FROM tbl_follow WHERE follower_id = %s) tbl_user_follow ' \
+              'INNER JOIN tbl_user ON followed_id = user_id'
+        cursor.execute(sql, (user_id,))
+        query_result = cursor.fetchall()
+    following_list = []
+    for row in query_result:
+        following_list.append(row)
+    return make_response(jsonify({'following': following_list}), 200)
+
+
+@app.route('/user/<int:user_id>/followers', methods=['GET'])
 @jwt_required
-def get_followers():
-    pass
+def get_followers(user_id):
+    """
+    Obtain the list of ids of the users that follow the user of user_id
+    :param user_id:
+    """
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'SELECT follower_id, username FROM ' \
+              '(SELECT follower_id FROM tbl_follow WHERE followed_id = %s) tbl_user_follow ' \
+              'INNER JOIN tbl_user ON follower_id = user_id'
+        cursor.execute(sql, (user_id,))
+        query_result = cursor.fetchall()
+    follower_list = []
+    for row in query_result:
+        follower_list.append(row)
+    return make_response(jsonify({'follower': follower_list}), 200)
 
 
 @app.route('/post/<int:post_id>/like', methods=['POST'])
 @jwt_required
-def post_like(post_id):
-    pass
+def like_post(post_id):
+    curr_user = get_jwt_identity()
+    curr_user_id = curr_user['userId']
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'INSERT INTO tbl_like (post_id, user_id) ' \
+              'VALUES (%s, %s)'
+        affected_row_cnt = cursor.execute(sql, (post_id, curr_user_id))
+    if affected_row_cnt == 1:  # if exactly one row is affected
+        flask.g.pymysql_db.commit()
+        return make_response(jsonify({'success': True}), 200)
+    else:
+        return make_response(jsonify({'msg': "Like failed"}), 400)
+
+
+@app.route('/post/<int:post_id>/like', methods=['DELETE'])
+@jwt_required
+def unlike_post(post_id):
+    curr_user = get_jwt_identity()
+    curr_user_id = curr_user['userId']
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'DELETE FROM tbl_like WHERE post_id = %s AND user_id = %s'
+        affected_row_cnt = cursor.execute(sql, (post_id, curr_user_id))
+    if affected_row_cnt == 1:
+        flask.g.pymysql_db.commit()
+        return make_response(jsonify({'success': True}), 200)
+    else:
+        return make_response(jsonify({'success': False}), 400)
+
+
+@app.route('/post/<int:post_id>/like', methods=['GET'])
+@jwt_required
+def get_post_likes(post_id):
+    """
+    Obtains list of user_id's that liked the post
+    :param post_id:
+    """
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'SELECT user_id FROM tbl_like WHERE post_id = %s'
+        cursor.execute(sql, (post_id,))
+        query_result = cursor.fetchall()
+    like_user_list = []
+    for row in query_result:
+        like_user_list.append(row[0])
+    return make_response(jsonify({'users': like_user_list}))
 
 
 @app.route('/post/<int:post_id>/bookmark', methods=['POST'])
 @jwt_required
-def post_bookmark(post_id):
+def bookmark_post(post_id):
     pass
 
 
-@app.route('/post/<int:post_id>/comment', methods=['GET', 'POST'])
+@app.route('/post/<int:post_id>/bookmark', methods=['DELETE'])
+@jwt_required
+def remove_bookmark(post_id):
+    pass
+
+
+@app.route('/post/<int:post_id>/comment', methods=['POST'])
 @jwt_required
 def post_comment(post_id):
     """
-    For POST request, upload comment passed in as the body of POST request
-    For GET request, return the list of comment ids
+    Upload comment passed in as the body of POST request
     :param post_id:
     """
-    if request.method == 'GET':
-        pass
-    elif request.method == 'POST':
-        pass
+    curr_user = get_jwt_identity()
+    curr_user_id = curr_user['userId']
+    data = json.loads(request.data)
+    content = data['content']
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'INSERT INTO tbl_comment (post_id, user_id, content)' \
+              'VALUES (%s, %s, %s)'
+        affected_row_cnt = cursor.execute(sql, (post_id, curr_user_id, content))
+        comment_id = cursor.lastrowid
+    if affected_row_cnt == 1 and comment_id:
+        flask.g.pymysql_db.commit()
+        return make_response(jsonify({'commentId': comment_id}), 200)
+    else:
+        return make_response(jsonify({'msg': 'Failed uplaoding comment'}), 400)
 
 
-@app.route('/comment/<int:comment_id>/reply', methods=['GET', 'POST'])
+@app.route('/post/<int:post_id>/comment', methods=['GET'])
+@jwt_required
+def get_post_comments(post_id):
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'SELECT comment_id, user_id, username, comment_date, content ' \
+              'FROM (SELECT * FROM tbl_comment WHERE post_id = %s) tbl_post_comment ' \
+              'NATURAL JOIN tbl_user ' \
+              'ORDER BY comment_date DESC'
+        cursor.execute(sql, (post_id,))
+        query_result = cursor.fetchall()
+    comment_preview_list = [] # choose the two most recent comments for preview
+    for idx, row in enumerate(query_result):
+        if idx < 2:
+            comment = {
+                'commentId': row[0],
+                'userId': row[1],
+                'username': row[2],
+                'commentDate': row[3],
+                'commentContent': row[4]
+            }
+            comment_preview_list.append(comment)
+    comment_preview_list.reverse()
+    return make_response(jsonify({'commentPreviewArr': comment_preview_list,
+                                  'commentCnt': len(query_result)}), 200)
+
+
+@app.route('/comment/<int:comment_id>', methods=['PUT'])
+@jwt_required
+def edit_comment(comment_id):
+    pass
+
+
+@app.route('/comment/<int:comment_id>', methods=['DELETE'])
+@jwt_required
+def delete_comment(comment_id):
+    pass
+
+
+@app.route('/comment/<int:comment_id>/reply', methods=['GET', 'POST', 'DELETE', 'PUT'])
 @jwt_required
 def comment_reply(comment_id):
     if request.method == 'GET':
         pass
+
     elif request.method =='POST':
         pass
