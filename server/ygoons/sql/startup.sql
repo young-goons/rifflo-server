@@ -51,6 +51,7 @@ CREATE TABLE tbl_song_info
     artist        VARCHAR(50) NOT NULL,
     release_date  DATE,
     album         VARCHAR(50),
+    rel_path      VARCHAR(50),
 
     PRIMARY KEY(song_id)
 );
