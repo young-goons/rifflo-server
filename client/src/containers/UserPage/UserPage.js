@@ -36,13 +36,11 @@ class UserPage extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log(nextProps);
         if (nextProps.userInfo) {
-            console.log(nextProps.userInfo);
             this.setState({authUserInfo: nextProps.userInfo});
             this.getUserId();
-        }
-        if (nextProps.isAuthenticated === false) { // signing out
-            console.log("signout");
+        } else if (nextProps.isAuthenticated === false) { // signing out
             this.setState({isSignedOut: true});
         }
     }
