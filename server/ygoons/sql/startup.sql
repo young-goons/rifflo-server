@@ -92,6 +92,18 @@ CREATE TABLE tbl_follow
       ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- Create view that stores the number of followers of each user
+CREATE VIEW view_follower_count AS
+SELECT user_id, COUNT(follower_id) AS follower_cnt FROM
+  tbl_user LEFT JOIN tbl_follow ON user_id = followed_id
+  GROUP BY user_id;
+
+-- Create view that stores the number of users each user follows
+CREATE VIEW view_following_count AS
+SELECT user_id, COUNT(followed_id) AS following_cnt FROM
+   tbl_user LEFT JOIN tbl_follow ON user_id = follower_id
+   GROUP BY user_id;
+
 -- Create like table.
 CREATE TABLE tbl_like
 (

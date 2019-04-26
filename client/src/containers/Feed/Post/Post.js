@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Image, Header, Icon, Container, Input } from 'semantic-ui-react';
+import { Grid, Image, Button, Icon, Container, Input, Label, Dropdown } from 'semantic-ui-react';
 import axios from 'axios';
 
 import styles from './Post.module.css';
@@ -12,6 +12,8 @@ class Post extends Component {
         isLiked: null,
         likeCnt: null,
         commentCnt: null,
+        isFollowed: null,
+        followerCnt: null,
         commentPreviewArr: null
     };
 
@@ -156,12 +158,17 @@ class Post extends Component {
                             <Image className={styles.profileImgDiv} src={profileImg}/>
                         </Grid.Column>
                         <Grid.Column width={13} className={styles.headerInfoColumn}>
-                            <Grid.Row>
-                                <Header as='h2'>
-                                    <a href={"/" + this.props.username}>
-                                        <span className={styles.usernameSpan}>{this.props.username}</span>
-                                    </a>
-                                </Header>
+                            <Grid.Row className={styles.usernameRow}>
+                                <div className={styles.usernameDiv}>
+                                    <div className={styles.usernameSpan}>
+                                        <a href={"/" + this.props.username}>{this.props.username}</a>
+                                    </div>
+                                    <Dropdown icon="options" className={styles.dropdown}>
+                                        <Dropdown.Menu>
+                                            <Dropdown.Item text="Report"/>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </div>
                             </Grid.Row>
                             <Grid.Row className={styles.songInfoRow}>
                                 <Grid.Column>
@@ -171,7 +178,7 @@ class Post extends Component {
                         </Grid.Column>
                     </Grid>
                     <Grid padded>
-                        <Grid.Row>
+                        <Grid.Row className={styles.songPlayRow}>
                             <Grid.Column width={2}>
                                 <Icon name="play circle outline" size="big" className={styles.playIcon}
                                     onClick={this.songPlayHandler}

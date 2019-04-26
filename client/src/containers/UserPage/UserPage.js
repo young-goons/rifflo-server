@@ -6,7 +6,7 @@ import { Grid, Column, Container } from 'semantic-ui-react';
 
 import SiteHeader from '../SiteHeader/SiteHeader';
 import Post from '../Feed/Post/Post';
-import UserPageHeader from '../../components/UserPage/UserPageHeader/UserPageHeader';
+import UserPageHeader from './UserPageHeader/UserPageHeader';
 import PostList from './SharedPost/SharedPost';
 import NoUserPage from '../../components/ErrorPage/NoUserPage/NoUserPage';
 import PostEditor from './PostEditor/PostEditor';
@@ -18,7 +18,9 @@ class UserPage extends Component {
         postArr: [],
         userId: null,
         authUserInfo: null,
-        isSignedOut: false
+        isSignedOut: false,
+        isFollowed: null,
+        followerCnt: null
     };
 
     componentDidMount() {
@@ -138,7 +140,11 @@ class UserPage extends Component {
                 console.log(this.props.userInfo);
                 userPageDiv = (
                     <div className={styles.userPageContainerDiv}>
-                        <UserPageHeader username={this.props.match.params.username}/>
+                        <UserPageHeader
+                            userId={this.props.userInfo.userId}
+                            username={this.props.match.params.username}
+                            ownPage={this.props.match.params.username === this.props.userInfo.username}
+                        />
                         <div className={styles.userPageContentDiv}>
                             {postUploadDiv}
                             {postDivArr}

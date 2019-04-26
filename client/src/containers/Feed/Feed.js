@@ -44,7 +44,6 @@ class Feed extends Component {
         console.log("load feed");
         axios({method: 'GET', url: url, headers: requestHeaders})
             .then(response => {
-                console.log(response.data.postIdArr);
                 let updatedState;
                 if (isNewLoad) {
                     updatedState = {
@@ -123,10 +122,12 @@ class Feed extends Component {
                         postId={this.state.feedPostIdArr[idx]}
                         currUserId={this.props.userInfo.userId}
                         currUsername={this.props.userInfo.username}
+                        userId={post.userId}
                         username={post.username}
                         date={post.uploadDate}
                         content={post.content}
                         tags={post.tags}
+                        followerCnt={post.followerCnt}
                     />
                 </div>
             )

@@ -30,6 +30,13 @@
     left: 44px;
 }
 
+.followButtonDiv {
+    position: absolute;
+    z-index: 15;
+    top: 140px;
+    left: 660px;
+}
+
 .userPageMenuRow {
     margin-top: -28px;
     font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
