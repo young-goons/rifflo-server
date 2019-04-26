@@ -20,7 +20,9 @@ class UserPage extends Component {
         authUserInfo: null,
         isSignedOut: false,
         isFollowed: null,
-        followerCnt: null
+        followerCnt: null,
+        uploadContent: '',
+        uploadTags: ''
     };
 
     componentDidMount() {
@@ -101,6 +103,46 @@ class UserPage extends Component {
             })
     };
 
+    contentInputHandler = (event) => {
+        this.setState({
+            uploadContent: event.target.value
+        });
+    };
+
+    tagsInputHandler = (event) => {
+        this.setState({
+            uploadTags: event.target.value
+        });
+    };
+
+    // TODO: error handling (if the content is too long)
+    sharePostHandler = () => {
+        let url = "http://127.0.0.1:5000/user/upload/post";
+        const requestData = {
+            content: this.state.uploadContent,
+            tags: this.state.uploadTags
+        };
+        const requestHeaders = {
+            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
+        };
+        let newPostId;
+        axios({method: 'POST', url: url, data: requestData, headers: requestHeaders})
+            .then(response => {
+                newPostId = response.data.postId;
+                url = "http://127.0.0.1:5000/posts/" + newPostId;
+                return axios({method: 'GET', url: url, headers: requestHeaders});
+            })
+            .then(response => {
+                this.setState({
+                    postArr: [...this.state.postArr, response.data.posts[newPostId]]
+                })
+            })
+            .catch(error => {
+                console.log(error);
+                alert(error);
+            })
+    };
+
     render() {
         const username = this.props.match.params.username;
         // TODO: psuedo-randomize the order
@@ -122,7 +164,13 @@ class UserPage extends Component {
             siteHeader = <SiteHeader userInfo={this.props.userInfo}/>;
             if (this.props.userInfo.username === username) {
                 postUploadDiv = (
-                    <PostEditor/>
+                    <PostEditor
+                        sharePostHandler={this.sharePostHandler}
+                        contentInput={this.state.uploadContent}
+                        tagsInput={this.state.uploadTags}
+                        contentInputHandler={this.contentInputHandler}
+                        tagsInputHandler={this.tagsInputHandler}
+                    />
                 );
             }
         }
@@ -135,7 +183,6 @@ class UserPage extends Component {
             if (this.state.isSignedOut) {
                 userPageDiv = <Redirect to="/signin"/>
             } else {
-                console.log(this.props.userInfo);
                 userPageDiv = (
                     <div className={styles.userPageContainerDiv}>
                         <UserPageHeader

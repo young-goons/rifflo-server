@@ -7,46 +7,12 @@ import styles from './PostEditor.module.css';
 class PostEditor extends Component {
     state = {
         songSearch: '',
-        content: '',
-        tags: ''
     };
 
     songSearchHandler = (event) => {
         this.setState({
             songSearch: event.target.value
         })
-    };
-
-    contentInputHandler = (event) => {
-        this.setState({
-            content: event.target.value
-        });
-    };
-
-    tagsInputHandler = (event) => {
-        this.setState({
-            tags: event.target.value
-        })
-    };
-
-    // TODO: error handling (if the content is too long)
-    sharePostHandler = () => {
-        const url = "http://127.0.0.1:5000/user/upload/post";
-        const requestData = {
-            content: this.state.content,
-            tags: this.state.tags
-        };
-        const requestHeaders = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        axios({method: 'POST', url: url, data: requestData, headers: requestHeaders})
-            .then(response => {
-                console.log(response);
-                alert("Shared successfully");
-            })
-            .catch(error => {
-                alert(error);
-            })
     };
 
     render() {
@@ -62,7 +28,7 @@ class PostEditor extends Component {
                                 placeholder="Search a song"
                                 className={styles.uploadInput}
                                 onChange={this.songSearchHandler}
-                                value={this.state.songSearch}
+                                value={this.props.songSearch}
                             />
                         </div>
                     </Grid.Column>
@@ -71,8 +37,8 @@ class PostEditor extends Component {
                             <input
                                 placeholder="Write tags"
                                 className={styles.uploadInput}
-                                onChange={this.tagsInputHandler}
-                                value={this.state.tags}
+                                onChange={this.props.tagsInputHandler}
+                                value={this.props.tags}
                             />
                         </div>
                     </Grid.Column>
@@ -88,11 +54,11 @@ class PostEditor extends Component {
                             <textarea
                                 placeholder="Write post"
                                 className={styles.postTextArea}
-                                onChange={this.contentInputHandler}
-                                value={this.state.content}
+                                onChange={this.props.contentInputHandler}
+                                value={this.props.content}
                             />
                             <div className={styles.shareButtonDiv}>
-                                <Button fluid>Share</Button>
+                                <Button fluid onClick={this.props.sharePostHandler}>Share</Button>
                             </div>
                         </div>
                     </Grid.Column>
