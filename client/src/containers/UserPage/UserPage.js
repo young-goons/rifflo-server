@@ -189,6 +189,7 @@ class UserPage extends Component {
                             userId={this.props.userInfo.userId}
                             username={this.props.match.params.username}
                             ownPage={this.props.match.params.username === this.props.userInfo.username}
+                            shareCnt={this.state.postArr.length}
                         />
                         <div className={styles.userPageContentDiv}>
                             {postUploadDiv}

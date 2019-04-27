@@ -117,7 +117,9 @@ class UserPageHeader extends Component {
                         <div className={styles.userPageLeftmostMenuEntry}>"</div>
                     </Grid.Column>
                     <Grid.Column width={3} textAlign="center" className={styles.userPageMenu}>
-                        <div className={styles.userPageMenuEntry}> 3 shares</div>
+                        <div className={styles.userPageMenuEntry}>
+                            {this.props.shareCnt} shares
+                        </div>
                     </Grid.Column>
                     <Grid.Column width={3} textAlign="center" className={styles.userPageMenu}>
                         <div className={styles.userPageMenuEntry}>3 playlists</div>
