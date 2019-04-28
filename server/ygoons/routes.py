@@ -109,8 +109,8 @@ def get_user_info(user_id):
     # check if the identity of the token is equal to the identity of the request parameter
     if user_id == get_jwt_identity()['userId']:
         with flask.g.pymysql_db.cursor() as cursor:
-            sql = 'SELECT user_id, username, email, following_count, follower_count, ' \
-                  'profile_picture_path FROM tbl_user NATURAL JOIN' \
+            sql = 'SELECT user_id, username, email, profile_picture_path ' \
+                  'FROM tbl_user NATURAL JOIN' \
                   '(SELECT * FROM tbl_user_info WHERE user_id = %s) tbl_user_info_id'
             cursor.execute(sql, (user_id, ))
             query_result = cursor.fetchall()
@@ -123,9 +123,7 @@ def get_user_info(user_id):
             'userId': query_result[0][0],
             'username': query_result[0][1],
             'email': query_result[0][2],
-            'following_count': query_result[0][3],
-            'follower_count': query_result[0][4],
-            'profile_picture_path': query_result[0][5]
+            'profile_picture_path': query_result[0][3]
         }
         return make_response(jsonify({'user': user}), 200)
     else:
