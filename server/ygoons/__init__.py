@@ -13,17 +13,15 @@ import pymysql
 from ygoons import config
 
 from ygoons import constants
-from ygoons.modules import user
-
+from ygoons.modules import user, post
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app) # Cross-Origin Resource Sharing
-
+CORS(app)  # Cross-Origin Resource Sharing
 
 # Load blueprint modules
 app.register_blueprint(user.blueprint)
-
+app.register_blueprint(post.blueprint)
 
 # Set up JWT
 app.config['JWT_SECRET_KEY'] = config.JWT_SECRET_KEY

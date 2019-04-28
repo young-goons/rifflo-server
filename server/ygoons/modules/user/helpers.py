@@ -1,1 +1,1 @@
-# Helper functions for users module
+# Helper functions for user module
