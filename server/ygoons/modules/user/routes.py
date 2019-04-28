@@ -66,6 +66,7 @@ def get_user_exists_by_email(email):
         sql = 'SELECT user_id FROM tbl_user WHERE email = %s'
         cursor.execute(sql, email)
         query_result = cursor.fetchone()
+    print(query_result)
     if query_result is not None:
         return make_response(jsonify({'userId': query_result[0]}), 200)
     else:

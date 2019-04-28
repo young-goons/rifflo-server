@@ -44,6 +44,7 @@ class Feed extends Component {
         console.log("load feed");
         axios({method: 'GET', url: url, headers: requestHeaders})
             .then(response => {
+                console.log(response.data);
                 let updatedState;
                 if (isNewLoad) {
                     updatedState = {
@@ -61,6 +62,7 @@ class Feed extends Component {
                 this.setState(updatedState, callback);
             })
             .catch(error => {
+                console.log(error);
                 alert(error);
             })
     };
@@ -91,6 +93,7 @@ class Feed extends Component {
         const postArr = [];
         axios({method: 'GET', url: url})
             .then(response => {
+                console.log(response);
                 for (let i = 0; i < postIdArr.length; i++) {
                     if (postIdArr[i] in response.data.posts) {
                         postArr.push(response.data.posts[postIdArr[i]]);
@@ -102,6 +105,7 @@ class Feed extends Component {
                 });
             })
             .catch(error => {
+                console.log(error);
                 alert(error);
             });
 

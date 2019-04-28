@@ -205,6 +205,7 @@ def sign_out():
 # TODO - error handling
 #      - add option to include or exclude music clips
 #      - empty id_list - return null
+@app.route('/posts/', defaults={'id_list': None})
 @app.route('/posts/<id_list>', methods=['GET'])
 def get_posts(id_list):
     """
@@ -212,9 +213,10 @@ def get_posts(id_list):
     id_list must not be an empty string
     :param id_list: list of integer ids separated by ,
     """
+    if id_list is None:
+        return make_response(jsonify({'posts': None}), 200)
     if not re.match(r'^\d+(?:,\d+)*,?$', id_list):
-        abort(400)
-    post_ids = [int(i) for i in id_list.split(',')]
+        return make_response(jsonify({'msg': "id_list is in wrong format"}), 400)
     with flask.g.pymysql_db.cursor() as cursor:
         # TODO - there must be a better way of putting multiple ids in IN () clause
         # obtain information about the post

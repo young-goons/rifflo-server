@@ -26,15 +26,15 @@ class UserPage extends Component {
     };
 
     componentDidMount() {
-        console.log("component did mount in UserPage.js")
-        if (!this.state.isUserPageLoaded && this.props.userInfo) {
-            if (this.state.userId) {
-                console.log("loading user posts in componentDidMount");
-                this.loadUserPosts();
-            } else {
-                this.getUserId();
-            }
-        }
+        // console.log("component did mount in UserPage.js")
+        // if (!this.state.isUserPageLoaded && this.props.userInfo) {
+        //     if (this.state.userId) {
+        //         console.log("loading user posts in componentDidMount");
+        //         this.loadUserPosts();
+        //     } else {
+        //         this.getUserId();
+        //     }
+        // }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -86,6 +86,7 @@ class UserPage extends Component {
             })
             .then(response => {
                 if (response) {
+                    console.log(response);
                     const postArr = [];
                     for (let i = 0; i < postIdArr.length; i++) {
                         if (postIdArr[i] in response.data.posts) {
@@ -99,6 +100,7 @@ class UserPage extends Component {
                 }
             })
             .catch(error => {
+                console.log(error);
                 alert(error);
             })
     };
