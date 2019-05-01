@@ -6,6 +6,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from ygoons.modules.user import blueprint, helpers
 
+
 # TODO: distinguish public and private info
 @blueprint.route('/user/<int:user_id>/info', methods=['GET'])
 @jwt_required
@@ -107,3 +108,131 @@ def get_user_feed():
         post_id_list.append(row[0])
     random.shuffle(post_id_list)
     return make_response(jsonify({'postIdArr': post_id_list}), 200)
+
+
+@blueprint.route('/user/upload/song', methods=['POST'])
+@jwt_required
+def upload_song():
+    pass
+
+
+@blueprint.route('/user/upload/post', methods=['POST'])
+@jwt_required
+def upload_post():
+    """
+    Uploads the post whose content is received from user who is identified through jwt token
+    """
+    user = get_jwt_identity()
+    user_id = user['userId']
+    data = json.loads(request.data)
+    content = data['content']
+    tags = data['tags']
+
+    # temporary data for now
+    clip_path = ''
+    song_name = "abc"
+    artist = "def"
+
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = "INSERT INTO tbl_song_info (song_name, artist) " \
+              "VALUES (%s, %s)"
+        cursor.execute(sql, (song_name, artist))
+        song_id = cursor.lastrowid
+        post_id = None
+        if song_id:
+            sql = "INSERT INTO tbl_post (user_id, content, tags, song_id, clip_path) " \
+                  "VALUES (%s, %s, %s, %s, %s)"
+            cursor.execute(sql, (user_id, content, tags, song_id, clip_path))
+            post_id = cursor.lastrowid
+
+    if song_id and post_id:
+        flask.g.pymysql_db.commit()
+        return make_response(jsonify({
+            'postId': post_id,
+            'songId': song_id
+        }), 200)
+    else:
+        return make_response(jsonify({'msg': 'Error uploading post and song'}),
+                             400)
+
+
+# TODO: error-handling for insert? make sure insert is actually executed
+#       disable following yourself
+@blueprint.route('/user/follow/<int:followed_user_id>', methods=['POST'])
+@jwt_required
+def user_follow(followed_user_id):
+    """
+    Follow the user of given user_id
+    :param followed_user_id: user_id of the user to follow
+    """
+    curr_user = get_jwt_identity()
+    curr_user_id = curr_user['userId']
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'INSERT INTO tbl_follow (followed_id, follower_id) ' \
+              'VALUES (%s, %s)'
+        affected_row_cnt = cursor.execute(sql,
+                                          (followed_user_id, curr_user_id))
+    if affected_row_cnt == 1:
+        flask.g.pymysql_db.commit()
+        return make_response(jsonify({'success': True}), 200)
+    else:
+        return make_response(jsonify({'msg': "User follow failed"}), 400)
+
+
+# TODO: disabel unfollowing yourself
+@blueprint.route('/user/follow/<int:followed_user_id>', methods=['DELETE'])
+@jwt_required
+def user_unfollow(followed_user_id):
+    """
+    Unfollow the user of given user_id
+    :param followed_user_id: user_id of the user to unfollow
+    :return:
+    """
+    curr_user = get_jwt_identity()
+    curr_user_id = curr_user['userId']
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'DELETE FROM tbl_follow WHERE followed_id = %s AND follower_id = %s'
+        affected_row_cnt = cursor.execute(sql,
+                                          (followed_user_id, curr_user_id))
+    if affected_row_cnt == 1:
+        flask.g.pymysql_db.commit()
+        return make_response(jsonify({'success': True}), 200)
+    else:
+        return make_response(jsonify({'msg': "User unfollow failed"}), 400)
+
+
+@blueprint.route('/user/<int:user_id>/following', methods=['GET'])
+def get_following(user_id):
+    """
+    Obtain the list of ids of the users that the user of user_id is following
+    :param user_id:
+    """
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'SELECT followed_id, username FROM ' \
+              '(SELECT followed_id FROM tbl_follow WHERE follower_id = %s) tbl_user_follow ' \
+              'INNER JOIN tbl_user ON followed_id = user_id'
+        cursor.execute(sql, (user_id, ))
+        query_result = cursor.fetchall()
+    following_list = []
+    for row in query_result:
+        following_list.append(row[0])
+    return make_response(jsonify({'followingArr': following_list}), 200)
+
+
+@blueprint.route('/user/<int:user_id>/followers', methods=['GET'])
+@jwt_required
+def get_followers(user_id):
+    """
+    Obtain the list of ids of the users that follow the user of user_id
+    :param user_id:
+    """
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'SELECT follower_id, username FROM ' \
+              '(SELECT follower_id FROM tbl_follow WHERE followed_id = %s) tbl_user_follow ' \
+              'INNER JOIN tbl_user ON follower_id = user_id'
+        cursor.execute(sql, (user_id, ))
+        query_result = cursor.fetchall()
+    follower_list = []
+    for row in query_result:
+        follower_list.append(row[0])
+    return make_response(jsonify({'followerArr': follower_list}), 200)
