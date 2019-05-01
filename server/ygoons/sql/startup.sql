@@ -5,20 +5,22 @@ USE app_dev;
 -- TODO: Apply indices
 
 -- Create the database schema.
-DROP TABLE IF EXISTS tbl_post;
-DROP TABLE IF EXISTS tbl_song_info;
-DROP TABLE IF EXISTS tbl_user_info;
-DROP TABLE IF EXISTS tbl_user;
-DROP TABLE IF EXISTS tbl_follow;
-DROP TABLE IF EXISTS tbl_like;
-DROP TABLE IF EXISTS tbl_comment;
-DROP TABLE IF EXISTS tbl_reply;
-DROP TABLE IF EXISTS tbl_bookmark;
 
 DROP VIEW IF EXISTS view_like_count;
 DROP VIEW IF EXISTS view_comment_count;
 DROP VIEW IF EXISTS view_follower_count;
 DROP VIEW IF EXISTS view_following_count;
+
+DROP TABLE IF EXISTS tbl_like;
+DROP TABLE IF EXISTS tbl_reply;
+DROP TABLE IF EXISTS tbl_comment;
+DROP TABLE IF EXISTS tbl_bookmark;
+DROP TABLE IF EXISTS tbl_follow;
+DROP TABLE IF EXISTS tbl_post;
+DROP TABLE IF EXISTS tbl_song_info;
+DROP TABLE IF EXISTS tbl_user_info;
+DROP TABLE IF EXISTS tbl_user;
+
 
 -- Create user table.
 CREATE TABLE tbl_user
@@ -67,7 +69,7 @@ CREATE TABLE tbl_post
     content        VARCHAR(100),
     tags           VARCHAR(100),
     song_id        INT NOT NULL,
-    clip_path      VARCHAR (50) NOT NULL
+    clip_path      VARCHAR (50) NOT NULL,
 
     PRIMARY KEY(post_id),
 
