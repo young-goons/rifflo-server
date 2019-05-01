@@ -1,16 +1,17 @@
 import React, { Component, createRef } from 'react';
 import { connect } from 'react-redux';
 import axios from "axios";
-import { Redirect } from 'react-router-dom';
-import { Container } from 'semantic-ui-react';
 
 import Post from './Post/Post';
 import SiteHeader from '../SiteHeader/SiteHeader';
+import AuthPage from '../AuthPage/AuthPage';
 import { FEED_POSTS_LOAD_NUM } from "../../shared/config";
 import styles from './Feed.module.css';
+import { loadUser } from "../../store/actions/auth";
 
 class Feed extends Component {
     state = {
+        authUserId: this.props.authUserId,
         isFeedLoaded: false,
         feedPostIdArr: [],
         feedPostIdx: 0, // the next post index to be fetched from feedPostIdArr
@@ -22,10 +23,26 @@ class Feed extends Component {
     contextRef = createRef();
 
     componentDidMount() {
-        // TODO: need to try to authenticate?
-        if (this.props.isAuthenticated && !this.state.isFeedLoaded) {
-            console.log("initial feed load")
+        if (this.state.authUserId) {
+            if (!this.props.authUserInfo) {
+                console.log("loading user info");
+                this.props.onLoadUser(this.state.authUserId);
+            }
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        console.log(nextProps);
+        if (nextProps.authUserInfo) { // upon sign in
             this.loadFeed(true, this.loadFeedPosts);
+        } else { // upon sign out
+            this.setState({
+                authUserId: null,
+                isFeedLoaded: false,
+                feedPostIdArr: [],
+                feedPostIdx: 0,
+                postArr: []
+            });
         }
     }
 
@@ -108,61 +125,84 @@ class Feed extends Component {
                 console.log(error);
                 alert(error);
             });
-
     };
 
     render() {
-        let authRedirect = null;
-        let siteHeader = null;
-        if (!this.props.isAuthenticated) {
-            authRedirect = <Redirect to="/signin"/>;
-        } else {
-            siteHeader = <SiteHeader contextRef={this.contextRef} userInfo={this.props.userInfo}/>;
-        }
-        const postDivArr = this.state.postArr.map((post, idx) => {
-            return (
-                <div key={idx}>
-                    <Post
-                        postId={this.state.feedPostIdArr[idx]}
-                        currUserId={this.props.userInfo.userId}
-                        currUsername={this.props.userInfo.username}
-                        userId={post.userId}
-                        username={post.username}
-                        date={post.uploadDate}
-                        content={post.content}
-                        tags={post.tags}
-                        followerCnt={post.followerCnt}
-                    />
-                </div>
-            )
-        });
-        const feedDiv = (
-            <div className={styles.feedDiv}>
-                { postDivArr }
+        let renderDiv = <div></div>;
+        if (this.props.authUserInfo) { // load posts after user info is loaded
+            const siteHeader = <SiteHeader contextRef={this.contextRef} userInfo={this.props.authUserInfo}/>;
+            const postDivArr = this.state.postArr.map((post, idx) => {
+                return (
+                    <div key={idx}>
+                        <Post
+                            postId={this.state.feedPostIdArr[idx]}
+                            currUserId={this.props.authUserInfo.userId}
+                            currUsername={this.props.authUserInfo.username}
+                            userId={post.userId}
+                            username={post.username}
+                            date={post.uploadDate}
+                            content={post.content}
+                            tags={post.tags}
+                            followerCnt={post.followerCnt}
+                        />
+                    </div>
+                )
+            });
+
+            const showMoreButton = (
                 <button onClick={() => this.loadFeedPostsHandler()}>
                     Show More
                 </button>
+            );
+
+            const refreshButton = (
                 <button onClick={() => this.loadFeed(true, this.loadFeedPosts)}>
                     Refresh
                 </button>
+            );
+
+            const feedDiv = (
+                <div className={styles.feedDiv}>
+                    { postDivArr }
+                    { this.state.postArr.length > 0 ? refreshButton : null}
+                    { this.state.postArr.length > 0 ? showMoreButton : null}
+                </div>
+            );
+
+            renderDiv = (
+                <div className={styles.containerDiv} ref={this.contextRef}>
+                    { siteHeader }
+                    { feedDiv }
+                </div>
+            );
+            console.log("Feed loaded");
+        } else if (this.state.authUserId) {
+            renderDiv = (
+                <div></div>
+            );
+        } else { // authPage;
+            renderDiv = (
+                <AuthPage/>
+            );
+        }
+        return (
+            <div className={styles.containerDiv}>
+                { renderDiv }
             </div>
         );
-        return (
-            <div className={styles.containerDiv} ref={this.contextRef}>
-                { authRedirect }
-                { siteHeader }
-                { feedDiv }
-            </div>
-        )
     }
 }
 
 const mapStateToProps = state => {
     return {
-        isAuthenticated: state.auth.isAuthenticated,
-        authRedirectPath: state.auth.authRedirectPath,
-        userInfo: state.auth.userInfo
+        authUserInfo: state.auth.authUserInfo
     };
 };
 
-export default connect(mapStateToProps)(Feed);
+const mapDispatchToProps = dispatch => {
+    return {
+        onLoadUser: (userId) => dispatch(loadUser(userId))
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Feed);

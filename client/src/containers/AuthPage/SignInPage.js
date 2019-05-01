@@ -40,10 +40,14 @@ class SignInPage extends Component {
             });
     };
 
+
+
     render () {
         let authRedirect = null;
+        console.log(this.props.isAuthenticated, this.props.userInfo);
         if (this.props.isAuthenticated && this.props.userInfo) {
             authRedirect = <Redirect to={this.props.authRedirectPath}/>;
+            // this.props.history.push(this.props.authRedirectPath);
         }
         let warningDiv = <div></div>;
         if (!this.state.emailExists) {
@@ -114,7 +118,10 @@ class SignInPage extends Component {
                     </div>
                     <div className={styles.signUpDiv}>
                         Don't have an account yet?
-                        <NavLink to={'/signup'} className={styles.signUpLink}>Sign Up!</NavLink>
+                        {/*<NavLink to={'/signup'} className={styles.signUpLink}>Sign Up!</NavLink>*/}
+                        <span className={styles.signUpLink} onClick={this.props.signUpClickHandler}>
+                            Sign Up!
+                        </span>
                     </div>
                 </Grid.Column>
             </Grid>

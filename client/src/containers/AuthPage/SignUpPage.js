@@ -186,7 +186,10 @@ class SignUpPage extends Component {
                     </div>
                     <div className={styles.signInDiv}>
                         Already have an account?
-                        <NavLink to={'/signin'} className={styles.signInLink}>Sign In!</NavLink>
+                        {/*<NavLink to={'/signin'} className={styles.signInLink}>Sign In!</NavLink>*/}
+                        <span className={styles.signInLink} onClick={this.props.signInClickHandler}>
+                            Sign In!
+                        </span>
                     </div>
                 </Grid.Column>
             </Grid>
