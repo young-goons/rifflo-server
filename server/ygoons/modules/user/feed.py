@@ -1,7 +1,8 @@
 import numpy as np
+import sys
 
 
-def select_feed_posts(friend_posts, top_posts, limit=20):
+def select_feed_posts(friend_posts=[], top_posts=[], limit=20):
     """Simple feed selection using popularity as a heuristic.
     Args:
         friend_posts (list): List of candidate posts from friends
@@ -18,22 +19,22 @@ def select_feed_posts(friend_posts, top_posts, limit=20):
 
     fposts = list(map(lambda x: x[0], friend_posts))
     tposts = list(map(lambda x: x[0], top_posts))
-    fpop = np.array(list(map(lambda x: x[1], friend_posts)))
-    tpop = np.array(list(map(lambda x: x[1], top_posts)))
+    fpop = np.array(list(map(lambda x: np.exp(x[1]), friend_posts)))
+    tpop = np.array(list(map(lambda x: np.exp(x[1]), top_posts)))
 
     # Randomly select candidate posts from friend_posts
-    # weighted by popularity
+    # exponentially (TODO: is this reasonable) weighted by popularity
     fposts = list(
         np.random.choice(fposts,
                          size=min(limit, len(fposts)),
                          replace=False,
-                         p=fpop / sum(fpop)))
+                         p=fpop / sum(fpop))) if fposts else []
     # Do the same for top_posts
     tposts = list(
         np.random.choice(tposts,
                          size=min(limit, len(tposts)),
                          replace=False,
-                         p=tpop / sum(tpop)))
+                         p=tpop / sum(tpop))) if tposts else []
 
     fposts = list(reversed(fposts))
     tposts = list(reversed(tposts))
@@ -60,4 +61,4 @@ def select_feed_posts(friend_posts, top_posts, limit=20):
             # Avoid duplicates
             posts.append(chosen_post)
 
-    return posts
+    return list(map(lambda x: int(x), posts))

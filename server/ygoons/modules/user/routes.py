@@ -1,10 +1,12 @@
 import random
+import json
+import sys
 
 import flask
 from flask import request, jsonify, make_response
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from ygoons.modules.user import blueprint, helpers
+from ygoons.modules.user import blueprint, helpers, feed
 
 
 # TODO: distinguish public and private info
@@ -98,15 +100,33 @@ def get_user_feed():
     """ Obtains the list of post_ids to appear on the user feed
         and sends the list of ids to the client """
     user_id = get_jwt_identity()['userId']
-    # obtain the list of ids of all the posts shared by other users for now...
+    # obtain the list of ids of the top posts shared by other users for now...
+    # TODO: change limit?
     with flask.g.pymysql_db.cursor() as cursor:
-        sql = 'SELECT post_id FROM tbl_post WHERE user_id != %s'
+        sql = '''SELECT tbl_post.post_id, like_cnt
+        FROM tbl_post LEFT JOIN view_like_count
+        ON tbl_post.post_id = view_like_count.post_id
+        WHERE user_id != %s
+        ORDER BY like_cnt DESC
+        LIMIT 20'''
         cursor.execute(sql, (user_id))
-        query_result = cursor.fetchall()
-    post_id_list = []
-    for row in query_result:
-        post_id_list.append(row[0])
-    random.shuffle(post_id_list)
+        top_posts = cursor.fetchall()
+
+    # obtain list of ids of top posts shared by followed users
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = '''SELECT tbl_post.post_id, like_cnt
+        FROM tbl_post LEFT JOIN view_like_count
+        ON tbl_post.post_id = view_like_count.post_id
+        WHERE user_id in (SELECT followed_id FROM tbl_follow WHERE follower_id = %s)
+        ORDER BY like_cnt DESC
+        LIMIT 20'''
+        cursor.execute(sql, (user_id))
+        friend_posts = cursor.fetchall()
+
+    post_id_list = feed.select_feed_posts(friend_posts=friend_posts,
+            top_posts=top_posts, limit=5)
+    # List comes back shuffled already
+    # random.shuffle(post_id_list)
     return make_response(jsonify({'postIdArr': post_id_list}), 200)
 
 
