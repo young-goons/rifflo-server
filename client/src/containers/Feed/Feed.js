@@ -128,7 +128,7 @@ class Feed extends Component {
     };
 
     render() {
-        let renderDiv = <div></div>;
+        let renderDiv;
         if (this.props.authUserInfo) { // load posts after user info is loaded
             const siteHeader = <SiteHeader contextRef={this.contextRef} userInfo={this.props.authUserInfo}/>;
             const postDivArr = this.state.postArr.map((post, idx) => {
@@ -177,13 +177,9 @@ class Feed extends Component {
             );
             console.log("Feed loaded");
         } else if (this.state.authUserId) {
-            renderDiv = (
-                <div></div>
-            );
+            renderDiv = <div></div>;
         } else { // authPage;
-            renderDiv = (
-                <AuthPage/>
-            );
+            renderDiv = <AuthPage/>;
         }
         return (
             <div className={styles.containerDiv}>

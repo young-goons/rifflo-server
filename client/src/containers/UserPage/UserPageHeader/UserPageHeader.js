@@ -14,39 +14,65 @@ class UserPageHeader extends Component {
     };
 
     componentDidMount() {
-        let url;
+        console.log("component did mount");
+        if (this.props.userId) {
+            if (this.state.isFollowed === null && this.state.followerArr === null) {
+                this.getFollowers(this.props.userId);
+            }
+            if (this.state.followingArr === null) {
+                this.getFollowing(this.props.userId);
+            }
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        console.log("component will receive props");
+        console.log(nextProps);
+        if (nextProps.userId) {
+            console.log(this.state);
+            if (this.state.isFollowed === null && this.state.followerArr === null) {
+                this.getFollowers(nextProps.userId);
+            }
+            if (this.state.followingArr === null) {
+                this.getFollowing(nextProps.userId);
+            }
+        }
+    }
+
+    getFollowers = (userId) => {
         const headers = {
             'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
         };
-        if (this.state.isFollowed === null && this.state.followerArr === null && this.props.userId) {
-            url = "http://127.0.0.1:5000/user/" + this.props.userId + "/followers";
-            axios({method: 'GET', url: url, headers: headers})
-                .then(response => {
-                    this.setState({
-                        followerArr: response.data.followerArr,
-                        followingCnt: response.data.followerArr.length,
-                        isFollowed: response.data.followerArr.includes(this.props.userId)
-                    });
-                })
-                .catch(error => {
-                    console.log(error);
-                    alert(error);
+        const url = "http://127.0.0.1:5000/user/" + userId + "/followers";
+        axios({method: 'GET', url: url, headers: headers})
+            .then(response => {
+                this.setState({
+                    followerArr: response.data.followerArr,
+                    isFollowed: response.data.followerArr.includes(this.props.authUserId)
                 });
-        }
-        if (this.state.followingArr === null && this.props.userId) {
-            url = "http://127.0.0.1:5000/user/" + this.props.userId + "/following";
-            axios({method: 'GET', url: url, headers: headers})
-                .then(response => {
-                    this.setState({
-                        followingArr: response.data.followingArr,
-                    });
-                })
-                .catch(error => {
-                    console.log(error);
-                    alert(error);
+            })
+            .catch(error => {
+                console.log(error);
+                alert(error);
+            });
+    };
+
+    getFollowing = (userId) => {
+        const headers = {
+            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
+        };
+        const url = "http://127.0.0.1:5000/user/" + userId + "/following";
+        axios({method: 'GET', url: url, headers: headers})
+            .then(response => {
+                this.setState({
+                    followingArr: response.data.followingArr,
                 });
-        }
-    }
+            })
+            .catch(error => {
+                console.log(error);
+                alert(error);
+            });
+    };
 
     followClickHandler = () => {
         let url = "http://127.0.0.1:5000/user/follow/" + this.props.userId;
@@ -63,10 +89,10 @@ class UserPageHeader extends Component {
             .then(response => {
                 const newFollowerArr = [...this.state.followerArr];
                 if (this.state.isFollowed) {
-                    const index = newFollowerArr.indexOf(this.props.userId);
+                    const index = newFollowerArr.indexOf(this.props.authUserId);
                     if (index !== -1) newFollowerArr.splice(index, 1);
                 } else {
-                    newFollowerArr.push(this.props.userId);
+                    newFollowerArr.push(this.props.authUserId);
                 }
                 this.setState({
                     followerArr: newFollowerArr,
@@ -80,7 +106,7 @@ class UserPageHeader extends Component {
 
     render () {
         let followButtonDiv = null;
-        if (!this.props.ownPage) {
+        if (this.props.authUserId != this.props.userId) {
             followButtonDiv = (
                 <div className={styles.followButtonDiv}>
                     <Button as='div' labelPosition='right' size='large' compact className={styles.followButton}>
