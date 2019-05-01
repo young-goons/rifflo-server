@@ -188,7 +188,7 @@ class UserPage extends Component {
                 userPageDiv = (
                     <div className={styles.userPageContainerDiv}>
                         <UserPageHeader
-                            userId={this.props.userInfo.userId}
+                            userId={this.state.userId}
                             username={this.props.match.params.username}
                             ownPage={this.props.match.params.username === this.props.userInfo.username}
                             shareCnt={this.state.postArr.length}
