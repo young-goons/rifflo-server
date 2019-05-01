@@ -1,5 +1,5 @@
-DROP DATABASE IF EXISTS app_dev;
-CREATE DATABASE app_dev;
+-- DROP DATABASE IF EXISTS app_dev;
+-- CREATE DATABASE app_dev;
 USE app_dev;
 
 -- TODO: Apply indices
@@ -17,6 +17,8 @@ DROP TABLE IF EXISTS tbl_bookmark;
 
 DROP VIEW IF EXISTS view_like_count;
 DROP VIEW IF EXISTS view_comment_count;
+DROP VIEW IF EXISTS view_follower_count;
+DROP VIEW IF EXISTS view_following_count;
 
 -- Create user table.
 CREATE TABLE tbl_user
@@ -65,9 +67,7 @@ CREATE TABLE tbl_post
     content        VARCHAR(100),
     tags           VARCHAR(100),
     song_id        INT NOT NULL,
-    clip_path      VARCHAR (50) NOT NULL,
-    like_count     INT DEFAULT 0,
-    comment_count  INT DEFAULT 0,
+    clip_path      VARCHAR (50) NOT NULL
 
     PRIMARY KEY(post_id),
 
