@@ -70,4 +70,3 @@ const mapDispatchToProps = dispatch => {
 };
 
 export default connect(null, mapDispatchToProps)(SiteHeader);
-// export default SiteHeader;

@@ -4,19 +4,23 @@ export const parseJWT = (token) => {
     return JSON.parse(atob(base64));
 };
 
-export const getDateStr = (date) => {
-    console.log(date);
-    date = new Date(date);
-    console.log(date);
-    const dd = date.getDate();
-    const mm = date.getMonth() + 1;
-    const yyyy = date.getFullYear();
-    const dateStr = [yyyy, mm, dd].join('.');
-    return dateStr;
+/**
+ * Validates the input jwt access token.
+ * Returns True if valid, False if not.
+ * @param token Access token to validate
+ */
+export const validateAccessToken = (token) => {
+    if (token) {
+        const jwtInfo = parseJWT(token);
+        if (Date.now() / 1000 < jwtInfo.exp) {
+            return jwtInfo.identity.userId;
+        }
+    }
+    return null;
 };
 
 /**
- * convertDate() returns formatted dateStr
+ * Obtains formatted str of input date of date type
  * @param {String} dateStr - assumed to be the format of 'MM.DD.YYYY'
  */
 export const convertDateToStr = (date) => {
