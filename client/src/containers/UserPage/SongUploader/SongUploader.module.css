@@ -1,0 +1,68 @@
+.audioPlayDiv {
+    width: 450px;
+    padding-bottom: 20px;
+}
+
+.progressDiv {
+    display: block;
+}
+
+.progressBar {
+    margin-left: 5px;
+    vertical-align: middle;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 400px;
+    height: 18px;
+}
+
+.progressBar::-webkit-progress-bar {
+    background-color: lightgray;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
+
+.progressBar::-webkit-progress-value {
+    background-color: darkorange;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
+
+.currTimeDiv {
+    float: left;
+    position: relative;
+    left: 42px;
+    font-size: 1.1em;
+}
+
+.clipLengthDiv {
+    float: right;
+    position: relative;
+    right: 10px;
+    font-size: 1.1em;
+}
+
+.timeInputDiv {
+    margin-top: 25px;
+    float: left;
+    display: block;
+    position: relative;
+    margin-bottom: 20px;
+    font-size: 1.1em;
+}
+
+.timeInput {
+    width: 90px;
+}
+
+.tildeSpan {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.playRangeSpan {
+
+}
+
+.songInfoInputDiv {
+    clear: both;
+}

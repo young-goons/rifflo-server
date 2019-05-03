@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { Grid, Form, Input, TextArea, Button, Segment } from 'semantic-ui-react';
+import { Grid, Form, Input, TextArea, Button, Segment, Modal } from 'semantic-ui-react';
 import axios from 'axios';
 
+import SongUploader from '../SongUploader/SongUploader';
+import SongInfoUploader from '../SongUploader/SongInfoUploader';
 import styles from './PostEditor.module.css';
 
 class PostEditor extends Component {
@@ -16,6 +18,14 @@ class PostEditor extends Component {
     };
 
     render() {
+        const songUploadModal = (
+            <Modal trigger={<Button>Browse</Button>} size="tiny">
+                <Modal.Header>Upload Your Song</Modal.Header>
+                <SongUploader/>
+                <SongInfoUploader/>
+            </Modal>
+        );
+
         return (
             <Grid columns="2">
                 <Grid.Row>
@@ -46,7 +56,7 @@ class PostEditor extends Component {
                 <Grid.Row className={styles.songUploadRow}>
                     <Grid.Column width={8} stretched>
                         <div className={styles.uploadSongDiv}>
-                            Upload a song
+                            { songUploadModal }
                         </div>
                     </Grid.Column>
                     <Grid.Column width={8}>

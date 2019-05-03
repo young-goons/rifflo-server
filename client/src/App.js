@@ -5,7 +5,7 @@ import { Container } from 'semantic-ui-react';
 
 import UserPage from './containers/UserPage/UserPage';
 import Feed from './containers/Feed/Feed';
-import { validateAccessToken } from "./shared/utils";
+import { validateAccessToken } from "./shared/tokenUtils";
 
 // TODO: check if refreshToken is not expired and get newToken if expired soon
 //       what if accessToken expires while using the app?
