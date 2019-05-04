@@ -9,6 +9,7 @@ import styles from './SongUploader.module.css';
 
 // TODO: make slider to help changing start point
 //       forward 5 seconds backward 5 seconds
+//       preload so that even if the user accidentally closes modal, the song is still there
 
 class SongUploader extends Component {
     state = {
@@ -56,7 +57,6 @@ class SongUploader extends Component {
             console.log(timeStr.match(pattern));
             const time = convertTimeStrToTime(timeStr);
             console.log(time);
-            this.audioRef.current.play();
             this.setState({
                 startTime: time,
                 startTimeStr: getCurrentTimeFloatStr(time),
@@ -97,6 +97,8 @@ class SongUploader extends Component {
         const player = this.audioRef.current;
         console.log(this.state.startTime);
         player.currentTime = this.state.startTime;
+        player.play();
+        this.setState({isPlaying: true});
     };
 
     initProgressBar = () => {
@@ -166,16 +168,15 @@ class SongUploader extends Component {
             }
         }
         return (
-            <div>
-                <div>
-                    <input type="file" accept=".mp3, .wav" onChange={this.uploadFileHandler}/>
+            <div className={styles.songUploadDiv}>
+                <div className={styles.fileUploaderDiv}>
+                    <input type="file" accept=".mp3, .wav" className={styles.songFileInput}
+                           onChange={this.uploadFileHandler}/>
                 </div>
                 { audioDiv }
                 <div className={styles.audioPlayDiv}>
                     { progressDiv }
                 </div>
-
-
             </div>
         )
     }
