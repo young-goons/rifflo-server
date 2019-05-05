@@ -2,8 +2,6 @@ import * as actionTypes from './actionTypes';
 import axios from "axios";
 
 export const loadUserPostsSuccess = (postArr) => {
-    console.log(postArr);
-    console.log(actionTypes.LOAD_USER_POSTS_SUCCESS);
     return {
         type: actionTypes.LOAD_USER_POSTS_SUCCESS,
         postArr: postArr
@@ -34,21 +32,38 @@ export const loadUserPosts = (userId) => {
                 return axios({method: 'GET', url: postUrl, headers: requestHeaders});
             })
             .then(response => {
+                const postArr = [];
                 if (response) {
-                    const postArr = [];
                     for (let i = 0; i < postIdArr.length; i++) {
                         if (postIdArr[i] in response.data.posts) {
                             postArr.push(response.data.posts[postIdArr[i]]);
                         }
                     }
-                    console.log(postArr);
-                    dispatch(loadUserPostsSuccess(postArr));
                 }
+                console.log(postArr);
+                dispatch(loadUserPostsSuccess(postArr));
             })
             .catch(error => {
                 console.log(error);
                 alert(error);
                 dispatch(loadUserPostsFail(error));
             })
-    }
+    };
+};
+
+export const loadUserUpdatedPosts = (postId, postArr) => {
+    return dispatch => {
+        const url = "http://127.0.0.1:5000/post/" + postId;
+        const requestHeaders = {
+            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken'),
+        };
+        axios({method: 'GET', url: url, headers: requestHeaders})
+            .then(response => {
+                const updatedPostArr = [...postArr, response.data.posts[postId]];
+                dispatch(loadUserPostsSuccess(updatedPostArr));
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    };
 };

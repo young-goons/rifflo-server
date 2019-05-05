@@ -5,14 +5,24 @@ import { connect } from 'react-redux';
 
 import SongUploader from '../SongUploader/SongUploader';
 import styles from './PostEditor.module.css';
-import { postUpload } from '../../../store/actions/upload';
+import { sharePost } from '../../../store/actions/upload';
 
 class PostEditor extends Component {
     state = {
-        songSearch: '',
         content: '',
-        tags: ''
+        tags: '',
+        isSongUploaded: false,
+        songUploadWarning: false
     };
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.songFile && nextProps.songInfo.termsChecked) {
+            this.setState({
+                isSongUploaded: true,
+                songUploadWarning: false
+            });
+        }
+    }
 
     contentInputHandler = (event) => {
         this.setState({
@@ -26,65 +36,39 @@ class PostEditor extends Component {
         });
     };
 
-    songSearchInputHandler = (event) => {
-        this.setState({
-            songSearch: event.target.value
-        });
-    };
-
     // TODO: error handling (if the content is too long)
     sharePostHandler = () => {
-        let url = "http://127.0.0.1:5000/post";
-        const requestData = {
-            content: this.state.content,
-            tags: this.state.tags
-        };
-        const requestHeaders = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        let newPostId;
-        axios({method: 'POST', url: url, data: requestData, headers: requestHeaders})
-            .then(response => {
-                newPostId = response.data.postId;
-                url = "http://127.0.0.1:5000/post/" + newPostId;
-                return axios({method: 'GET', url: url, headers: requestHeaders});
-            })
-            .then(response => {
-                this.setState({
-                    postArr: [...this.state.postArr, response.data.posts[newPostId]]
-                })
-            })
-            .catch(error => {
-                console.log(error);
-                alert(error);
-            })
+        if (this.state.isSongUploaded) {
+            this.props.onSharePost(this.props.songFile, this.props.clipRange, this.props.songInfo,
+                                   this.state.content, this.state.tags);
+        } else {
+            alert("Song not uploaded");
+            this.setState({songUploadWarning: true});
+        }
     };
 
     render() {
+        const browseButton = (
+            <div className={styles.browseButtonDiv}>
+                <Button>Browse</Button>
+            </div>
+        );
         const songUploadModal = (
-            <Modal trigger={<Button>Browse</Button>} size="tiny">
-                <div>Upload Your Song</div>
+            <Modal trigger={browseButton} size="tiny">
                 <SongUploader/>
             </Modal>
         );
 
         return (
             <Grid columns="2">
-                <Grid.Row>
-                    <Grid.Column verticalAlign="middle">
-                        <div className={styles.shareClipDiv}>
-                            <span>Share a clip</span>
-                        </div>
-                        <div className={styles.searchSongInputDiv}>
-                            <input
-                                placeholder="Search a song"
-                                className={styles.uploadInput}
-                                onChange={this.songSearchInputHandler}
-                                value={this.state.songSearch}
-                            />
-                        </div>
-                    </Grid.Column>
-                    <Grid.Column>
+                <Grid.Column>
+                    <div className={styles.uploadSongDiv}>
+                        <div className={styles.browseHeaderDiv}>Upload Your Song (.mp3, .wav)</div>
+                        { songUploadModal }
+                    </div>
+                </Grid.Column>
+                <Grid.Column>
+                    <Grid.Row>
                         <div className={styles.tagInputDiv}>
                             <input
                                 placeholder="Write tags"
@@ -93,15 +77,8 @@ class PostEditor extends Component {
                                 value={this.state.tags}
                             />
                         </div>
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row className={styles.songUploadRow}>
-                    <Grid.Column width={8} stretched>
-                        <div className={styles.uploadSongDiv}>
-                            { songUploadModal }
-                        </div>
-                    </Grid.Column>
-                    <Grid.Column width={8}>
+                    </Grid.Row>
+                    <Grid.Row className={styles.songUploadRow}>
                         <div className={styles.postInputDiv}>
                             <textarea
                                 placeholder="Write post"
@@ -113,8 +90,8 @@ class PostEditor extends Component {
                                 <Button fluid onClick={this.sharePostHandler}>Share</Button>
                             </div>
                         </div>
-                    </Grid.Column>
-                </Grid.Row>
+                    </Grid.Row>
+                </Grid.Column>
             </Grid>
         );
     }
@@ -122,13 +99,15 @@ class PostEditor extends Component {
 
 const mapStateToProps = state => {
     return {
-
+        songFile: state.upload.songFile,
+        clipRange: state.upload.clipRange,
+        songInfo: state.upload.songInfo
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        onSharePost: (postContent, tags) => dispatch(postUpload(postContent, tags))
+        onSharePost: (songFile, clipRange, songInfo, postContent, tags) => dispatch(sharePost(songFile, clipRange, songInfo, postContent, tags))
     };
 };
 

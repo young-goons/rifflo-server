@@ -4,53 +4,43 @@ const initialState = {
     songFile: null,
     clipRange: null,
     songInfo: null,
-    songUploadError: null,
-    postContent: null,
-    tags: null,
+    newPostId: null,
     postShareError: null
 };
 
-const uploadSongSuccess = (state, action) => {
+const uploadSong = (state, action) => {
     return {
         ...state,
         songFile: action.songFile,
         clipRange: action.clipRange,
         songInfo: action.songInfo,
-        songUploadError: null
-    };
-};
-
-const uploadSongFail = (state, action) => {
-    return {
-        ...state,
-        clipRange: null,
-        songFile: null,
-        songInfo: null,
-        songUploadError: action.error
     };
 };
 
 const postShareSuccess = (state, action) => {
     return {
         ...state,
+        songFile: null,
+        clipRange: null,
+        songInfo: null,
+        newPostId: action.newPostId,
+        postShareError: null,
     };
 };
 
 const postShareFail = (state, action) => {
     return {
         ...state,
-        postContent: null,
-        tags: null,
+        newPostId: null,
         postShareError: action.error
     };
 };
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
-        case actionTypes.UPLOAD_SONG_SUCCESS: return uploadSongSuccess(state, action);
-        case actionTypes.UPLOAD_SONG_FAIL: return uploadSongFail(state, action);
-        case actionTypes.POST_SHARE_SUCCESS: return postShareSuccess(state, action);
-        case actionTypes.POST_SHARE_FAIL: return postShareFail(state, action);
+        case actionTypes.UPLOAD_SONG: return uploadSong(state, action);
+        case actionTypes.SHARE_POST_SUCCESS: return postShareSuccess(state, action);
+        case actionTypes.SHARE_POST_FAIL: return postShareFail(state, action);
         default:
             return state;
     }

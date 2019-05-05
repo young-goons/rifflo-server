@@ -55,7 +55,7 @@ CREATE TABLE tbl_song_info
     artist        VARCHAR(50) NOT NULL,
     release_date  DATE,
     album         VARCHAR(50),
-    rel_path      VARCHAR(50),
+    song_path     VARCHAR(200) NOT NULL, -- path to the mp3 of full song
 
     PRIMARY KEY(song_id)
 );
@@ -63,13 +63,15 @@ CREATE TABLE tbl_song_info
 -- Create post table.
 CREATE TABLE tbl_post
 (
-    post_id        INT AUTO_INCREMENT,
-    user_id        INT NOT NULL,
-    upload_date    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    content        VARCHAR(100),
-    tags           VARCHAR(100),
-    song_id        INT NOT NULL,
-    clip_path      VARCHAR (50) NOT NULL,
+    post_id          INT AUTO_INCREMENT,
+    user_id          INT NOT NULL,
+    upload_date      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    content          VARCHAR(100),
+    tags             VARCHAR(100),
+    song_id          INT NOT NULL,
+    clip_start_time  FLOAT(5, 2) NOT NULL, -- start time of clip in seconds
+    clip_end_time    FLOAT(5, 2) NOT NULL, -- end time of clip in seconds
+    clip_path        VARCHAR(200) NOT NULL, -- path to the mp3 of clip
 
     PRIMARY KEY(post_id),
 

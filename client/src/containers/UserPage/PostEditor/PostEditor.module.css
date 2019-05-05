@@ -25,12 +25,24 @@
 }
 
 .songUploadRow {
-    margin-top: -14px;
+    margin-top: 10px;
 }
 
 .uploadSongDiv {
     border: 1px solid lightslategray;
     margin-left: 25px;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.browseHeaderDiv {
+    margin-top: 30px;
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-size: 1.1rem;
+}
+
+.browseButtonDiv {
+    margin-top: 10px;
 }
 
 .postInputDiv {

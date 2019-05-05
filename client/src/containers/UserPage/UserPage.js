@@ -12,7 +12,7 @@ import NoUserPage from '../../components/ErrorPage/NoUserPage/NoUserPage';
 import PostEditor from './PostEditor/PostEditor';
 import styles from './UserPage.module.css';
 import { loadUser } from "../../store/actions/auth";
-import { loadUserPosts } from "../../store/actions/user";
+import { loadUserPosts, loadUserUpdatedPosts } from "../../store/actions/user";
 
 class UserPage extends Component {
     state = {
@@ -23,6 +23,7 @@ class UserPage extends Component {
         isSignedOut: false,
         isFollowed: null,
         followerCnt: null,
+        postArr: []
     };
 
     componentDidMount() {
@@ -36,11 +37,20 @@ class UserPage extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(this.props.postArr);
         console.log(nextProps);
-        if (nextProps.authUserInfo) { // upon sign in
-            this.setState({authUserInfo: nextProps.authUserInfo});
-            this.getUserId();
+        if (nextProps.authUserInfo) {
+            if (!nextProps.postArr && !nextProps.newPostId) { // upon sign in
+                this.setState({authUserInfo: nextProps.authUserInfo});
+                this.getUserId();
+            } else if (nextProps.postArr && !nextProps.newPostId) { // upon loading initial post
+                this.setState({postArr: nextProps.postArr});
+            } else if (nextProps.postArr && nextProps.newPostId) { // upon loading updatedPost
+                if (this.state.postArr.length === nextProps.postArr.length) { // get new post Id
+                    this.props.onLoadUserUpdatedPosts(nextProps.newPostId, this.state.postArr)
+                } else { // get updated postArr
+                    this.setState({postArr: nextProps.postArr});
+                }
+            }
         } else { // upon sign out
             this.setState({
                 authUserId: null,
@@ -57,7 +67,6 @@ class UserPage extends Component {
     }
 
     componentDidUpdate() {
-        console.log(this.props.postArr);
         if (!this.props.postLoaded && this.state.userId && this.state.authUserInfo) {
             console.log("load user posts");
             this.props.onLoadUserPosts(this.state.userId);
@@ -79,47 +88,11 @@ class UserPage extends Component {
             })
     };
 
-    // loadUserPosts = () => {
-    //     const userPostUrl = "http://127.0.0.1:5000/user/" + this.state.userId + "/posts";
-    //     const requestHeaders = {
-    //         'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-    //     };
-    //     let postIdArr;
-    //     axios({method: 'GET', url: userPostUrl, headers: requestHeaders})
-    //         .then(response => {
-    //             postIdArr = response.data.postIdArr;
-    //             if (postIdArr.length === 0) {
-    //                 return;
-    //             }
-    //             const postUrl = "http://127.0.0.1:5000/post/" + postIdArr.join(',');
-    //             return axios({method: 'GET', url: postUrl, headers: requestHeaders});
-    //         })
-    //         .then(response => {
-    //             if (response) {
-    //                 console.log(response);
-    //                 const postArr = [];
-    //                 for (let i = 0; i < postIdArr.length; i++) {
-    //                     if (postIdArr[i] in response.data.posts) {
-    //                         postArr.push(response.data.posts[postIdArr[i]]);
-    //                     }
-    //                 }
-    //                 this.setState({
-    //                     isUserPageLoaded: true,
-    //                     postArr: postArr
-    //                 })
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.log(error);
-    //             alert(error);
-    //         })
-    // };
-
     render() {
         let renderDiv;
         const username = this.props.match.params.username;
         // TODO: psuedo-randomize the order
-        const postDivArr = this.props.postArr.map((post, idx) => {
+        const postDivArr = this.state.postArr.map((post, idx) => {
             return (
                 <div key={idx} className={styles.postListDiv}>
                     <PostList
@@ -149,7 +122,7 @@ class UserPage extends Component {
                             authUserId={this.state.authUserId}
                             userId={this.state.userId}
                             username={this.props.match.params.username}
-                            shareCnt={this.props.postArr.length}
+                            shareCnt={this.state.postArr.length}
                         />
                         <div className={styles.userPageContentDiv}>
                             {postUploadDiv}
@@ -183,14 +156,16 @@ const mapStateToProps = state => {
         authUserInfo: state.auth.authUserInfo,
         isAuthenticated: state.auth.isAuthenticated,
         postArr: state.user.postArr,
-        postLoaded: state.user.postLoaded
+        postLoaded: state.user.postLoaded,
+        newPostId: state.upload.newPostId
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
         onLoadUser: (userId) => dispatch(loadUser(userId)),
-        onLoadUserPosts: (userId) => dispatch(loadUserPosts(userId))
+        onLoadUserPosts: (userId) => dispatch(loadUserPosts(userId)),
+        onLoadUserUpdatedPosts: (postId, postArr) => dispatch(loadUserUpdatedPosts(postId, postArr))
     };
 };
 

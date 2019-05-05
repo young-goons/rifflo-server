@@ -1,7 +1,7 @@
 import * as actionTypes from '../actions/actionTypes';
 
 const initialState = {
-    postArr: [],
+    postArr: null,
     postLoaded: false,
     error: null
 };
@@ -18,7 +18,7 @@ const loadUserPostsSuccess = (state, action) => {
 const loadUserPostsFail = (state, action) => {
     return {
         ...state,
-        postArr: [],
+        postArr: null,
         postLoaded: false,
         error: action.error
     };

@@ -13,10 +13,9 @@ export const LOAD_FEED_POSTS_SUCCESS = 'LOAD_FEED_POSTS_SUCCESS'; // load the ac
 export const LOAD_FEED_POSTS_FAIL = 'LOAD_FEED_POSTS_FAIL';
 
 // action types for uploading posts (postContent, tags, and song)
-export const UPLOAD_SONG_SUCCESS = 'UPLOAD_SONG_SUCCESS';
-export const UPLOAD_SONG_FAIL = 'UPLOAD_SONG_FAIL';
-export const POST_SHARE_SUCCESS = 'POST_SHARE_SUCCESS';
-export const POST_SHARE_FAIL = 'POST_SHARE_FAIL';
+export const UPLOAD_SONG = 'UPLOAD_SONG';
+export const SHARE_POST_SUCCESS = 'SHARE_POST_SUCCESS';
+export const SHARE_POST_FAIL = 'SHARE_POST_FAIL';
 
 // action types for user page on loading posts
 // postArr needs to be shared with the post editor

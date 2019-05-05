@@ -20,7 +20,7 @@ class SongUploader extends Component {
             track: '',
             artist: '',
             album: '',
-            year: '',
+            releaseDate: '',
             youtubeUrl: '',
             soundcloudUrl: '',
             bandcampUrl: '',
@@ -58,9 +58,9 @@ class SongUploader extends Component {
         });
     };
 
-    yearInputHandler = (event) => {
+    releaseDateInputHandler = (event) => {
         this.setState({
-            songInfo: { ...this.state.songInfo, year: event.target.value }
+            songInfo: { ...this.state.songInfo, releaseDate: event.target.value }
         });
     };
 
@@ -84,7 +84,7 @@ class SongUploader extends Component {
 
     termsCheckHandler = () => {
         this.setState({
-            songInfo: { ...this.state.songInfo, termsChecked: !this.state.termsChecked }
+            songInfo: { ...this.state.songInfo, termsChecked: !this.state.songInfo.termsChecked }
         });
     };
 
@@ -218,7 +218,7 @@ class SongUploader extends Component {
                            onTimeUpdate={this.initProgressBar} preload="metadata"/>
                 </div>
             );
-            if (this.state.audioLength) { // when metadata is loaded
+            if (this.state.audioLength && this.state.src) { // when metadata is loaded
                 const clipLengthStr = getEndTimeStr(this.state.audioLength);
                 progressDiv = (
                     <div>
@@ -263,8 +263,8 @@ class SongUploader extends Component {
                     artistInputHandler={this.artistInputHandler}
                     album={this.state.songInfo.album}
                     albumInputHandler={this.albumInputHandler}
-                    year={this.state.songInfo.year}
-                    yearInputHandler={this.yearInputHandler}
+                    releaseDate={this.state.songInfo.releaseDate}
+                    releaseDateInputHandler={this.releaseDateInputHandler}
                     youtubeUrl={this.state.songInfo.youtubeUrl}
                     youtubeUrlHandler={this.youtubeUrlHandler}
                     soundcloudUrl={this.state.songInfo.soundcloudUrl}

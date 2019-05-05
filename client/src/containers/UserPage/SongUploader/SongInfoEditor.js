@@ -43,12 +43,12 @@ class SongInfoEditor extends Component {
                 </Grid.Row>
                 <Grid.Row className={styles.inputRow}>
                     <Grid.Column width="3" verticalAlign="middle" textAlign="center" className={styles.labelColumn}>
-                        <span className={styles.labelSpan}>Year</span>
+                        <span className={styles.labelSpan}>Date</span>
                     </Grid.Column>
                     <Grid.Column width="12" className={styles.inputColumn}>
                         <Input fluid size="small" type="text" className={styles.songInfoInput}
-                               placeholder="Year of Song Release"
-                               value={this.props.year} onChange={this.props.yearInputHandler}/>
+                               placeholder="Date of Song Release (MM.DD.YYYY)"
+                               value={this.props.releaseDate} onChange={this.props.releaseDateInputHandler}/>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row className={styles.inputRow}>
