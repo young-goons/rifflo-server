@@ -12,14 +12,16 @@ class PostEditor extends Component {
         content: '',
         tags: '',
         isSongUploaded: false,
-        songUploadWarning: false
+        songUploadWarning: false,
+        modalOpen: false
     };
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.songFile && nextProps.songInfo.termsChecked) {
             this.setState({
                 isSongUploaded: true,
-                songUploadWarning: false
+                songUploadWarning: false,
+                modalOpen: false
             });
         }
     }
@@ -36,6 +38,14 @@ class PostEditor extends Component {
         });
     };
 
+    handleOpen = () => {
+        this.setState({modalOpen: true});
+    };
+
+    handleClose = () => {
+        this.setState({modalOpen: false});
+    };
+
     // TODO: error handling (if the content is too long)
     sharePostHandler = () => {
         if (this.state.isSongUploaded) {
@@ -50,22 +60,75 @@ class PostEditor extends Component {
     render() {
         const browseButton = (
             <div className={styles.browseButtonDiv}>
-                <Button>Browse</Button>
+                <Button onClick={this.handleOpen}>Browse</Button>
+            </div>
+        );
+        const editButton = (
+            <div className={styles.editUploadButtonDiv}>
+                <Button onClick={this.handleOpen} size="mini">Edit Upload</Button>
             </div>
         );
         const songUploadModal = (
-            <Modal trigger={browseButton} size="tiny">
-                <SongUploader/>
+            <Modal trigger={ this.state.isSongUploaded ? editButton : browseButton } size="tiny"
+                   open={this.state.modalOpen} onClose={this.handleClose}>
+                <SongUploader />
             </Modal>
         );
 
+        let songUploadDiv = (
+            <div className={styles.uploadSongDiv}>
+                <div className={styles.browseHeaderDiv}>Upload Your Song (.mp3, .wav)</div>
+                { songUploadModal }
+            </div>
+        );
+        if (this.state.isSongUploaded && this.props.songInfo) {
+            const songInfoDiv = (
+                <Grid>
+                    <Grid.Row className={styles.songInfoFirstRow}>
+                        <Grid.Column width="5" textAlign="left" className={styles.songInfoLabelColumn}>
+                            Track
+                        </Grid.Column>
+                        <Grid.Column width="11" textAlign="left" className={styles.songInfoColumn}>
+                            {this.props.songInfo.track}
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row className={styles.songInfoRow}>
+                        <Grid.Column width="5" textAlign="left" className={styles.songInfoLabelColumn}>
+                            Artist
+                        </Grid.Column>
+                        <Grid.Column width="11" textAlign="left" className={styles.songInfoColumn}>
+                            {this.props.songInfo.artist}
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row className={styles.songInfoRow}>
+                        <Grid.Column width="5" textAlign="left" className={styles.songInfoLabelColumn}>
+                            Clip Start
+                        </Grid.Column>
+                        <Grid.Column width="11" textAlign="left" className={styles.songInfoColumn}>
+                            {this.props.clipRange.startTime.toFixed(2)}
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row className={styles.songInfoRow}>
+                        <Grid.Column width="5" textAlign="left" className={styles.songInfoLabelColumn}>
+                            Clip End
+                        </Grid.Column>
+                        <Grid.Column width="11" textAlign="left" className={styles.songInfoColumn}>
+                            {this.props.clipRange.endTime.toFixed(2)}
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
+            );
+            songUploadDiv = (
+                <div className={styles.uploadSongDiv}>
+                    { songInfoDiv }
+                    { songUploadModal }
+                </div>
+            )
+        }
         return (
             <Grid columns="2">
                 <Grid.Column>
-                    <div className={styles.uploadSongDiv}>
-                        <div className={styles.browseHeaderDiv}>Upload Your Song (.mp3, .wav)</div>
-                        { songUploadModal }
-                    </div>
+                    { songUploadDiv }
                 </Grid.Column>
                 <Grid.Column>
                     <Grid.Row>
@@ -101,7 +164,8 @@ const mapStateToProps = state => {
     return {
         songFile: state.upload.songFile,
         clipRange: state.upload.clipRange,
-        songInfo: state.upload.songInfo
+        songInfo: state.upload.songInfo,
+        newPostId: state.upload.newPostId
     };
 };
 

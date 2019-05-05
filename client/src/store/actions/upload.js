@@ -56,22 +56,5 @@ export const sharePost = (songFile, clipRange, songInfo, content, tags) => {
                 alert(error);
                 dispatch(postShareFail(error));
             });
-        // axios({method: 'POST', url: url, data: formData, headers: requestHeaders})
-        //     .then(response => {
-        //         newPostId = response.data.postId;
-        //         url = "http://127.0.0.1:5000/post/" + newPostId;
-        //         return axios({method: 'GET', url: url, headers: requestHeaders});
-        //     })
-        //     .then(response => {
-        //         this.setState({
-        //             postArr: [...this.state.postArr, response.data.posts[newPostId]]
-        //         });
-        //         dispatch(postShareSuccess());
-        //     })
-        //     .catch(error => {
-        //         console.log(error);
-        //         alert(error);
-        //         dispatch(postShareFail(error));
-        //     })
     };
 };
