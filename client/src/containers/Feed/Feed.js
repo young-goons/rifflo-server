@@ -106,7 +106,7 @@ class Feed extends Component {
 
         const postIdArr = this.state.feedPostIdArr.slice(this.state.feedPostIdx,
             this.state.feedPostIdx + this.numPosts);
-        let url = "http://127.0.0.1:5000/posts/" + postIdArr.join(',');
+        let url = "http://127.0.0.1:5000/post/" + postIdArr.join(',');
         const postArr = [];
         axios({method: 'GET', url: url})
             .then(response => {

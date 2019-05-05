@@ -113,11 +113,6 @@
     margin-right: 23px;
 }
 
-.buttonRow {
-    margin-top: -15px;
-    margin-bottom: 15px;
-}
-.buttonColumn {
-    margin-left: 25px;
-    margin-right: 25px;
+.buttonDiv {
+    margin: 10px 25px 15px;
 }

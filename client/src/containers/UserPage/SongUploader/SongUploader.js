@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { FilePond } from 'react-filepond';
-import { Input, Icon } from 'semantic-ui-react';
+import { Input, Icon, Button } from 'semantic-ui-react';
 
+import { uploadSong } from '../../../store/actions/upload';
 import { getEndTimeStr, getCurrentTimeStr,
     getCurrentTimeFloatStr, convertTimeStrToTime } from "../../../shared/musicUtils";
 import { DEFAULT_CLIP_LENGTH } from "../../../shared/config";
+import SongInfoEditor from "./SongInfoEditor";
 import styles from './SongUploader.module.css';
 
 // TODO: make slider to help changing start point
@@ -13,8 +16,18 @@ import styles from './SongUploader.module.css';
 
 class SongUploader extends Component {
     state = {
+        songInfo: {
+            track: '',
+            artist: '',
+            album: '',
+            year: '',
+            youtubeUrl: '',
+            soundcloudUrl: '',
+            bandcampUrl: '',
+            termsChecked: false
+        },
         src: null,
-        value: null,
+        songFile: null,
         startTime: 0,
         startTimeStr: '00:00.00',
         endTime: 15,
@@ -27,13 +40,62 @@ class SongUploader extends Component {
 
     audioRef = React.createRef();
 
+    trackInputHandler = (event) => {
+        this.setState({
+            songInfo: { ...this.state.songInfo, track: event.target.value }
+        });
+    };
+
+    artistInputHandler = (event) => {
+        this.setState({
+            songInfo: { ...this.state.songInfo, artist: event.target.value }
+        });
+    };
+
+    albumInputHandler = (event) => {
+        this.setState({
+            songInfo: { ...this.state.songInfo, album: event.target.value }
+        });
+    };
+
+    yearInputHandler = (event) => {
+        this.setState({
+            songInfo: { ...this.state.songInfo, year: event.target.value }
+        });
+    };
+
+    youtubeUrlHandler = (event) => {
+        this.setState({
+            songInfo: { ...this.state.songInfo, youtubeUrl: event.target.value }
+        });
+    };
+
+    soundcloudUrlHandler = (event) => {
+        this.setState({
+            songInfo: { ...this.state.songInfo, soundCloudUrl: event.target.value }
+        });
+    };
+
+    bandcampUrlHandler = (event) => {
+        this.setState({
+            songInfo: { ...this.state.songInfo, bandCampUrl: event.target.value }
+        });
+    };
+
+    termsCheckHandler = () => {
+        this.setState({
+            songInfo: { ...this.state.songInfo, termsChecked: !this.state.termsChecked }
+        });
+    };
+
     uploadFileHandler = (event) => {
         if(window.FileReader){
             const file = event.target.files[0];
             const reader = new FileReader();
             reader.onload = (r) => {
                 this.setState({
-                    src: r.target.result
+                    src: r.target.result,
+                    songFile: file
                 });
                 this.audioRef.current.onloadedmetadata = () => {
                     const audioLength = this.audioRef.current.duration;
@@ -41,9 +103,7 @@ class SongUploader extends Component {
                 }
             };
             reader.readAsDataURL(file);
-            this.setState({value: reader});
-        }
-        else {
+        } else {
             alert('Sorry, your browser does\'nt support for preview');
         }
 
@@ -130,6 +190,25 @@ class SongUploader extends Component {
         });
     };
 
+    uploadClickHandler = () => {
+        console.log(this.state.songInfo);
+        if (!this.state.songInfo.track || !this.state.songInfo.artist) {
+            alert("Fill out song info")
+        } else if (!this.state.src || !this.state.audioLength) {
+            alert("Upload an mp3 file")
+        } else if (this.state.endTime - this.state.startTime > 15 && this.state.endTime - this.state.startTime < 12) {
+            alert("Clip length must be between 12 to 15 seconds");
+        } else if (!this.state.songInfo.termsChecked) {
+            alert("Terms of use not checked");
+        } else { // upload song
+            const clipRange = {
+                startTime: this.state.startTime,
+                endTime: this.state.endTime
+            };
+            this.props.onUploadSong(this.state.songFile, clipRange, this.state.songInfo);
+        }
+    };
+
     render() {
         let audioDiv, progressDiv;
         if (this.state.src) {
@@ -177,13 +256,41 @@ class SongUploader extends Component {
                 <div className={styles.audioPlayDiv}>
                     { progressDiv }
                 </div>
+                <SongInfoEditor
+                    track={this.state.songInfo.track}
+                    trackInputHandler={this.trackInputHandler}
+                    artist={this.state.songInfo.artist}
+                    artistInputHandler={this.artistInputHandler}
+                    album={this.state.songInfo.album}
+                    albumInputHandler={this.albumInputHandler}
+                    year={this.state.songInfo.year}
+                    yearInputHandler={this.yearInputHandler}
+                    youtubeUrl={this.state.songInfo.youtubeUrl}
+                    youtubeUrlHandler={this.youtubeUrlHandler}
+                    soundcloudUrl={this.state.songInfo.soundcloudUrl}
+                    soundcloudUrlHandler={this.soundcloudUrlHandler}
+                    bandcampUrl={this.state.songInfo.bandcampUrl}
+                    bandcampUrlHandler={this.bandcampUrlHandler}
+                    termsChecked={this.state.songInfo.termsChecked}
+                    termsCheckHandler={this.termsCheckHandler}
+                />
+                <div className={styles.buttonDiv}>
+                    <Button color="orange" fluid size="small" onClick={this.uploadClickHandler}>
+                        Upload
+                    </Button>
+                </div>
             </div>
         )
     }
 }
 
-export default SongUploader
+const mapDispatchToProps = dispatch => {
+    return {
+        onUploadSong: (songFile, clipRange, songInfo) => dispatch(uploadSong(songFile, clipRange, songInfo))
+    };
+};
+
+export default connect(null, mapDispatchToProps)(SongUploader);
 
 // references
-// Basic audio loading: https://jsfiddle.net/vu4vrLo2/1/
-// Progress bar: https://m.dotdev.co/how-to-build-an-audio-player-with-html5-and-the-progress-element-487cbbbaebfc
+// http://jsfiddle.net/lun471k/KfzM6/

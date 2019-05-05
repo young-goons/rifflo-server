@@ -5,68 +5,7 @@ import styles from './SongUploader.module.css';
 
 // TODO: fill out the info automatically
 
-class SongInfoUploader extends Component {
-    state = {
-        track: '',
-        artist: '',
-        album: '',
-        year: '',
-        youtubeUrl: '',
-        soundCloudUrl: '',
-        bandCampUrl: '',
-        termsChecked: false
-    };
-
-    trackInputHandler = (event) => {
-        this.setState({
-            track: event.target.value
-        });
-    };
-
-    artistInputHandler = (event) => {
-        this.setState({
-            artist: event.target.value
-        });
-    };
-
-    albumInputHandler = (event) => {
-        this.setState({
-            album: event.target.value
-        });
-    };
-
-    yearInputHandler = (event) => {
-        this.setState({
-            year: event.target.value
-        });
-    };
-
-    youtubeUrlHandler = (event) => {
-        this.setState({
-            youtubeUrl: event.target.value
-        });
-    };
-
-    soundCloudUrlHandler = (event) => {
-        this.setState({
-            soundCloudUrl: event.target.value
-        });
-    };
-
-    bandCampUrlHandler = (event) => {
-        this.setState({
-            bandCampUrl: event.target.value
-        });
-    };
-
-    termsCheckHandler = () => {
-        this.setState({termsChecked: !this.state.termsChecked})
-    }
-
-    uploadClickHandler = () => {
-
-    };
-
+class SongInfoEditor extends Component {
     render() {
         return (
             <Grid className={styles.songInfoInputDiv}>
@@ -76,9 +15,9 @@ class SongInfoUploader extends Component {
                     </Grid.Column>
                     <Grid.Column width="12" className={styles.inputColumn}>
                         <Input fluid size="small" type="text" className={styles.songInfoInput}
-                               error={this.state.track === '' ? true : false}
+                               error={this.props.track === '' ? true : false}
                                placeholder="Name of the Track (Required)"
-                               value={this.state.track} onChange={this.trackInputHandler}/>
+                               value={this.props.track} onChange={this.props.trackInputHandler}/>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row className={styles.inputRow}>
@@ -87,9 +26,9 @@ class SongInfoUploader extends Component {
                     </Grid.Column>
                     <Grid.Column width="12" className={styles.inputColumn}>
                         <Input fluid size="small" type="text" className={styles.songInfoInput}
-                               error={this.state.track === '' ? true : false}
+                               error={this.props.artist === '' ? true : false}
                                placeholder="Name of the Artist (Required)"
-                               value={this.state.artist} onChange={this.artistInputHandler}/>
+                               value={this.props.artist} onChange={this.props.artistInputHandler}/>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row className={styles.inputRow}>
@@ -99,7 +38,7 @@ class SongInfoUploader extends Component {
                     <Grid.Column width="12" className={styles.inputColumn}>
                         <Input fluid size="small" type="text" className={styles.songInfoInput}
                                placeholder="Name of the Album"
-                               value={this.state.album} onChange={this.albumInputHandler}/>
+                               value={this.props.album} onChange={this.props.albumInputHandler}/>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row className={styles.inputRow}>
@@ -109,7 +48,7 @@ class SongInfoUploader extends Component {
                     <Grid.Column width="12" className={styles.inputColumn}>
                         <Input fluid size="small" type="text" className={styles.songInfoInput}
                                placeholder="Year of Song Release"
-                               value={this.state.year} onChange={this.yearInputHandler}/>
+                               value={this.props.year} onChange={this.props.yearInputHandler}/>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row className={styles.inputRow}>
@@ -119,7 +58,7 @@ class SongInfoUploader extends Component {
                     <Grid.Column width="12" className={styles.inputColumn}>
                         <Input fluid size="small" type="text" className={styles.songInfoInput}
                                placeholder="Youtube URL of the Song"
-                               value={this.state.youtubeUrl} onChange={this.youtubeUrlHandler}/>
+                               value={this.props.youtubeUrl} onChange={this.props.youtubeUrlHandler}/>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row className={styles.inputRow}>
@@ -129,7 +68,7 @@ class SongInfoUploader extends Component {
                     <Grid.Column width="12" className={styles.inputColumn}>
                         <Input fluid size="small" type="text" className={styles.songInfoInput}
                         placeholder="SoundCloud URL of the Song"
-                        value={this.state.soundCloudUrl} onChange={this.soundCloudUrlHandler}/>
+                        value={this.props.soundCloudUrl} onChange={this.props.soundcloudUrlHandler}/>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row className={styles.inputRow}>
@@ -139,7 +78,7 @@ class SongInfoUploader extends Component {
                     <Grid.Column width="12" className={styles.inputColumn}>
                         <Input fluid size="small" type="text" className={styles.songInfoInput}
                                placeholder="BandCamp URL of the Song"
-                               value={this.state.bandCampUrl} onChange={this.bandCampUrlHandler}/>
+                               value={this.props.bandCampUrl} onChange={this.props.bandcampUrlHandler}/>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row className={styles.inputRow}>
@@ -151,15 +90,8 @@ class SongInfoUploader extends Component {
                     <Grid.Column className={styles.labelColumn}>
                         <Checkbox label="I agree that the tracks have been lawfully acquired,
                                         are not bootlegged or pre-release, and are properly identified"
-                                  onChange={this.termsCheckHandler} checked={this.state.termsChecked}
+                                  onChange={this.props.termsCheckHandler} checked={this.props.termsChecked}
                                   className={styles.termsCheckbox}/>
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row className={styles.buttonRow}>
-                    <Grid.Column className={styles.buttonColumn}>
-                        <Button color="orange" fluid size="small" onClick={this.uploadClickHandler}>
-                            Upload
-                        </Button>
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
@@ -167,4 +99,4 @@ class SongInfoUploader extends Component {
     }
 }
 
-export default SongInfoUploader;
+export default SongInfoEditor;

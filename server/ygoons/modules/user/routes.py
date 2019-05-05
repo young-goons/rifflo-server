@@ -130,52 +130,6 @@ def get_user_feed():
     return make_response(jsonify({'postIdArr': post_id_list}), 200)
 
 
-@blueprint.route('/user/upload/song', methods=['POST'])
-@jwt_required
-def upload_song():
-    pass
-
-
-@blueprint.route('/user/upload/post', methods=['POST'])
-@jwt_required
-def upload_post():
-    """
-    Uploads the post whose content is received from user who is identified through jwt token
-    """
-    user = get_jwt_identity()
-    user_id = user['userId']
-    data = json.loads(request.data)
-    content = data['content']
-    tags = data['tags']
-
-    # temporary data for now
-    clip_path = ''
-    song_name = "abc"
-    artist = "def"
-
-    with flask.g.pymysql_db.cursor() as cursor:
-        sql = "INSERT INTO tbl_song_info (song_name, artist) " \
-              "VALUES (%s, %s)"
-        cursor.execute(sql, (song_name, artist))
-        song_id = cursor.lastrowid
-        post_id = None
-        if song_id:
-            sql = "INSERT INTO tbl_post (user_id, content, tags, song_id, clip_path) " \
-                  "VALUES (%s, %s, %s, %s, %s)"
-            cursor.execute(sql, (user_id, content, tags, song_id, clip_path))
-            post_id = cursor.lastrowid
-
-    if song_id and post_id:
-        flask.g.pymysql_db.commit()
-        return make_response(jsonify({
-            'postId': post_id,
-            'songId': song_id
-        }), 200)
-    else:
-        return make_response(jsonify({'msg': 'Error uploading post and song'}),
-                             400)
-
-
 # TODO: error-handling for insert? make sure insert is actually executed
 #       disable following yourself
 @blueprint.route('/user/follow/<int:followed_user_id>', methods=['POST'])
