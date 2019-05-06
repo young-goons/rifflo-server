@@ -1,0 +1,23 @@
+This is a file to store the database schemas for the backend.
+The format is as follows.
+
+table(_primary-key_, column1, column2, ...)
+* column1 is a foreign key to table2.column2
+
+The primary key columns are indicated by enclosing the attribute names in _ characters.
+Foreign keys (or other notable properties) are indicated under each schema.
+
+-------------------------------------------------------
+
+tbl_user(_user_id_, username, email, salt, hashed_password)
+* profile_picture is stored in another storage
+
+tbl_userinfo(_user_id, following_count, follower_count, profile_picture_path)
+* user_id is a foreign key to user.user_id
+
+tbl_post(_post_id_, user_id, date, content, tags, song_id, clip_path, like_count, comment_count)
+* clip_id is a foreign key to song.song_id
+* user_id is a foreign key to user.user_id
+* clip is stored in another storage
+
+tbl_song_info(_song_id_, artist, release_date, album)
