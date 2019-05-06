@@ -184,3 +184,23 @@ CREATE TABLE tbl_bookmark
       ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- Create user play history table
+CREATE TABLE tbl_play_history
+(
+    user_id    INT,
+    post_id    INT,
+    play_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY(user_id, post_id, play_date),
+
+    FOREIGN KEY(user_id) REFERENCES tbl_user(user_id)
+      ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(post_id) REFERENCES tbl_post(post_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Create user stop history table (songs that user did not hear until the end)
+(
+
+
+)

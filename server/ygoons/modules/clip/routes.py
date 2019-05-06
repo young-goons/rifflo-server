@@ -22,10 +22,6 @@ def get_clip(post_id):
     if query_result is not None:
         file_name = query_result[0].split('/')[-1]
         file_path = '/'.join(query_result[0].split('/')[:-1])
-        mp3_file = open(query_result[0], 'rb').read()
-        return send_file(query_result[0], mimetype="audio/mp3")
-        # response = make_response(mp3_file)
-        # response.headers.set('Content-Type', 'audio/mp3')
-        # return response
+        return send_from_directory(file_path, file_name, mimetype="audio/mpeg")
     else:
         return make_response(jsonify({'msg': 'Post id not found'}), 200)

@@ -93,6 +93,17 @@ class Post extends Component {
     };
 
     onAudioEnd = () => {
+        const url = "http://127.0.0.1:5000/user/history/played/" + this.props.postId;
+        const requestHeaders = {
+            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken'),
+        };
+        axios({method: 'POST', url: url, headers: requestHeaders})
+            .then(response => {
+                console.log(response.data);
+            })
+            .catch(error => {
+                console.log(error);
+            });
         this.setState({
             isPlaying: false,
             isPlayed: true,

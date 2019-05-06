@@ -144,9 +144,8 @@ def user_follow(followed_user_id):
     with flask.g.pymysql_db.cursor() as cursor:
         sql = 'INSERT INTO tbl_follow (followed_id, follower_id) ' \
               'VALUES (%s, %s)'
-        affected_row_cnt = cursor.execute(sql,
-                                          (followed_user_id, curr_user_id))
-    if affected_row_cnt == 1:
+        row_cnt = cursor.execute(sql, (followed_user_id, curr_user_id))
+    if row_cnt == 1:
         flask.g.pymysql_db.commit()
         return make_response(jsonify({'success': True}), 200)
     else:
@@ -210,3 +209,18 @@ def get_followers(user_id):
     for row in query_result:
         follower_list.append(row[0])
     return make_response(jsonify({'followerArr': follower_list}), 200)
+
+
+@blueprint.route('/user/history/played/<int:post_id>', methods=['POST'])
+@jwt_required
+def upload_play_history(post_id):
+    user_id = get_jwt_identity()['userId']
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'INSERT INTO tbl_play_history (user_id, post_id)' \
+              'VALUES (%s, %s)'
+        row_cnt = cursor.execute(sql, (user_id, post_id))
+    if row_cnt == 1:
+        flask.g.pymysql_db.commit()
+        return make_response(jsonify({'success': True}), 400)
+    else:
+        return make_response(jsonify({'success': False}), 200)
