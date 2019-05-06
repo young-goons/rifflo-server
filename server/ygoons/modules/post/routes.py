@@ -51,7 +51,7 @@ def get_posts(id_list):
             'songId': row[6],
             'clipPath': row[7],
             'songName': row[8],
-            'artist': row[9]
+            'artist': row[9],
         }
         post_dict[row[0]] = post_data
     print(post_dict)
@@ -117,7 +117,7 @@ def upload_post():
             post_id = cursor.lastrowid
 
     if song_id and post_id:
-        flask.g.pymysql_db.commit()
+        # flask.g.pymysql_db.commit()
         return make_response(jsonify({
             'postId': post_id,
             'songId': song_id

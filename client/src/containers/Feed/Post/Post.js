@@ -5,6 +5,7 @@ import axios from 'axios';
 import styles from './Post.module.css';
 import profileImg from '../../../default_profile_img.png';
 import { convertDateToStr } from '../../../shared/dateUtils';
+import {getCurrentTimeStr} from "../../../shared/musicUtils";
 
 class Post extends Component {
     state = {
@@ -14,8 +15,14 @@ class Post extends Component {
         commentCnt: null,
         isFollowed: null,
         followerCnt: null,
-        commentPreviewArr: null
+        commentPreviewArr: null,
+        audioReady: false,
+        isPlayed: false,
+        isPlaying: false,
+        progressPercent: 0
     };
+
+    audioRef = React.createRef();
 
     componentDidMount() {
         // get the list of ids of users who liked the post
@@ -38,7 +45,7 @@ class Post extends Component {
         }
         if (this.state.commentCnt === null && this.state.commentPreviewArr === null) {
             url = "http://127.0.0.1:5000/post/" + this.props.postId + "/comment";
-            axios({method: 'GET', url: url, headers: headers})
+            axios({url: url, headers: headers})
                 .then(response => {
                     this.setState({
                         commentCnt: response.data.commentCnt,
@@ -49,6 +56,20 @@ class Post extends Component {
                     alert(error);
                 })
         }
+        if (!this.state.audioSrc) {
+            url = "http://127.0.0.1:5000/clip/" + this.props.postId;
+            const requestHeaders = {
+                'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken'),
+            };
+            axios({method: 'GET', url: url, headers: requestHeaders})
+                .then(response => {
+                    this.setState({audioReady: true});
+                })
+                .catch(error => {
+                    console.log(error);
+                    alert(error);
+                });
+        }
     }
 
     commentInputHandler = (event) => {
@@ -58,8 +79,35 @@ class Post extends Component {
     };
 
     songPlayHandler = () => {
-        alert("song played");
+        if (!this.state.isPlayed) {
+            this.audioRef.current.play();
+            this.setState({isPlaying: true});
+        } else {
+            alert("Clip has been already played");
+        }
     };
+
+    songPauseHandler = () => {
+        this.audioRef.current.pause();
+        this.setState({isPlaying: false});
+    };
+
+    onAudioEnd = () => {
+        this.setState({
+            isPlaying: false,
+            isPlayed: true,
+            progressPercent: 1
+        })
+    };
+
+    initProgressBar = () => {
+        const player = this.audioRef.current;
+        this.setState({
+            progressPercent: player.currentTime / player.duration
+        });
+    };
+
+
 
     likeClickHandler = () => {
         // add like functionality
@@ -150,6 +198,24 @@ class Post extends Component {
             }
         }
 
+        let songInfoSpan = null;
+        if (this.state.isPlayed) {
+            songInfoSpan = (
+                <Grid.Column>
+                    <span>{this.props.songName}</span>
+                    <span className={styles.bySpan}>by</span>
+                    <span>{this.props.artist}</span>
+                </Grid.Column>
+            );
+        }
+
+        let audioDiv = null;
+        if (this.state.audioReady) {
+            audioDiv = <audio src={"http://127.0.0.1:5000/clip/" + this.props.postId}
+                              ref={this.audioRef} onTimeUpdate={this.initProgressBar}
+                              onEnded={this.onAudioEnd}/>;
+        }
+
         return (
             <Container className={styles.postDiv}>
                 <div className={styles.postHeaderDiv}>
@@ -171,21 +237,23 @@ class Post extends Component {
                                 </div>
                             </Grid.Row>
                             <Grid.Row className={styles.songInfoRow}>
-                                <Grid.Column>
-                                    <span>SongName</span> <span>by</span> <span>Artist</span>
-                                </Grid.Column>
+                                { songInfoSpan }
                             </Grid.Row>
                         </Grid.Column>
                     </Grid>
                     <Grid padded>
                         <Grid.Row className={styles.songPlayRow}>
+                            { audioDiv }
                             <Grid.Column width={2}>
-                                <Icon name="play circle outline" size="big" className={styles.playIcon}
-                                    onClick={this.songPlayHandler}
-                                />
+                                { this.state.isPlaying || this.state.isPlayed ?
+                                    <Icon name="pause" size="big" onClick={this.songPauseHandler}/> :
+                                    <Icon name="play" size="big" onClick={this.songPlayHandler}/>
+                                }
                             </Grid.Column>
                             <Grid.Column width={14} verticalAlign="middle" className={styles.playBarColumn}>
-                                Play Bar
+                                <div className={styles.progressDiv}>
+                                    <progress value={this.state.progressPercent} max="1" className={styles.progressBar}/>
+                                </div>
                             </Grid.Column>
                         </Grid.Row>
                         <Grid.Row className={styles.tagsRow}>

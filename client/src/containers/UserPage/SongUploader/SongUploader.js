@@ -224,7 +224,8 @@ class SongUploader extends Component {
                     <div>
                         { this.state.isPlaying ?
                             <Icon name="pause" size="big" onClick={this.pauseClickHandler}/> :
-                            <Icon name="play" size="big" onClick={this.playClickHandler}/> }
+                            <Icon name="play" size="big" onClick={this.playClickHandler}/>
+                        }
                         <progress value={this.state.progressPercent} max="1" className={styles.progressBar}
                                   onClick={this.onProgressBarClick}/>
                         <br/>
