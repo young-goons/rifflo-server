@@ -20,6 +20,10 @@ DROP TABLE IF EXISTS tbl_post;
 DROP TABLE IF EXISTS tbl_song_info;
 DROP TABLE IF EXISTS tbl_user_info;
 DROP TABLE IF EXISTS tbl_user;
+DROP TABLE IF EXISTS tbl_user_svd;
+DROP TABLE IF EXISTS tbl_post_svd;
+DROP TABLE IF EXISTS tbl_user_bias;
+DROP TABLE IF EXISTS tbl_post_bias;
 
 
 -- Create user table.
@@ -182,3 +186,36 @@ CREATE TABLE tbl_bookmark
       ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE tbl_user_svd
+(
+    user_id INT,
+    latent_idx INT,
+    value DOUBLE,
+
+    PRIMARY KEY(user_id, latent_idx)
+);
+
+CREATE TABLE tbl_post_svd
+(
+    post_id INT,
+    latent_idx INT,
+    value DOUBLE,
+
+    PRIMARY KEY(post_id, latent_idx)
+);
+
+CREATE TABLE tbl_user_bias
+(
+    user_id INT,
+    user_bias DOUBLE,
+
+    PRIMARY KEY(user_id)
+);
+
+CREATE TABLE tbl_post_bias
+(
+    post_id INT,
+    post_bias DOUBLE,
+
+    PRIMARY KEY(post_id)
+);
