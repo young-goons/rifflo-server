@@ -1,6 +1,6 @@
 # Usage
 
-Run "app.py" to start the server
+Run "run.py" to start the server
 
 # Resources
 
