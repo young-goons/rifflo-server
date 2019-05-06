@@ -51,8 +51,7 @@ export const loadUser = (user_id) => {
         axios({method: 'GET', url: url, headers: headers})
             .then(response => {
                 dispatch(loadUserInfo(response.data.user));
-                dispatch(authSuccess());
-                console.log("User loaded");
+                console.log("User " + user_id + " loaded");
             })
             .catch(error => {
                 alert(error);
@@ -86,7 +85,7 @@ export const auth = (email, password) => {
             .then(response => {
                 if (response) {
                     dispatch(loadUserInfo(response.data.user));
-                    dispatch(authSuccess());
+                    // dispatch(authSuccess());
                     console.log(response.data.user)
                 }
             })

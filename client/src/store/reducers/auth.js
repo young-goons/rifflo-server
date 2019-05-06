@@ -6,7 +6,7 @@ const initialState = {
     error: null,
     wrongPassword: false,
     authRedirectPath: '/',
-    userInfo: null
+    authUserInfo: null
 };
 
 const authSuccess = (state, action) => {
@@ -23,7 +23,7 @@ const authFail = (state, action) => {
         ...state,
         isAuthenticated: false,
         error: action.error,
-        userInfo: null
+        authUserInfo: null
     };
 };
 
@@ -32,7 +32,7 @@ const wrongPassword = (state, action) => {
         ...state,
         wrongPassword: true,
         isAuthenticated: false,
-        userInfo: null,
+        authUserInfo: null,
     }
 };
 
@@ -51,16 +51,18 @@ const signOut = (state, action) => {
         error: action.error,
         isAuthenticating: false,
         isAuthenticated: false,
-        userInfo: null,
+        authUserInfo: null,
         wrongPassword: null,
         authRedirectPath: '/',
     };
 };
 
+// assume user info is loaded only when authentication is successful
 const loadUserInfo = (state, action) => {
     return {
         ...state,
-        userInfo: action.userInfo
+        authUserInfo: action.userInfo,
+        isAuthenticated: true
     };
 };
 

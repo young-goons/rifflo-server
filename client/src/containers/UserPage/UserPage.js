@@ -5,19 +5,22 @@ import axios from 'axios';
 import { Grid, Column, Container } from 'semantic-ui-react';
 
 import SiteHeader from '../SiteHeader/SiteHeader';
+import AuthPage from '../AuthPage/AuthPage';
 import Post from '../Feed/Post/Post';
 import UserPageHeader from './UserPageHeader/UserPageHeader';
 import PostList from './SharedPost/SharedPost';
 import NoUserPage from '../../components/ErrorPage/NoUserPage/NoUserPage';
 import PostEditor from './PostEditor/PostEditor';
 import styles from './UserPage.module.css';
+import {loadUser} from "../../store/actions/auth";
 
 class UserPage extends Component {
     state = {
+        authUserId: this.props.authUserId,
+        authUserInfo: null,
         isUserPageLoaded: false,
         postArr: [],
         userId: null,
-        authUserInfo: null,
         isSignedOut: false,
         isFollowed: null,
         followerCnt: null,
@@ -26,24 +29,31 @@ class UserPage extends Component {
     };
 
     componentDidMount() {
-        // console.log("component did mount in UserPage.js")
-        // if (!this.state.isUserPageLoaded && this.props.userInfo) {
-        //     if (this.state.userId) {
-        //         console.log("loading user posts in componentDidMount");
-        //         this.loadUserPosts();
-        //     } else {
-        //         this.getUserId();
-        //     }
-        // }
+        if (this.state.authUserId) {
+            if (!this.props.authUserInfo) {
+                console.log("loading user info");
+                this.props.onLoadUser(this.state.authUserId);
+            }
+        }
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps);
-        if (nextProps.userInfo) {
-            this.setState({authUserInfo: nextProps.userInfo});
+        if (nextProps.authUserInfo) { // upon sign in
+            this.setState({authUserInfo: nextProps.authUserInfo});
             this.getUserId();
-        } else if (nextProps.isAuthenticated === false) { // signing out
-            this.setState({isSignedOut: true});
+        } else { // upon sign out
+            this.setState({
+                authUserId: null,
+                authUserInfo: null,
+                isUserPageLoaded: false,
+                postArr: [],
+                userId: null,
+                isSignedOut: false,
+                isFollowed: null,
+                followerCnt: null,
+                uploadContent: "",
+                uploadTags: ""
+            })
         }
     }
 
@@ -146,6 +156,7 @@ class UserPage extends Component {
     };
 
     render() {
+        let renderDiv;
         const username = this.props.match.params.username;
         // TODO: psuedo-randomize the order
         const postDivArr = this.state.postArr.map((post, idx) => {
@@ -160,37 +171,30 @@ class UserPage extends Component {
             );
         });
 
-        let siteHeader = null;
-        let postUploadDiv = <div></div>;
-        if (this.props.userInfo) {
-            siteHeader = <SiteHeader userInfo={this.props.userInfo}/>;
-            if (this.props.userInfo.username === username) {
-                postUploadDiv = (
-                    <PostEditor
-                        sharePostHandler={this.sharePostHandler}
-                        contentInput={this.state.uploadContent}
-                        tagsInput={this.state.uploadTags}
-                        contentInputHandler={this.contentInputHandler}
-                        tagsInputHandler={this.tagsInputHandler}
-                    />
-                );
-            }
-        }
-
-        // TODO: retrieve info of the owner of the user page
-        let userPageDiv;
-        if (this.state.userId === null) {
-            userPageDiv = <NoUserPage isAuthenticated={this.state.isAuthenticated}/>;
-        } else {
-            if (this.state.isSignedOut) {
-                userPageDiv = <Redirect to="/signin"/>
+        if (this.props.authUserInfo) {
+            let userPageDiv;
+            const siteHeader = <SiteHeader userInfo={this.props.authUserInfo}/>;
+            if (this.state.isUserPageLoaded && this.state.userId === null) {
+                userPageDiv = <NoUserPage/>;
             } else {
+                let postUploadDiv;
+                if (this.props.authUserInfo.username === username) {
+                    postUploadDiv = (
+                        <PostEditor
+                            sharePostHandler={this.sharePostHandler}
+                            contentInput={this.state.uploadContent}
+                            tagsInput={this.state.uploadTags}
+                            contentInputHandler={this.contentInputHandler}
+                            tagsInputHandler={this.tagsInputHandler}
+                        />
+                    );
+                }
                 userPageDiv = (
                     <div className={styles.userPageContainerDiv}>
                         <UserPageHeader
+                            authUserId={this.state.authUserId}
                             userId={this.state.userId}
                             username={this.props.match.params.username}
-                            ownPage={this.props.match.params.username === this.props.userInfo.username}
                             shareCnt={this.state.postArr.length}
                         />
                         <div className={styles.userPageContentDiv}>
@@ -200,12 +204,21 @@ class UserPage extends Component {
                     </div>
                 );
             }
+            renderDiv = (
+                <div className={styles.containerDiv} ref={this.contextRef}>
+                    { siteHeader }
+                    { userPageDiv }
+                </div>
+            );
+        } else if (this.state.authUserId) {
+            renderDiv = <div></div>;
+        } else {
+            renderDiv = <AuthPage />;
         }
 
         return (
-            <div className={styles.containerDiv} ref={this.contextRef}>
-                { siteHeader }
-                { userPageDiv }
+            <div className={styles.containerDiv}>
+                { renderDiv }
             </div>
         );
     }
@@ -213,9 +226,15 @@ class UserPage extends Component {
 
 const mapStateToProps = state => {
     return {
-        userInfo: state.auth.userInfo,
-        isAuthenticated: state.auth.isAuthenticated
+        authUserInfo: state.auth.authUserInfo,
+        isAuthenticated: state.auth.isAuthenticated,
     };
 };
 
-export default connect(mapStateToProps)(UserPage);
+const mapDispatchToProps = dispatch => {
+    return {
+        onLoadUser: (userId) => dispatch(loadUser(userId))
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserPage);
