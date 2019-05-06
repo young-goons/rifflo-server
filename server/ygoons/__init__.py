@@ -40,6 +40,13 @@ def before_request():
     flask.g.pymysql_db = connection
 
 
+# Disconnect from database
+@app.teardown_request
+def teardown_request(exception):
+    db = flask.g.pop('pymysql_db', None)
+    if db: db.close()
+
+
 # Error handlers
 @jwt.unauthorized_loader
 def unauthorized_response(callback):

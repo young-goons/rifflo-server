@@ -19,23 +19,10 @@ def get_user_info(user_id):
     """
     # check if the identity of the token is equal to the identity of the request parameter
     if user_id == get_jwt_identity()['userId']:
-        with flask.g.pymysql_db.cursor() as cursor:
-            sql = 'SELECT user_id, username, email, profile_picture_path ' \
-                  'FROM tbl_user NATURAL JOIN' \
-                  '(SELECT * FROM tbl_user_info WHERE user_id = %s) tbl_user_info_id'
-            cursor.execute(sql, (user_id, ))
-            query_result = cursor.fetchall()
-
-        if len(query_result) != 1:
-            return make_response(
+        user = get_user_data(user_id)
+        if user == None:
+            user = make_response(
                 jsonify({'msg': 'Error fetching user info data'}), 400)
-
-        user = {
-            'userId': query_result[0][0],
-            'username': query_result[0][1],
-            'email': query_result[0][2],
-            'profile_picture_path': query_result[0][3]
-        }
         return make_response(jsonify({'user': user}), 200)
     else:
         return make_response(
@@ -124,7 +111,8 @@ def get_user_feed():
         friend_posts = cursor.fetchall()
 
     post_id_list = feed.select_feed_posts(friend_posts=friend_posts,
-            top_posts=top_posts, limit=5)
+                                          top_posts=top_posts,
+                                          limit=5)
     # List comes back shuffled already
     # random.shuffle(post_id_list)
     return make_response(jsonify({'postIdArr': post_id_list}), 200)
