@@ -2,7 +2,7 @@ language: python
 python: "3.6"
 services: mysql
 before_install: cd server
-install: pip install -r server/requirements.txt
+install: pip install -r requirements.txt
 before_script:
   - mysql -u root -e "SET GLOBAL max_connections = 1000;"
   - mysql -u root < sql/setup.sql
