@@ -70,10 +70,13 @@ def upload_post():
     print(request.form)
 
     # file is saved in SONG_STORAGE_PATH/userid/.mp3
-    if not os.path.isdir(os.path.join(app.config["SONG_STORAGE_PATH"], str(user_id))):
-        os.makedirs(os.path.join(app.config["SONG_STORAGE_PATH"], str(user_id)), exist_ok=True)
-    song_file_path = os.path.join(app.config["SONG_STORAGE_PATH"], str(user_id),
-                                  secure_filename(file.filename))
+    if not os.path.isdir(
+            os.path.join(app.config["SONG_STORAGE_PATH"], str(user_id))):
+        os.makedirs(os.path.join(app.config["SONG_STORAGE_PATH"],
+                                 str(user_id)),
+                    exist_ok=True)
+    song_file_path = os.path.join(app.config["SONG_STORAGE_PATH"],
+                                  str(user_id), secure_filename(file.filename))
     # TODO: instead of checking if the filename is the same, not insert into table if
     #       the song_name already exists
     if not os.path.exists(song_file_path):
@@ -87,12 +90,17 @@ def upload_post():
 
     # TODO: directly used the file passed on instead of reading it from the local? (maybe not necessary)
     full_song = AudioSegment.from_file(song_file_path, format=file_format)
-    clip = full_song[int(float(request.form['clipStart'])*1000):int(float(request.form['clipEnd'])*1000)]
-    clip_name = file.filename[:-4] + "_" + request.form['clipStart'] + "_" + request.form['clipEnd'] + file.filename[-4:]
-    if not os.path.isdir(os.path.join(app.config["CLIP_STORAGE_PATH"], str(user_id))):
-        os.makedirs(os.path.join(app.config["CLIP_STORAGE_PATH"], str(user_id)), exist_ok=True)
-    clip_file_path = os.path.join(app.config["CLIP_STORAGE_PATH"], str(user_id),
-                                  secure_filename(clip_name))
+    clip = full_song[int(float(request.form['clipStart']) *
+                         1000):int(float(request.form['clipEnd']) * 1000)]
+    clip_name = file.filename[:-4] + "_" + request.form[
+        'clipStart'] + "_" + request.form['clipEnd'] + file.filename[-4:]
+    if not os.path.isdir(
+            os.path.join(app.config["CLIP_STORAGE_PATH"], str(user_id))):
+        os.makedirs(os.path.join(app.config["CLIP_STORAGE_PATH"],
+                                 str(user_id)),
+                    exist_ok=True)
+    clip_file_path = os.path.join(app.config["CLIP_STORAGE_PATH"],
+                                  str(user_id), secure_filename(clip_name))
 
     if not os.path.exists(clip_file_path):
         clip.export(clip_file_path, format=file_format)
@@ -105,15 +113,18 @@ def upload_post():
     with flask.g.pymysql_db.cursor() as cursor:
         sql = "INSERT INTO tbl_song_info (song_name, artist, release_date, album, song_path) " \
               "VALUES (%s, %s, %s, %s, %s)"
-        cursor.execute(sql, (request.form['track'], request.form['artist'], release_date,
-                             request.form['album'], song_file_path))
+        cursor.execute(sql,
+                       (request.form['track'], request.form['artist'],
+                        release_date, request.form['album'], song_file_path))
         song_id = cursor.lastrowid
         post_id = None
         if song_id:
             sql = "INSERT INTO tbl_post (user_id, content, tags, song_id, clip_start_time, clip_end_time, clip_path) " \
                   "VALUES (%s, %s, %s, %s, %s, %s, %s)"
-            cursor.execute(sql, (user_id, request.form['content'], request.form['tags'], song_id,
-                                 request.form['clipStart'], request.form['clipEnd'], clip_file_path))
+            cursor.execute(
+                sql, (user_id, request.form['content'], request.form['tags'],
+                      song_id, request.form['clipStart'],
+                      request.form['clipEnd'], clip_file_path))
             post_id = cursor.lastrowid
 
     if song_id and post_id:

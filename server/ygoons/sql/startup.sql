@@ -172,8 +172,8 @@ CREATE TABLE tbl_reply
 
 CREATE TABLE tbl_bookmark
 (
-    user_id  INT,
-    post_id  INT,
+    user_id       INT,
+    post_id       INT,
     bookmark_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY(user_id, post_id),
@@ -183,6 +183,21 @@ CREATE TABLE tbl_bookmark
     FOREIGN KEY(post_id) REFERENCES tbl_post(post_id)
       ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+-- Create dislike table
+CREATE TABLE tbl_dislike
+(
+    user_id       INT,
+    post_id       INT,
+    dislike_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY(user_id, post_id),
+
+    FOREIGN KEY(user_id) REFERENCES tbl_user(user_id)
+      ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(post_id) REFERENCES tbl_post(post_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+)
 
 -- Create user play history table
 CREATE TABLE tbl_play_history

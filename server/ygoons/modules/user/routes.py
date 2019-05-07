@@ -124,7 +124,8 @@ def get_user_feed():
         friend_posts = cursor.fetchall()
 
     post_id_list = feed.select_feed_posts(friend_posts=friend_posts,
-            top_posts=top_posts, limit=5)
+                                          top_posts=top_posts,
+                                          limit=5)
     # List comes back shuffled already
     # random.shuffle(post_id_list)
     return make_response(jsonify({'postIdArr': post_id_list}), 200)

@@ -17,7 +17,7 @@ def get_clip(post_id):
     print(post_id)
     with flask.g.pymysql_db.cursor() as cursor:
         sql = 'SELECT clip_path FROM tbl_post WHERE post_id = %s'
-        cursor.execute(sql, (post_id,))
+        cursor.execute(sql, (post_id, ))
         query_result = cursor.fetchone()
     if query_result is not None:
         file_name = query_result[0].split('/')[-1]
