@@ -6,8 +6,7 @@ import flask
 from flask import request, jsonify, make_response
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from ygoons.modules.user import blueprint, helpers, feed
-
+from ygoons.modules.user import blueprint, helpers, feed, svd
 
 # TODO: distinguish public and private info
 @blueprint.route('/user/<int:user_id>/info', methods=['GET'])
@@ -86,35 +85,43 @@ def get_user_posts(user_id):
 def get_user_feed():
     """ Obtains the list of post_ids to appear on the user feed
         and sends the list of ids to the client """
+
     user_id = get_jwt_identity()['userId']
-    # obtain the list of ids of the top posts shared by other users for now...
-    # TODO: change limit?
     with flask.g.pymysql_db.cursor() as cursor:
+        # obtain the list of ids of the top posts shared by other users for now...
+        # TODO: is this limit reasonable
         sql = '''SELECT tbl_post.post_id, like_cnt
         FROM tbl_post LEFT JOIN view_like_count
         ON tbl_post.post_id = view_like_count.post_id
         WHERE user_id != %s
         ORDER BY like_cnt DESC
-        LIMIT 20'''
+        LIMIT 1000'''
         cursor.execute(sql, (user_id))
         top_posts = cursor.fetchall()
 
-    # obtain list of ids of top posts shared by followed users
-    with flask.g.pymysql_db.cursor() as cursor:
+        # obtain list of ids of top posts shared by followed users
         sql = '''SELECT tbl_post.post_id, like_cnt
         FROM tbl_post LEFT JOIN view_like_count
         ON tbl_post.post_id = view_like_count.post_id
-        WHERE user_id in (SELECT followed_id FROM tbl_follow WHERE follower_id = %s)
+        WHERE user_id in
+            (SELECT followed_id FROM tbl_follow WHERE follower_id = %s)
         ORDER BY like_cnt DESC
-        LIMIT 20'''
+        LIMIT 1000'''
         cursor.execute(sql, (user_id))
         friend_posts = cursor.fetchall()
 
-    post_id_list = feed.select_feed_posts(friend_posts=friend_posts,
-                                          top_posts=top_posts,
-                                          limit=5)
-    # List comes back shuffled already
-    # random.shuffle(post_id_list)
+    cand_id_list = feed.select_feed_posts(friend_posts=friend_posts,
+            top_posts=top_posts, limit=1000)
+
+    # Reorder using SVD features
+    clf = svd.SVD()
+    clf.db_load_user([user_id])
+    clf.db_load_post(cand_id_list)
+
+    post_id_list = clf.get_recommendations(
+            user_id, k=1000, candidates=cand_id_list)
+
+    # TODO: introduce shuffling in top posts
     return make_response(jsonify({'postIdArr': post_id_list}), 200)
 
 
