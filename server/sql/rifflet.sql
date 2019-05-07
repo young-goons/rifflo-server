@@ -1,6 +1,6 @@
 -- DROP DATABASE IF EXISTS app_dev;
 -- CREATE DATABASE app_dev;
-USE app_dev;
+-- USE app_dev;
 
 -- TODO: Apply indices
 
@@ -20,6 +20,10 @@ DROP TABLE IF EXISTS tbl_post;
 DROP TABLE IF EXISTS tbl_song_info;
 DROP TABLE IF EXISTS tbl_user_info;
 DROP TABLE IF EXISTS tbl_user;
+DROP TABLE IF EXISTS tbl_user_svd;
+DROP TABLE IF EXISTS tbl_post_svd;
+DROP TABLE IF EXISTS tbl_user_bias;
+DROP TABLE IF EXISTS tbl_post_bias;
 
 
 -- Create user table.
@@ -184,6 +188,7 @@ CREATE TABLE tbl_bookmark
       ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+<<<<<<< HEAD:server/ygoons/sql/startup.sql
 -- Create dislike table
 CREATE TABLE tbl_dislike
 (
@@ -219,3 +224,38 @@ CREATE TABLE tbl_play_history
 
 
 )
+=======
+CREATE TABLE tbl_user_svd
+(
+    user_id INT,
+    latent_idx INT,
+    value DOUBLE,
+
+    PRIMARY KEY(user_id, latent_idx)
+);
+
+CREATE TABLE tbl_post_svd
+(
+    post_id INT,
+    latent_idx INT,
+    value DOUBLE,
+
+    PRIMARY KEY(post_id, latent_idx)
+);
+
+CREATE TABLE tbl_user_bias
+(
+    user_id INT,
+    user_bias DOUBLE,
+
+    PRIMARY KEY(user_id)
+);
+
+CREATE TABLE tbl_post_bias
+(
+    post_id INT,
+    post_bias DOUBLE,
+
+    PRIMARY KEY(post_id)
+);
+>>>>>>> eaf8d67b41de11b087698bc929d442a2ee4e5c2c:server/sql/rifflet.sql

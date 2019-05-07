@@ -8,3 +8,10 @@ update-reqs:
 lint:
 	yapf -i -r .
 
+test: init-test-db
+	pytest .
+
+init-test-db:
+	mysql -u ygoons_test --password=Public1! < sql/reset.sql
+
+push: lint test

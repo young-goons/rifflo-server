@@ -1,4 +1,4 @@
-# young-goons
+# young-goons [![Build Status](https://travis-ci.com/joshc/young-goons.svg)](https://travis-ci.com/joshc/young-goons) [![Maintainability](https://api.codeclimate.com/v1/badges/41350fac136bf42ca12f/maintainability)](https://codeclimate.com/github/joshc/young-goons/maintainability)
 
 ## Prerequisites
 

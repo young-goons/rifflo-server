@@ -10,7 +10,10 @@ from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 get_jwt_identity)
 import pymysql
 
-from ygoons import config
+try:
+    from ygoons import config
+except ImportError:
+    from ygoons import default_config as config
 
 from ygoons import constants
 from ygoons.modules import user, post, clip
@@ -41,6 +44,13 @@ def before_request():
                                  passwd=config.DB_PASSWORD,
                                  db=config.DB_NAME)
     flask.g.pymysql_db = connection
+
+
+# Disconnect from database
+@app.teardown_request
+def teardown_request(exception):
+    db = flask.g.pop('pymysql_db', None)
+    if db: db.close()
 
 
 # Error handlers
