@@ -188,7 +188,6 @@ CREATE TABLE tbl_bookmark
       ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-<<<<<<< HEAD:server/ygoons/sql/startup.sql
 -- Create dislike table
 CREATE TABLE tbl_dislike
 (
@@ -220,11 +219,7 @@ CREATE TABLE tbl_play_history
 );
 
 -- Create user stop history table (songs that user did not hear until the end)
-(
 
-
-)
-=======
 CREATE TABLE tbl_user_svd
 (
     user_id INT,
@@ -258,4 +253,3 @@ CREATE TABLE tbl_post_bias
 
     PRIMARY KEY(post_id)
 );
->>>>>>> eaf8d67b41de11b087698bc929d442a2ee4e5c2c:server/sql/rifflet.sql
