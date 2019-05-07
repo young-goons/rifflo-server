@@ -20,6 +20,13 @@ Execute `run.py` to start the server
 * make lint: style formatting
 * make test: initialize test database, run pytest
 
+# Set up test database
+
+1. Log in to MySQL as root: `mysql -u root -p`
+2. SOURCE sql/setup.sql;
+3. SOURCE sql/reset.sql;
+4. `make test` from the terminal to make sure everything works.
+
 # Testing
 
 * Implement tests in tests/modules/{module_name}. Declare test functions as 
