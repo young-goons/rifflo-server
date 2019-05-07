@@ -14,3 +14,4 @@ test: init-test-db
 init-test-db:
 	mysql -u ygoons_test --password=Public1! < sql/reset.sql
 
+push: lint test
