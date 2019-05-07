@@ -1,6 +1,6 @@
 import datetime
 
-JWT_SECRET_KEY = 'abcdef'
+JWT_SECRET_KEY = 'jwt_secret_key'
 JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(days=1)
 DB_HOST = 'localhost'
 DB_PORT = 3306
