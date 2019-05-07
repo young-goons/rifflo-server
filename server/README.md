@@ -23,8 +23,8 @@ Execute `run.py` to start the server
 # Set up test database
 
 1. Log in to MySQL as root: `mysql -u root -p`
-2. SOURCE sql/setup.sql;
-3. SOURCE sql/reset.sql;
+2. `SOURCE sql/setup.sql;`
+3. `SOURCE sql/reset.sql;`
 4. `make test` from the terminal to make sure everything works.
 
 # Testing
