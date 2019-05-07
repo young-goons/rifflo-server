@@ -12,7 +12,7 @@
 2. Write config.py file
 * import datetime
 * Default values: DB_HOST='localhost', DB_PORT=3306, DB_USER='root', DB_PASSWORD=[mysql password],
-DB_NAME='app_dv', JWT_SECRET_KEY='abcdef', JWT_ACCESS_TOKEN_EXPIRES=datetime.timedelta(days=1)
+DB_NAME='app_dv', JWT_SECRET_KEY='jwt_secret_key', JWT_ACCESS_TOKEN_EXPIRES=datetime.timedelta(days=1)
 2. Connect to MySQL server with `mysql -u root -p`.
 3. Create and use the database with `SOURCE sql/rifflet.sql`.
 4. Insert dummy values to the table `SOURCE sql/data.sql`.
