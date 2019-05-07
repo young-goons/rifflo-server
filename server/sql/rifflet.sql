@@ -11,7 +11,9 @@ DROP VIEW IF EXISTS view_comment_count;
 DROP VIEW IF EXISTS view_follower_count;
 DROP VIEW IF EXISTS view_following_count;
 
+DROP TABLE IF EXISTS tbl_dislike;
 DROP TABLE IF EXISTS tbl_like;
+DROP TABLE IF EXISTS tbl_play_history;
 DROP TABLE IF EXISTS tbl_reply;
 DROP TABLE IF EXISTS tbl_comment;
 DROP TABLE IF EXISTS tbl_bookmark;
@@ -195,7 +197,7 @@ CREATE TABLE tbl_dislike
     post_id       INT,
     dislike_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    PRIMARY KEY(user_id, post_id),
+    PRIMARY KEY(user_id, post_id, dislike_date),
 
     FOREIGN KEY(user_id) REFERENCES tbl_user(user_id)
       ON DELETE CASCADE ON UPDATE CASCADE,

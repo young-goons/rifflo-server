@@ -19,11 +19,12 @@ def get_user_info(user_id):
     """
     # check if the identity of the token is equal to the identity of the request parameter
     if user_id == get_jwt_identity()['userId']:
-        user = get_user_data(user_id)
-        if user == None:
-            user = make_response(
+        user = helpers.get_user_data(user_id)
+        if user is None:
+            return make_response(
                 jsonify({'msg': 'Error fetching user info data'}), 400)
-        return make_response(jsonify({'user': user}), 200)
+        else:
+            return make_response(jsonify({'user': user}), 200)
     else:
         return make_response(
             jsonify({'msg': 'No authentication on requested data'}), 400)
