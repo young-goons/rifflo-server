@@ -10,7 +10,10 @@ from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 get_jwt_identity)
 import pymysql
 
-from ygoons import config
+try:
+    from ygoons import config
+except ImportError:
+    from ygoons import default_config
 
 from ygoons import constants
 from ygoons.modules import user, post
