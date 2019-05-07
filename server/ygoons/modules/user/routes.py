@@ -8,6 +8,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from ygoons.modules.user import blueprint, helpers, feed, svd
 
+
 # TODO: distinguish public and private info
 @blueprint.route('/user/<int:user_id>/info', methods=['GET'])
 @jwt_required
@@ -18,23 +19,10 @@ def get_user_info(user_id):
     """
     # check if the identity of the token is equal to the identity of the request parameter
     if user_id == get_jwt_identity()['userId']:
-        with flask.g.pymysql_db.cursor() as cursor:
-            sql = 'SELECT user_id, username, email, profile_picture_path ' \
-                  'FROM tbl_user NATURAL JOIN' \
-                  '(SELECT * FROM tbl_user_info WHERE user_id = %s) tbl_user_info_id'
-            cursor.execute(sql, (user_id, ))
-            query_result = cursor.fetchall()
-
-        if len(query_result) != 1:
-            return make_response(
+        user = get_user_data(user_id)
+        if user == None:
+            user = make_response(
                 jsonify({'msg': 'Error fetching user info data'}), 400)
-
-        user = {
-            'userId': query_result[0][0],
-            'username': query_result[0][1],
-            'email': query_result[0][2],
-            'profile_picture_path': query_result[0][3]
-        }
         return make_response(jsonify({'user': user}), 200)
     else:
         return make_response(
@@ -124,15 +112,17 @@ def get_user_feed():
         friend_posts = cursor.fetchall()
 
     cand_id_list = feed.select_feed_posts(friend_posts=friend_posts,
-            top_posts=top_posts, limit=1000)
+                                          top_posts=top_posts,
+                                          limit=1000)
 
     # Reorder using SVD features
     clf = svd.SVD()
     clf.db_load_user([user_id])
     clf.db_load_post(cand_id_list)
 
-    post_id_list = clf.get_recommendations(
-            user_id, k=1000, candidates=cand_id_list)
+    post_id_list = clf.get_recommendations(user_id,
+                                           k=1000,
+                                           candidates=cand_id_list)
 
     # TODO: introduce shuffling in top posts
     return make_response(jsonify({'postIdArr': post_id_list}), 200)

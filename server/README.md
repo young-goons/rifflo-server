@@ -13,6 +13,19 @@ Execute `run.py` to start the server
 
 * https://www.vitoshacademy.com/hashing-passwords-in-python/
 
+# Makefile
+
+* make update-packages: update virtual environment
+* make update-reqs: update requirements.txt
+* make lint: style formatting
+* make test: initialize test database, run pytest
+
+# Testing
+
+* Implement tests in tests/modules/{module_name}. Declare test functions as 
+  test_{function_name}(tester), where tester is in ygoons.testing.fixtures 
+  and initializes the database connection.
+
 # TODOs
 
 * check if same username and email exists

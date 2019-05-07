@@ -1,6 +1,6 @@
 -- DROP DATABASE IF EXISTS app_dev;
 -- CREATE DATABASE app_dev;
-USE app_dev;
+-- USE app_dev;
 
 -- TODO: Apply indices
 
