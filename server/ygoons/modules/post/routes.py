@@ -117,7 +117,7 @@ def upload_post():
             post_id = cursor.lastrowid
 
     if song_id and post_id:
-        # flask.g.pymysql_db.commit()
+        flask.g.pymysql_db.commit()
         return make_response(jsonify({
             'postId': post_id,
             'songId': song_id

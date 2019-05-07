@@ -77,7 +77,6 @@ class UserPage extends Component {
         const userExistsUrl = "http://127.0.0.1:5000/user/id/username/" + this.props.match.params.username;
         axios({method: 'GET', url: userExistsUrl})
             .then(response => {
-                console.log(response);
                 if (response.data.userId) {
                     console.log("userid begin set");
                     this.setState({userId: response.data.userId});
