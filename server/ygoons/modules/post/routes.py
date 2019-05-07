@@ -43,6 +43,7 @@ def get_posts(id_list):
     post_dict = {}
     for row in query_result:
         post_data = {
+            'postId': row[0],
             'userId': row[1],
             'username': row[2],
             'uploadDate': row[3],

@@ -7,7 +7,7 @@ import SiteHeader from '../SiteHeader/SiteHeader';
 import AuthPage from '../AuthPage/AuthPage';
 import Post from '../Feed/Post/Post';
 import UserPageHeader from './UserPageHeader/UserPageHeader';
-import PostList from './SharedPost/SharedPost';
+import SharedPost from './SharedPost/SharedPost';
 import NoUserPage from '../../components/ErrorPage/NoUserPage/NoUserPage';
 import PostEditor from './PostEditor/PostEditor';
 import styles from './UserPage.module.css';
@@ -94,7 +94,8 @@ class UserPage extends Component {
         const postDivArr = this.state.postArr.map((post, idx) => {
             return (
                 <div key={idx} className={styles.postListDiv}>
-                    <PostList
+                    <SharedPost
+                        postId={post.postId}
                         songName={post.songName}
                         artist={post.artist}
                         tags={post.tags}
