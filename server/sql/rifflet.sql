@@ -201,7 +201,7 @@ CREATE TABLE tbl_dislike
       ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(post_id) REFERENCES tbl_post(post_id)
       ON DELETE CASCADE ON UPDATE CASCADE
-)
+);
 
 -- Create user play history table
 CREATE TABLE tbl_play_history
