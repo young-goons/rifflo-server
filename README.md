@@ -1,4 +1,4 @@
-# young-goons [![Build Status](https://travis-ci.com/joshc/young-goons.svg?branch=joshc%2Ftesting)](https://travis-ci.com/joshc/young-goons)
+# young-goons
 
 ## Prerequisites
 
