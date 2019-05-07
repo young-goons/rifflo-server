@@ -1,25 +1,17 @@
 .clipPlayColumn {
-    /*margin-left: 5px;*/
+   margin-left: -14px;
 }
 
 .playIcon:hover {
     cursor: pointer;
 }
 
-.playBar {
-    border: 1px solid black;
-    color: white;
-    margin-left: 5px;
-    padding-top: 3px;
-    padding-bottom: 3px;
-}
-
 .postLikeCommentColumn {
     display: inline;
     font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
     weight: 400;
-    margin-left: -14px;
-    margin-right: -14px;
+    margin-left: 10px;
+    margin-right: 0px;
 }
 
 .postLikeDiv {
@@ -63,6 +55,38 @@
     font-size: 1.3em;
 }
 
+.fullSongColumn {
+    margin-left: -5px;
+}
+
 .songSpan {
     color: dodgerblue;
+}
+
+.progressBarColumn {
+    margin-left: -15px;
+}
+
+.progressDiv {
+
+}
+
+.progressBar {
+    margin-left: 0px;
+    vertical-align: middle;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 308px;
+    height: 15px;
+}
+
+.progressBar::-webkit-progress-bar {
+    background-color: lightgray;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
+
+.progressBar::-webkit-progress-value {
+    background-color: darkorange;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
 }
