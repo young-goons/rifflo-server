@@ -8,6 +8,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from ygoons.modules.user import blueprint, helpers, feed, svd
 
+
 # TODO: distinguish public and private info
 @blueprint.route('/user/<int:user_id>/info', methods=['GET'])
 @jwt_required
@@ -111,15 +112,17 @@ def get_user_feed():
         friend_posts = cursor.fetchall()
 
     cand_id_list = feed.select_feed_posts(friend_posts=friend_posts,
-            top_posts=top_posts, limit=1000)
+                                          top_posts=top_posts,
+                                          limit=1000)
 
     # Reorder using SVD features
     clf = svd.SVD()
     clf.db_load_user([user_id])
     clf.db_load_post(cand_id_list)
 
-    post_id_list = clf.get_recommendations(
-            user_id, k=1000, candidates=cand_id_list)
+    post_id_list = clf.get_recommendations(user_id,
+                                           k=1000,
+                                           candidates=cand_id_list)
 
     # TODO: introduce shuffling in top posts
     return make_response(jsonify({'postIdArr': post_id_list}), 200)

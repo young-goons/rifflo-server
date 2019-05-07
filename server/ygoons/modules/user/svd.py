@@ -10,6 +10,7 @@ INIT_MEAN = 0
 INIT_STD_DEV = 0.1
 LRATE = 0.001
 
+
 class SVD:
     def __init__(self):
         self.user_vecs = {}
@@ -86,7 +87,6 @@ class SVD:
         for (post_id, post_bias) in bias_query:
             self.set_post_bias(post_id, post_bias)
 
-
     def db_save(self):
         """Save latent vectors to database.
         """
@@ -100,8 +100,9 @@ class SVD:
                     INSERT INTO tbl_user_svd (user_id, latent_idx, value)
                     VALUES (%s, %s, %s)
                     '''
-                    cursor.execute(sql,
-                            (user_id, i, float(self.get_user_vector(user_id)[i])))
+                    cursor.execute(
+                        sql,
+                        (user_id, i, float(self.get_user_vector(user_id)[i])))
             # Now post svd table
             cursor.execute('DELETE FROM tbl_post_svd')
             for post_id in self.post_vecs:
@@ -110,8 +111,9 @@ class SVD:
                     INSERT INTO tbl_post_svd (post_id, latent_idx, value)
                     VALUES (%s, %s, %s)
                     '''
-                    cursor.execute(sql,
-                            (post_id, i, float(self.get_post_vector(post_id)[i])))
+                    cursor.execute(
+                        sql,
+                        (post_id, i, float(self.get_post_vector(post_id)[i])))
 
             # User bias
             cursor.execute('DELETE FROM tbl_user_bias')
@@ -224,7 +226,7 @@ class SVD:
         self.post_vecs[post_id] = ivec
 
     def set_mean(self, global_mean):
-      self.global_mean = global_mean
+        self.global_mean = global_mean
 
     def predict(self, user_id, post_id):
         """Predict the rating of an interaction.
@@ -253,7 +255,7 @@ class SVD:
         # Update latent vectors
         uvec = self.get_user_vector(user_id)
         ivec = self.get_post_vector(post_id)
-        tmp = uvec # Synchronous update
+        tmp = uvec  # Synchronous update
 
         self.set_user_vector(user_id, uvec + err * ivec)
         self.set_post_vector(post_id, ivec + err * tmp)
@@ -275,7 +277,11 @@ class SVD:
         """
         return np.power(rating - self.predict(user_id, post_id), 2)
 
-    def get_recommendations(self, user_id, k=10, candidates=None, prohibited=None):
+    def get_recommendations(self,
+                            user_id,
+                            k=10,
+                            candidates=None,
+                            prohibited=None):
         """Get recommendations for a user.
         Args:
             user_id (int): user ID
