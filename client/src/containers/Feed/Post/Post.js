@@ -56,7 +56,7 @@ class Post extends Component {
                     alert(error);
                 })
         }
-        if (!this.state.audioSrc) {
+        if (!this.state.audioReady) {
             url = "http://127.0.0.1:5000/clip/" + this.props.postId;
             const requestHeaders = {
                 'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken'),
