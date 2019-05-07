@@ -13,7 +13,7 @@ import pymysql
 try:
     from ygoons import config
 except ImportError:
-    from ygoons import default_config
+    from ygoons import default_config as config
 
 from ygoons import constants
 from ygoons.modules import user, post
