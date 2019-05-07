@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import { Grid, Column, Container } from 'semantic-ui-react';
 
@@ -12,23 +11,23 @@ import PostList from './SharedPost/SharedPost';
 import NoUserPage from '../../components/ErrorPage/NoUserPage/NoUserPage';
 import PostEditor from './PostEditor/PostEditor';
 import styles from './UserPage.module.css';
-import {loadUser} from "../../store/actions/auth";
+import { loadUser } from "../../store/actions/auth";
+import { loadUserPosts, loadUserUpdatedPosts } from "../../store/actions/user";
 
 class UserPage extends Component {
     state = {
         authUserId: this.props.authUserId,
         authUserInfo: null,
         isUserPageLoaded: false,
-        postArr: [],
         userId: null,
         isSignedOut: false,
         isFollowed: null,
         followerCnt: null,
-        uploadContent: '',
-        uploadTags: ''
+        postArr: []
     };
 
     componentDidMount() {
+        console.log(this.props.postArr);
         if (this.state.authUserId) {
             if (!this.props.authUserInfo) {
                 console.log("loading user info");
@@ -38,29 +37,39 @@ class UserPage extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.authUserInfo) { // upon sign in
-            this.setState({authUserInfo: nextProps.authUserInfo});
-            this.getUserId();
+        console.log(nextProps);
+        if (nextProps.authUserInfo) {
+            if (!nextProps.postArr && !nextProps.newPostId) { // upon sign in
+                this.setState({authUserInfo: nextProps.authUserInfo});
+                this.getUserId();
+            } else if (nextProps.postArr && !nextProps.newPostId) { // upon loading initial post
+                this.setState({postArr: nextProps.postArr});
+            } else if (nextProps.postArr && nextProps.newPostId) { // upon loading updatedPost
+                if (this.state.postArr.length === nextProps.postArr.length) { // get new post Id
+                    this.props.onLoadUserUpdatedPosts(nextProps.newPostId, this.state.postArr)
+                } else { // get updated postArr
+                    this.setState({postArr: nextProps.postArr});
+                }
+            }
         } else { // upon sign out
             this.setState({
                 authUserId: null,
                 authUserInfo: null,
                 isUserPageLoaded: false,
-                postArr: [],
                 userId: null,
                 isSignedOut: false,
                 isFollowed: null,
                 followerCnt: null,
                 uploadContent: "",
                 uploadTags: ""
-            })
+            });
         }
     }
 
     componentDidUpdate() {
-        if (!this.state.isUserPageLoaded && this.state.userId && this.state.authUserInfo) {
+        if (!this.props.postLoaded && this.state.userId && this.state.authUserInfo) {
             console.log("load user posts");
-            this.loadUserPosts();
+            this.props.onLoadUserPosts(this.state.userId);
         }
     }
 
@@ -68,7 +77,6 @@ class UserPage extends Component {
         const userExistsUrl = "http://127.0.0.1:5000/user/id/username/" + this.props.match.params.username;
         axios({method: 'GET', url: userExistsUrl})
             .then(response => {
-                console.log(response);
                 if (response.data.userId) {
                     console.log("userid begin set");
                     this.setState({userId: response.data.userId});
@@ -76,82 +84,6 @@ class UserPage extends Component {
                     console.log('userid does not exist');
                     this.setState({isUserPageLoaded: true, authUserInfo: null});
                 }
-            })
-    };
-
-    loadUserPosts = () => {
-        const userPostUrl = "http://127.0.0.1:5000/user/" + this.state.userId + "/posts";
-        const requestHeaders = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        let postIdArr;
-        axios({method: 'GET', url: userPostUrl, headers: requestHeaders})
-            .then(response => {
-                postIdArr = response.data.postIdArr;
-                if (postIdArr.length === 0) {
-                    return;
-                }
-                const postUrl = "http://127.0.0.1:5000/posts/" + postIdArr.join(',');
-                return axios({method: 'GET', url: postUrl, headers: requestHeaders});
-            })
-            .then(response => {
-                if (response) {
-                    console.log(response);
-                    const postArr = [];
-                    for (let i = 0; i < postIdArr.length; i++) {
-                        if (postIdArr[i] in response.data.posts) {
-                            postArr.push(response.data.posts[postIdArr[i]]);
-                        }
-                    }
-                    this.setState({
-                        isUserPageLoaded: true,
-                        postArr: postArr
-                    })
-                }
-            })
-            .catch(error => {
-                console.log(error);
-                alert(error);
-            })
-    };
-
-    contentInputHandler = (event) => {
-        this.setState({
-            uploadContent: event.target.value
-        });
-    };
-
-    tagsInputHandler = (event) => {
-        this.setState({
-            uploadTags: event.target.value
-        });
-    };
-
-    // TODO: error handling (if the content is too long)
-    sharePostHandler = () => {
-        let url = "http://127.0.0.1:5000/user/upload/post";
-        const requestData = {
-            content: this.state.uploadContent,
-            tags: this.state.uploadTags
-        };
-        const requestHeaders = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        let newPostId;
-        axios({method: 'POST', url: url, data: requestData, headers: requestHeaders})
-            .then(response => {
-                newPostId = response.data.postId;
-                url = "http://127.0.0.1:5000/posts/" + newPostId;
-                return axios({method: 'GET', url: url, headers: requestHeaders});
-            })
-            .then(response => {
-                this.setState({
-                    postArr: [...this.state.postArr, response.data.posts[newPostId]]
-                })
-            })
-            .catch(error => {
-                console.log(error);
-                alert(error);
             })
     };
 
@@ -180,13 +112,7 @@ class UserPage extends Component {
                 let postUploadDiv;
                 if (this.props.authUserInfo.username === username) {
                     postUploadDiv = (
-                        <PostEditor
-                            sharePostHandler={this.sharePostHandler}
-                            contentInput={this.state.uploadContent}
-                            tagsInput={this.state.uploadTags}
-                            contentInputHandler={this.contentInputHandler}
-                            tagsInputHandler={this.tagsInputHandler}
-                        />
+                        <PostEditor/>
                     );
                 }
                 userPageDiv = (
@@ -213,7 +139,7 @@ class UserPage extends Component {
         } else if (this.state.authUserId) {
             renderDiv = <div></div>;
         } else {
-            renderDiv = <AuthPage />;
+            renderDiv = <AuthPage/>;
         }
 
         return (
@@ -228,12 +154,17 @@ const mapStateToProps = state => {
     return {
         authUserInfo: state.auth.authUserInfo,
         isAuthenticated: state.auth.isAuthenticated,
+        postArr: state.user.postArr,
+        postLoaded: state.user.postLoaded,
+        newPostId: state.upload.newPostId
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        onLoadUser: (userId) => dispatch(loadUser(userId))
+        onLoadUser: (userId) => dispatch(loadUser(userId)),
+        onLoadUserPosts: (userId) => dispatch(loadUserPosts(userId)),
+        onLoadUserUpdatedPosts: (postId, postArr) => dispatch(loadUserUpdatedPosts(postId, postArr))
     };
 };
 

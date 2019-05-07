@@ -24,7 +24,16 @@
 }
 
 .songInfoRow {
-    margin-top: 0.4em;
+    margin-top: 10px;
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-size: 1.2rem;
+}
+
+.bySpan {
+    font-size: 1rem;
+    font-color: gray;
+    margin-left: 0.4rem;
+    margin-right: 0.4rem;
 }
 
 .playBarColumn {
@@ -102,6 +111,31 @@
 
 .songPlayRow {
     margin-top: -0.8em;
+    margin-left: 5px;
+}
+
+.progressDiv {
+
+}
+
+.progressBar {
+    margin-left: 0px;
+    vertical-align: middle;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 430px;
+    height: 20px;
+}
+
+.progressBar::-webkit-progress-bar {
+    background-color: lightgray;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
+
+.progressBar::-webkit-progress-value {
+    background-color: darkorange;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
 }
 
 .commentPreviewRow {
@@ -124,3 +158,4 @@
 .commentInputRow {
     margin-top: -1em;
 }
+

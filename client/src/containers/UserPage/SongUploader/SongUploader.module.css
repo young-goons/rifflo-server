@@ -1,0 +1,118 @@
+.songUploadDiv {
+    margin-bottom: 15px;
+}
+
+.fileUploaderDiv {
+    margin-bottom: 20px;
+    margin-left: 25px;
+    margin-right: 43px;
+}
+
+.songFileInput {
+    width: 100%;
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    weight: 400;
+    font-size: 1.05em;
+}
+
+.audioPlayDiv {
+    width: 480px;
+    margin-left: 25px;
+    margin-top: -5px;
+}
+
+.progressDiv {
+    display: block;
+}
+
+.progressBar {
+    margin-left: 5px;
+    vertical-align: middle;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 430px;
+    height: 18px;
+}
+
+.progressBar::-webkit-progress-bar {
+    background-color: lightgray;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
+
+.progressBar::-webkit-progress-value {
+    background-color: darkorange;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
+
+.currTimeDiv {
+    float: left;
+    position: relative;
+    left: 42px;
+    font-size: 1.1em;
+}
+
+.clipLengthDiv {
+    float: right;
+    position: relative;
+    right: 8px;
+    font-size: 1.1em;
+}
+
+.timeInputDiv {
+    margin-top: 25px;
+    float: left;
+    display: block;
+    position: relative;
+    margin-bottom: 20px;
+    font-size: 1.1em;
+}
+
+.timeInput {
+    width: 90px;
+}
+
+.tildeSpan {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.playRangeSpan {
+    margin-left: 20px;
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    color: dodgerblue;
+}
+
+.songInfoInputDiv {
+    clear: both;
+}
+
+.inputRow {
+    margin-top: -12px;
+}
+
+.songInfoInput {
+    margin-right: 20px;
+}
+
+.labelColumn {
+    margin-left: 20px;
+}
+
+.inputColumn {
+    margin-left: -8px;
+}
+
+.labelSpan {
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    weight: 400;
+    font-size: 1.15rem;
+}
+
+.termsCheckbox {
+    margin-right: 23px;
+}
+
+.buttonDiv {
+    margin: 10px 25px 15px;
+}

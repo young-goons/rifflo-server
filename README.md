@@ -27,3 +27,7 @@
   Always work on the virtual environment you set up for this project.
   After you download/update a package using pip, run "pip freeze > requirements.txt"
   and push the requirements.txt file to the repo.
+
+* ffmpeg (for audio processing in the backend)
+
+    brew install ffmpeg

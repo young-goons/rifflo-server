@@ -35,9 +35,9 @@ export const signOut = (error) => {
     };
 };
 
-export const loadUserInfo = (userInfo) => {
+export const loadAuthUserInfo = (userInfo) => {
     return {
-        type: actionTypes.LOAD_USER_INFO,
+        type: actionTypes.LOAD_AUTH_USER_INFO,
         userInfo: userInfo
     };
 };
@@ -50,7 +50,7 @@ export const loadUser = (user_id) => {
         };
         axios({method: 'GET', url: url, headers: headers})
             .then(response => {
-                dispatch(loadUserInfo(response.data.user));
+                dispatch(loadAuthUserInfo(response.data.user));
                 console.log("User " + user_id + " loaded");
             })
             .catch(error => {
@@ -84,7 +84,7 @@ export const auth = (email, password) => {
             })
             .then(response => {
                 if (response) {
-                    dispatch(loadUserInfo(response.data.user));
+                    dispatch(loadAuthUserInfo(response.data.user));
                     // dispatch(authSuccess());
                     console.log(response.data.user)
                 }

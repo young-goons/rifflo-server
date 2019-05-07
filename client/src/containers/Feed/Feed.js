@@ -18,7 +18,8 @@ class Feed extends Component {
         postArr: []
     };
 
-    numPosts = FEED_POSTS_LOAD_NUM;
+    // numPosts = FEED_POSTS_LOAD_NUM;
+    numPosts = 2;
 
     contextRef = createRef();
 
@@ -106,7 +107,7 @@ class Feed extends Component {
 
         const postIdArr = this.state.feedPostIdArr.slice(this.state.feedPostIdx,
             this.state.feedPostIdx + this.numPosts);
-        let url = "http://127.0.0.1:5000/posts/" + postIdArr.join(',');
+        let url = "http://127.0.0.1:5000/post/" + postIdArr.join(',');
         const postArr = [];
         axios({method: 'GET', url: url})
             .then(response => {
@@ -132,6 +133,7 @@ class Feed extends Component {
         if (this.props.authUserInfo) { // load posts after user info is loaded
             const siteHeader = <SiteHeader contextRef={this.contextRef} userInfo={this.props.authUserInfo}/>;
             const postDivArr = this.state.postArr.map((post, idx) => {
+                console.log(post);
                 return (
                     <div key={idx}>
                         <Post
@@ -144,6 +146,8 @@ class Feed extends Component {
                             content={post.content}
                             tags={post.tags}
                             followerCnt={post.followerCnt}
+                            songName={post.songName}
+                            artist={post.artist}
                         />
                     </div>
                 )
