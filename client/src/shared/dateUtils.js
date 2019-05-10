@@ -4,7 +4,7 @@
  */
 export const convertDateToStr = (date) => {
     date = new Date(date);
-    const day = date.getDay();
+    const day = date.getDate();
     let month = date.getMonth() + 1;
     const year = date.getFullYear();
     switch (month) {

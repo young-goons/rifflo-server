@@ -133,7 +133,6 @@ class Feed extends Component {
         if (this.props.authUserInfo) { // load posts after user info is loaded
             const siteHeader = <SiteHeader contextRef={this.contextRef} userInfo={this.props.authUserInfo}/>;
             const postDivArr = this.state.postArr.map((post, idx) => {
-                console.log(post);
                 return (
                     <div key={idx}>
                         <Post

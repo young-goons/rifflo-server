@@ -4,6 +4,7 @@ import { createBrowserHistory } from 'history';
 import { Container } from 'semantic-ui-react';
 
 import UserPage from './containers/UserPage/UserPage';
+import FullPost from './containers/FullPost/FullPost';
 import Feed from './containers/Feed/Feed';
 import { validateAccessToken } from "./shared/tokenUtils";
 
@@ -22,6 +23,9 @@ class App extends Component {
         console.log("rendering App as user " + this.state.authUserId);
         const routes = (
             <Switch>
+                <Route path="/post/:postId"
+                       render={(props) => <FullPost {...props} authUserId={this.state.authUserId} />}
+                />
                 <Route path="/:username"
                        render={(props) => <UserPage {...props} authUserId={this.state.authUserId} />}
                 />
