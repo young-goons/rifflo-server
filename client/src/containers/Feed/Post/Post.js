@@ -45,7 +45,7 @@ class Post extends Component {
         }
         if (this.state.commentCnt === null && this.state.commentPreviewArr === null) {
             url = "http://127.0.0.1:5000/post/" + this.props.postId + "/comment";
-            axios({url: url, headers: headers})
+            axios({url: url, headers: headers, params: {preview: true}})
                 .then(response => {
                     this.setState({
                         commentCnt: response.data.commentCnt,
@@ -142,11 +142,6 @@ class Post extends Component {
             });
     };
 
-    bookmarkClickHandler = () => {
-        // add bookmark functionality
-        alert("bookmark clicked");
-    };
-
     dislikeClickHandler = () => {
         const url = "http://127.0.0.1:5000/post/" + this.props.postId + "/dislike";
         const requestHeaders = {
@@ -159,11 +154,6 @@ class Post extends Component {
             .catch(error => {
                 console.log(error);
             })
-    };
-
-    fullSongClickHandler = () => {
-        // use modal to show options
-        alert("full song clicked");
     };
 
     commentClickHandler = () => {
@@ -320,15 +310,11 @@ class Post extends Component {
                                 </span>
                             </Grid.Column>
                             <Grid.Column width={5}>
-                                {/*<Icon*/}
-                                {/*    name="headphones" size="large" className={styles.actionIcon}*/}
-                                {/*    onClick={this.fullSongClickHandler}*/}
-                                {/*/>*/}
                                 { fullSongModal }
                                 <span className={styles.actionLabel}>Full Song</span>
 
                             </Grid.Column>
-                            <Grid.Column width={5}>
+                            <Grid.Column width={5} textAlign="right">
                                 <Icon
                                     name="warning circle" size="large" className={styles.actionIcon}
                                     onClick={this.dislikeClickHandler}

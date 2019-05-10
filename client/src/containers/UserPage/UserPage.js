@@ -79,7 +79,7 @@ class UserPage extends Component {
             .then(response => {
                 if (response.data.userId) {
                     console.log("userid begin set");
-                    this.setState({userId: response.data.userId});
+                    this.setState({isUserPageLoaded: true, userId: response.data.userId});
                 } else {
                     console.log('userid does not exist');
                     this.setState({isUserPageLoaded: true, authUserInfo: null});
@@ -154,7 +154,6 @@ class UserPage extends Component {
 const mapStateToProps = state => {
     return {
         authUserInfo: state.auth.authUserInfo,
-        isAuthenticated: state.auth.isAuthenticated,
         postArr: state.user.postArr,
         postLoaded: state.user.postLoaded,
         newPostId: state.upload.newPostId

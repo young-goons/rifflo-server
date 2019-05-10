@@ -3,7 +3,6 @@
     margin-top: 3rem;
     margin-bottom: 2rem;
     text-align: left;
-    width: 40em;
 }
 
 .postHeaderDiv {
@@ -96,6 +95,7 @@
 .buttonSpan {
     font-size: 1.2em;
 }
+
 .usernameSpan {
     color: black;
     font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
@@ -124,7 +124,7 @@
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    width: 430px;
+    width: 470px;
     height: 20px;
 }
 
