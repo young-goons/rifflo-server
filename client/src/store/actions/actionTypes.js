@@ -21,3 +21,6 @@ export const SHARE_POST_FAIL = 'SHARE_POST_FAIL';
 // postArr needs to be shared with the post editor
 export const LOAD_USER_POSTS_SUCCESS = 'LOAD_USER_POSTS_SUCCESS';
 export const LOAD_USER_POSTS_FAIL = 'LOAD_USER_POSTS_FAIL';
+
+// action types to load profile image
+export const LOAD_USER_PROFILE_IMAGE_SUCCESS = 'LOAD_USER_PROFILE_IMAGE_SUCCESS';

@@ -1,16 +1,21 @@
 import React, { Component } from 'react';
-import { Grid, Image, Button, Label } from 'semantic-ui-react';
+import { connect } from 'react-redux';
+import { Grid, Image, Button, Label, Modal } from 'semantic-ui-react';
+import axios from 'axios';
 
 import styles from './UserPageHeader.module.css';
 import backgroundImg from '../../../malibu_background.jpg'
-import profileImg from '../../../yongkyun_profile_pic.jpg';
-import axios from "axios/index";
+import profileImage from '../../../yongkyun_profile_pic.jpg';
+import ProfilePictureUploader from "../ProfilePictureUploader/ProfilePictureUploader";
+import { loadUserProfileImage } from "../../../store/actions/user";
 
 class UserPageHeader extends Component {
     state = {
         isFollowed: null,
         followerArr: null,
         followingArr: null,
+        profileImgModalOpen: false,
+        profileImageReady: false
     };
 
     componentDidMount() {
@@ -29,12 +34,15 @@ class UserPageHeader extends Component {
         console.log("component will receive props");
         console.log(nextProps);
         if (nextProps.userId) {
-            console.log(this.state);
             if (this.state.isFollowed === null && this.state.followerArr === null) {
                 this.getFollowers(nextProps.userId);
             }
             if (this.state.followingArr === null) {
                 this.getFollowing(nextProps.userId);
+            }
+            if (!this.state.profileImageReady) {
+                this.props.onLoadUserProfileImage(nextProps.userId);
+                this.setState({profileImageReady: true});
             }
         }
     }
@@ -104,8 +112,19 @@ class UserPageHeader extends Component {
             })
     };
 
+    profileImgHandleOpen = () => {
+        this.setState({profileImgModalOpen: true});
+    };
+
+    profileImgHandleClose = () => {
+        console.log("close modal");
+        this.setState({profileImgModalOpen: false});
+    };
+
     render () {
-        let followButtonDiv = null;
+        let followButtonDiv;
+        let profileImgModal;
+        let profileImg;
         if (this.props.authUserId != this.props.userId) {
             followButtonDiv = (
                 <div className={styles.followButtonDiv}>
@@ -123,18 +142,31 @@ class UserPageHeader extends Component {
                     </Button>
                 </div>
             );
+            profileImg = <img className={styles.profileImg} src={this.props.profileImgSrc} />;
+        } else {
+            profileImg = <img className={styles.profileImg + " " + styles.profileImgModal}
+                              src={this.props.profileImgSrc} onClick={this.profileImgHandleOpen}/>;
+            profileImgModal = (
+                <Modal trigger={profileImg} size="small" centered={false}
+                       open={this.state.profileImgModalOpen} onClose={this.profileImgHandleClose}>
+                    <ProfilePictureUploader
+                        userId={this.props.userId}
+                        profileImgHandleClose={this.profileImgHandleClose}
+                    />
+                </Modal>
+            );
         }
 
         return (
             <Grid>
                 <Grid.Row>
                     <div className={styles.usernameDiv}>{this.props.username}</div>
-                    <img src={profileImg} className={styles.profileImg}/>
+                    { this.props.authUserId === this.props.userId ? profileImgModal : profileImg }
                     { followButtonDiv }
                     <Grid.Column width={16}>
                         <div className={styles.backgroundImgDiv}>
-                            {/*<img className={styles.backgroundImg} src={backgroundImg}/>*/}
-                            <Image fluid src={backgroundImg} className={styles.backgroundImg}/>
+                            <Image fluid className={styles.backgroundImg}
+                                   src={backgroundImg}/>
                         </div>
                     </Grid.Column>
                 </Grid.Row>
@@ -166,4 +198,16 @@ class UserPageHeader extends Component {
     }
 }
 
-export default UserPageHeader;
+const mapStateToProps = state => {
+    return {
+        profileImgSrc: state.user.profileImgSrc
+    };
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onLoadUserProfileImage: (userId) => dispatch(loadUserProfileImage(userId))
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserPageHeader);
