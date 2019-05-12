@@ -11,19 +11,21 @@
 
 .profileImgDiv {
     margin-top: 5px;
+    width: 70px;
+    border: 1px solid black;
 }
 
 .profileImgColumn {
-    /*margin-bottom: -1em;*/
+    margin-left: 10px;
 }
 
 .headerInfoColumn {
-    margin-left: -1.5em;
-    margin-top:0.2em;
+    margin-left: -25px;
+    margin-top: 7px;
 }
 
 .songInfoRow {
-    margin-top: 10px;
+    margin-top: 13px;
     font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
     font-size: 1.2rem;
 }
@@ -110,8 +112,8 @@
 }
 
 .songPlayRow {
-    margin-top: -0.8em;
-    margin-left: 5px;
+    margin-top: -5px;
+    margin-left: -5px;
 }
 
 .progressDiv {

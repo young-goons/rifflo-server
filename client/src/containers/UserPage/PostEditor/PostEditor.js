@@ -51,6 +51,7 @@ class PostEditor extends Component {
         if (this.state.isSongUploaded) {
             this.props.onSharePost(this.props.songFile, this.props.clipRange, this.props.songInfo,
                                    this.state.content, this.state.tags);
+            this.setState({isSongUploaded: false, content: '', tags: ''});
         } else {
             alert("Song not uploaded");
             this.setState({songUploadWarning: true});
