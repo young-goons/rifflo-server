@@ -4,8 +4,8 @@ import { Grid, Image, Button, Label, Modal } from 'semantic-ui-react';
 import axios from 'axios';
 
 import styles from './UserPageHeader.module.css';
-import backgroundImg from '../../../malibu_background.jpg'
-import profileImage from '../../../yongkyun_profile_pic.jpg';
+import defaultProfileImage from '../../../resources/defaultProfileImage.jpg';
+import defaultHeaderImage from '../../../resources/defaultHeaderImage.jpg';
 import ImageUploader from "../ImageUploader/ImageUploader";
 import {
     loadUserProfileImage,
@@ -160,13 +160,17 @@ class UserPageHeader extends Component {
                     </Button>
                 </div>
             );
-            profileImg = <img className={styles.profileImg} src={this.props.profileImgSrc} alt="profileImage" />;
-            headerImg = <img className={styles.headerImg} src={this.props.headerImgSrc} alt="headerImage" />;
+            profileImg = <img className={styles.profileImg} alt="profileImage"
+                              src={this.props.profileImgSrc ? this.props.profileImgSrc : defaultProfileImage} />;
+            headerImg = <img className={styles.headerImg} alt="headerImage"
+                             src={this.props.headerImgSrc ? this.props.headerImgSrc : defaultHeaderImage} />;
         } else {
             profileImg = <img className={styles.profileImg + " " + styles.profileImgModal} alt="profileImage"
-                              src={this.props.profileImgSrc} onClick={this.profileImgHandleOpen} />;
+                              src={this.props.profileImgSrc ? this.props.profileImgSrc : defaultProfileImage}
+                              onClick={this.profileImgHandleOpen} />;
             headerImg = <img className={styles.headerImg + " " + styles.headerImgModal} alt="headerImage"
-                              src={this.props.headerImgSrc} onClick={this.headerImgHandleOpen} />;
+                             src={this.props.headerImgSrc ? this.props.headerImgSrc : defaultHeaderImage }
+                             onClick={this.headerImgHandleOpen} />;
             profileImgModal = (
                 <Modal trigger={profileImg} size="small" centered={false}
                        open={this.state.profileImgModalOpen} onClose={this.profileImgHandleClose}>

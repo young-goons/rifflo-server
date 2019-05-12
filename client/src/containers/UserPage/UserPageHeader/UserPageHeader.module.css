@@ -24,7 +24,7 @@
     position: absolute;
     width: 110px;
     height: 110px;
-    border: 2px white solid;
+    border: 2px ghostwhite solid;
     z-index: 5;
     /* there is default 14px padding from top and left*/
     top: 104px;
