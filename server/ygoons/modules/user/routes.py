@@ -1,10 +1,13 @@
 import random
 import json
 import sys
+import os
 
 import flask
-from flask import request, jsonify, make_response
+from flask import request, jsonify, make_response, send_from_directory
+from flask import current_app as app
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from werkzeug.utils import secure_filename
 
 from ygoons.modules.user import blueprint, helpers, feed, svd
 
@@ -220,6 +223,41 @@ def upload_play_history(post_id):
         row_cnt = cursor.execute(sql, (user_id, post_id))
     if row_cnt == 1:
         flask.g.pymysql_db.commit()
-        return make_response(jsonify({'success': True}), 400)
+        return make_response(jsonify({'success': True}), 200)
     else:
-        return make_response(jsonify({'success': False}), 200)
+        return make_response(jsonify({'success': False}), 400)
+
+
+@blueprint.route('/user/<int:user_id>/profile/image', methods=['GET'])
+def get_user_profile_image(user_id):
+    query_result = helpers.get_profile_picture_path(user_id)
+    if query_result is not None:
+        file_name = query_result.split('/')[-1]
+        file_path = '/'.join(query_result.split('/')[:-1])
+        return send_from_directory(file_path, file_name, mimetype='image/jpeg')
+    else:
+        return make_response(jsonify({'msg': "user_id is not found"}), 400)
+
+
+@blueprint.route('/user/<int:user_id>/profile/image', methods=['POST'])
+@jwt_required
+def upload_user_profile_image(user_id):
+    curr_user_id = get_jwt_identity()['userId']
+    if user_id != curr_user_id:
+        return make_response(jsonify({'msg': "Authorization failed", 'success': False}), 400)
+
+    image = request.files['file']
+
+    if not os.path.isdir(
+            os.path.join(app.config["IMAGE_STORAGE_PATH"], str(user_id))):
+        os.makedirs(os.path.join(app.config["IMAGE_STORAGE_PATH"], str(user_id)),
+                    exist_ok=True)
+    image_file_path = os.path.join(app.config['IMAGE_STORAGE_PATH'],
+                                   str(user_id), secure_filename(image.filename))
+    if os.path.exists(image_file_path):
+        image.save(image_file_path)
+
+    row_cnt = helpers.upload_profile_picture(user_id, image_file_path)
+    if row_cnt == 1:
+        flask.g.pymysql_db.commit()
+    return make_response(jsonify({'success': True}), 200)

@@ -68,7 +68,6 @@ def upload_post():
     user = get_jwt_identity()
     user_id = user['userId']
     file = request.files['songFile']
-    print(request.form)
 
     # file is saved in SONG_STORAGE_PATH/userid/.mp3
     if not os.path.isdir(

@@ -47,7 +47,7 @@ CREATE TABLE tbl_user
 CREATE TABLE tbl_user_info
 (
     user_id               INT PRIMARY KEY,
-    profile_picture_path  VARCHAR(50),
+    profile_picture_path  VARCHAR(200),
 
     FOREIGN KEY (user_id) REFERENCES tbl_user(user_id)
       ON DELETE CASCADE ON UPDATE CASCADE
