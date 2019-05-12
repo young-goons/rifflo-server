@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { FilePond } from 'react-filepond';
 import { Input, Icon, Button } from 'semantic-ui-react';
 
 import { uploadSong } from '../../../store/actions/upload';

@@ -4,7 +4,7 @@ import axios from 'axios';
 
 import styles from './Post.module.css';
 import { convertDateToStr } from "../../../shared/dateUtils";
-import profileImg from '../../../default_profile_img.png';
+import profileImg from '../../../resources/defaultProfileImage.jpg';
 
 class Post extends Component {
     state = {

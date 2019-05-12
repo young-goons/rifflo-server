@@ -1,4 +1,4 @@
-.backgroundImgDiv {
+.headerImgDiv {
     width: 100%;
     height: 180px;
     overflow: hidden;
@@ -15,7 +15,8 @@
     font-size: 2.5em;
 }
 
-.backgroundImg {
+.headerImg {
+    width: 100%;
     z-index: 1;
 }
 
@@ -23,7 +24,7 @@
     position: absolute;
     width: 110px;
     height: 110px;
-    border: 2px white solid;
+    border: 2px ghostwhite solid;
     z-index: 5;
     /* there is default 14px padding from top and left*/
     top: 104px;
@@ -55,4 +56,12 @@
 
 .userPageLeftmostMenuEntry {
     color: white;
+}
+
+.profileImgModal:hover {
+    cursor: pointer;
+}
+
+.headerImgModal:hover {
+    cursor: pointer;
 }

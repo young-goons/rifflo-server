@@ -32,6 +32,7 @@ app.config['JWT_SECRET_KEY'] = config.JWT_SECRET_KEY
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = config.JWT_ACCESS_TOKEN_EXPIRES
 app.config['SONG_STORAGE_PATH'] = config.SONG_STORAGE_PATH
 app.config['CLIP_STORAGE_PATH'] = config.CLIP_STORAGE_PATH
+app.config['IMAGE_STORAGE_PATH'] = config.IMAGE_STORAGE_PATH
 jwt = JWTManager(app)
 
 
