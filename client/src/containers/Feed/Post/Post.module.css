@@ -10,17 +10,17 @@
 }
 
 .profileImgDiv {
-    margin-top: 5px;
-    width: 70px;
+    margin-top: 10px;
+    width: 65px;
     border: 1px solid black;
 }
 
 .profileImgColumn {
-    margin-left: 10px;
+    margin-left: 15px;
 }
 
 .headerInfoColumn {
-    margin-left: -25px;
+    margin-left: -30px;
     margin-top: 7px;
 }
 
