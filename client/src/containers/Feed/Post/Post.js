@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { Grid, Image, Modal, Icon, Container, Input, Dropdown } from 'semantic-ui-react';
 import axios from 'axios';
+import { connect } from 'react-redux';
 
 import styles from './Post.module.css';
 import profileImg from '../../../resources/defaultProfileImage.jpg';
 import { convertDateToStr } from '../../../shared/dateUtils';
+import { loadUserProfileImage } from '../../../store/actions/user';
 
 class Post extends Component {
     state = {
@@ -19,7 +21,8 @@ class Post extends Component {
         isPlayed: false,
         isPlaying: false,
         progressPercent: 0,
-        fullSongModalOpen: false
+        fullSongModalOpen: false,
+        profileImgSrc: null
     };
 
     audioRef = React.createRef();
@@ -69,6 +72,16 @@ class Post extends Component {
                     console.log(error);
                     alert(error);
                 });
+        }
+        if (!this.state.profileImgSrc) {
+            let url = "http://127.0.0.1:5000/user/" + this.props.userId + "/profile/image";
+            axios({method: 'GET', url})
+                .then(response => {
+                    this.setState({profileImgSrc: url + "?" + Date.now()});
+                })
+                .catch(error => {
+                    console.log(error);
+                })
         }
     }
 
@@ -254,7 +267,10 @@ class Post extends Component {
                 <div className={styles.postHeaderDiv}>
                     <Grid>
                         <Grid.Column width={3} className={styles.profileImgColumn}>
-                            <Image className={styles.profileImgDiv} src={profileImg}/>
+                            <a href={"/" + this.props.username}>
+                            <Image className={styles.profileImgDiv}
+                                   src={this.state.profileImgSrc ? this.state.profileImgSrc : profileImg} />
+                            </a>
                         </Grid.Column>
                         <Grid.Column width={13} className={styles.headerInfoColumn}>
                             <Grid.Row className={styles.usernameRow}>
