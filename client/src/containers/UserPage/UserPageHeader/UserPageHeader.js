@@ -7,11 +7,8 @@ import styles from './UserPageHeader.module.css';
 import defaultProfileImage from '../../../resources/defaultProfileImage.jpg';
 import defaultHeaderImage from '../../../resources/defaultHeaderImage.jpg';
 import ImageUploader from "../ImageUploader/ImageUploader";
-import {
-    loadUserProfileImage,
-    loadUserHeaderImage,
-    uploadUserHeaderImage,
-    uploadUserProfileImage
+import { loadUserProfileImage, loadUserHeaderImage, uploadUserHeaderImage, deleteUserHeaderImage,
+         uploadUserProfileImage, deleteUserProfileImage
 } from "../../../store/actions/user";
 
 class UserPageHeader extends Component {
@@ -178,12 +175,14 @@ class UserPageHeader extends Component {
                         userId={this.props.userId}
                         imgHandleClose={this.profileImgHandleClose}
                         onUploadImage={this.props.onUploadProfileImage}
+                        onDeleteImage={this.props.onDeleteProfileImage}
                         aspectRatio={1 / 1}
                         newFilename="profileImage.jpeg"
                         headerSentence="Upload New Profile Picture"
                         cropDefaultWidth={150}
                         maxWidth={700}
                         maxHeight={700}
+                        imageSrc={this.props.profileImgSrc}
                     />
                 </Modal>
             );
@@ -194,12 +193,14 @@ class UserPageHeader extends Component {
                         userId={this.props.userId}
                         imgHandleClose={this.headerImgHandleClose}
                         onUploadImage={this.props.onUploadHeaderImage}
+                        onDeleteImage={this.props.onDeleteHeaderImage}
                         aspectRatio={796 / 180}
                         newFilename="headerImage.jpeg"
                         headerSentence="Upload New Header Picture"
                         cropDefaultWidth={400}
                         maxwidth={1500}
                         maxHeight={1500}
+                        imageSrc={this.props.headerImgSrc}
                     />
                 </Modal>
             );
@@ -256,8 +257,10 @@ const mapDispatchToProps = dispatch => {
     return {
         onLoadUserProfileImage: (userId) => dispatch(loadUserProfileImage(userId)),
         onUploadProfileImage: (userId, formData) => dispatch(uploadUserProfileImage(userId, formData)),
+        onDeleteProfileImage: (userId) => dispatch(deleteUserProfileImage(userId)),
         onLoadUserHeaderImage: (userId) => dispatch(loadUserHeaderImage(userId)),
-        onUploadHeaderImage: (userId, formData) => dispatch(uploadUserHeaderImage(userId, formData))
+        onUploadHeaderImage: (userId, formData) => dispatch(uploadUserHeaderImage(userId, formData)),
+        onDeleteHeaderImage: (userId) => dispatch(deleteUserHeaderImage(userId))
     };
 };
 

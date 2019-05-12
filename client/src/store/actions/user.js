@@ -22,10 +22,24 @@ export const loadUserProfileImageSuccess = (imageSrc) => {
     };
 };
 
+export const deleteUserProfileImageSuccess = () => {
+    return {
+        type: actionTypes.DELETE_USER_PROFILE_IMAGE_SUCCESS,
+        profileImgSrc: null
+    };
+};
+
 export const loadUserHeaderImageSuccess = (imageSrc) => {
     return {
         type: actionTypes.LOAD_USER_HEADER_IMAGE_SUCCESS,
         headerImgSrc: imageSrc
+    };
+};
+
+export const deleteUserHeaderImageSuccess = () => {
+    return {
+        type: actionTypes.DELETE_USER_HEADER_IMAGE_SUCCESS,
+        headerImgSrc: null
     };
 };
 
@@ -84,6 +98,7 @@ export const loadUserUpdatedPosts = (postId, postArr) => {
 
 export const loadUserProfileImage = (userId) => {
     return dispatch => {
+        console.log('requesting profile image load');
         let url = "http://127.0.0.1:5000/user/" + userId + "/profile/image";
         axios({method: 'GET', url: url})
             .then(response => {
@@ -110,7 +125,23 @@ export const uploadUserProfileImage = (userId, formData) => {
             .catch(error => {
                 console.log(error);
             })
-    }
+    };
+};
+
+export const deleteUserProfileImage = (userId) => {
+    return dispatch => {
+        const url = "http://127.0.0.1:5000/user/" + userId + "/profile/image";
+        const requestHeaders = {
+            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken'),
+        };
+        axios({method: 'DELETE', url: url, headers: requestHeaders})
+            .then(response => {
+                dispatch(deleteUserProfileImageSuccess());
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    };
 };
 
 export const loadUserHeaderImage = (userId) => {
@@ -118,7 +149,6 @@ export const loadUserHeaderImage = (userId) => {
         let url = "http://127.0.0.1:5000/user/" + userId + "/header/image";
         axios({method: 'GET', url: url})
             .then(response => {
-                console.log(response);
                 dispatch(loadUserHeaderImageSuccess(url + "?" + Date.now()));
             })
             .catch(error => {
@@ -143,4 +173,20 @@ export const uploadUserHeaderImage = (userId, formData) => {
                 console.log(error);
             })
     }
+};
+
+export const deleteUserHeaderImage = (userId) => {
+    return dispatch => {
+        const url = "http://127.0.0.1:5000/user/" + userId + "/header/image";
+        const requestHeaders = {
+            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken'),
+        };
+        axios({method: 'DELETE', url: url, headers: requestHeaders})
+            .then(response => {
+                dispatch(deleteUserHeaderImageSuccess());
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    };
 };

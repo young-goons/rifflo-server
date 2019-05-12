@@ -112,6 +112,11 @@ class ImageUploader extends Component {
         this.props.onUploadImage(this.props.userId, formData);
     };
 
+    clickRemoveHandler = () => {
+        this.props.imgHandleClose();
+        this.props.onDeleteImage(this.props.userId);
+    };
+
     render() {
         let imageLoadSpinner;
         if (this.state.isFileSelected && this.state.isImageLoading) {
@@ -138,11 +143,18 @@ class ImageUploader extends Component {
             // croppedImage = <img style={{ maxWidth: "200px"}} src={this.state.croppedImageUrl}/>
             uploadButton = (
                 <div className={styles.buttonDiv}>
-                    <Button fluid color="teal" size="medium"
-                            onClick={this.clickUploadHandler}>
+                    <Button fluid color="teal" size="medium" onClick={this.clickUploadHandler}>
                         Upload Profile Image
                     </Button>
                 </div>
+            );
+        }
+        let removeButton;
+        if (this.props.imageSrc && !this.state.isFileSelected) {
+            removeButton = (
+                <button className={styles.removeButton} onClick={this.clickRemoveHandler}>
+                    Remove Current Picture
+                </button>
             );
         }
         return (
@@ -151,6 +163,7 @@ class ImageUploader extends Component {
                 <div className={styles.modalHeaderDiv}>{this.props.headerSentence}</div>
                 <input type="file" className={styles.imgInput} accept=".jpg, .jpeg, .gif, .png"
                        onChange={this.onSelectFile}/>
+                { removeButton }
                 <div className={styles.loadedImgDiv}>
                     { cropComponent }
                 </div>
