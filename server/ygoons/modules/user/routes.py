@@ -348,8 +348,8 @@ def delete_user_header_image(user_id):
 
     image_path = helpers.get_header_picture_path(user_id)
     if image_path is None:
-        return make_response(
-            jsonify({'msg': "Header image does not exist"}), 200)
+        return make_response(jsonify({'msg': "Header image does not exist"}),
+                             200)
     else:
         os.remove(image_path)
 
