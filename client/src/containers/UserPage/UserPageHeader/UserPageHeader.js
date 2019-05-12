@@ -6,8 +6,13 @@ import axios from 'axios';
 import styles from './UserPageHeader.module.css';
 import backgroundImg from '../../../malibu_background.jpg'
 import profileImage from '../../../yongkyun_profile_pic.jpg';
-import ProfilePictureUploader from "../ProfilePictureUploader/ProfilePictureUploader";
-import { loadUserProfileImage } from "../../../store/actions/user";
+import ImageUploader from "../ImageUploader/ImageUploader";
+import {
+    loadUserProfileImage,
+    loadUserHeaderImage,
+    uploadUserHeaderImage,
+    uploadUserProfileImage
+} from "../../../store/actions/user";
 
 class UserPageHeader extends Component {
     state = {
@@ -15,7 +20,9 @@ class UserPageHeader extends Component {
         followerArr: null,
         followingArr: null,
         profileImgModalOpen: false,
-        profileImageReady: false
+        profileImageReady: false,
+        headerImgModalOpen: false,
+        headerImageReady: false
     };
 
     componentDidMount() {
@@ -43,6 +50,10 @@ class UserPageHeader extends Component {
             if (!this.state.profileImageReady) {
                 this.props.onLoadUserProfileImage(nextProps.userId);
                 this.setState({profileImageReady: true});
+            }
+            if (!this.state.headerImageReady) {
+                this.props.onLoadUserHeaderImage(nextProps.userId);
+                this.setState({headerImageReady: true});
             }
         }
     }
@@ -117,14 +128,21 @@ class UserPageHeader extends Component {
     };
 
     profileImgHandleClose = () => {
-        console.log("close modal");
         this.setState({profileImgModalOpen: false});
+    };
+
+    headerImgHandleOpen = () => {
+        this.setState({headerImgModalOpen: true});
+    };
+
+    headerImgHandleClose = () => {
+        this.setState({headerImgModalOpen: false});
     };
 
     render () {
         let followButtonDiv;
-        let profileImgModal;
-        let profileImg;
+        let profileImgModal, profileImg;
+        let headerImgModal, headerImg;
         if (this.props.authUserId != this.props.userId) {
             followButtonDiv = (
                 <div className={styles.followButtonDiv}>
@@ -142,16 +160,42 @@ class UserPageHeader extends Component {
                     </Button>
                 </div>
             );
-            profileImg = <img className={styles.profileImg} src={this.props.profileImgSrc} />;
+            profileImg = <img className={styles.profileImg} src={this.props.profileImgSrc} alt="profileImage" />;
+            headerImg = <img className={styles.headerImg} src={this.props.headerImgSrc} alt="headerImage" />;
         } else {
-            profileImg = <img className={styles.profileImg + " " + styles.profileImgModal}
-                              src={this.props.profileImgSrc} onClick={this.profileImgHandleOpen}/>;
+            profileImg = <img className={styles.profileImg + " " + styles.profileImgModal} alt="profileImage"
+                              src={this.props.profileImgSrc} onClick={this.profileImgHandleOpen} />;
+            headerImg = <img className={styles.headerImg + " " + styles.headerImgModal} alt="headerImage"
+                              src={this.props.headerImgSrc} onClick={this.headerImgHandleOpen} />;
             profileImgModal = (
                 <Modal trigger={profileImg} size="small" centered={false}
                        open={this.state.profileImgModalOpen} onClose={this.profileImgHandleClose}>
-                    <ProfilePictureUploader
+                    <ImageUploader
                         userId={this.props.userId}
-                        profileImgHandleClose={this.profileImgHandleClose}
+                        imgHandleClose={this.profileImgHandleClose}
+                        onUploadImage={this.props.onUploadProfileImage}
+                        aspectRatio={1 / 1}
+                        newFilename="profileImage.jpeg"
+                        headerSentence="Upload New Profile Picture"
+                        cropDefaultWidth={150}
+                        maxWidth={700}
+                        maxHeight={700}
+                    />
+                </Modal>
+            );
+            headerImgModal = (
+                <Modal trigger={headerImg} size="large" centered={false}
+                       open={this.state.headerImgModalOpen} onClose={this.headerImgHandleClose}>
+                    <ImageUploader
+                        userId={this.props.userId}
+                        imgHandleClose={this.headerImgHandleClose}
+                        onUploadImage={this.props.onUploadHeaderImage}
+                        aspectRatio={796 / 180}
+                        newFilename="headerImage.jpeg"
+                        headerSentence="Upload New Header Picture"
+                        cropDefaultWidth={400}
+                        maxwidth={1500}
+                        maxHeight={1500}
                     />
                 </Modal>
             );
@@ -164,9 +208,8 @@ class UserPageHeader extends Component {
                     { this.props.authUserId === this.props.userId ? profileImgModal : profileImg }
                     { followButtonDiv }
                     <Grid.Column width={16}>
-                        <div className={styles.backgroundImgDiv}>
-                            <Image fluid className={styles.backgroundImg}
-                                   src={backgroundImg}/>
+                        <div className={styles.headerImgDiv}>
+                            { this.props.authUserId === this.props.userId ? headerImgModal : headerImg }
                         </div>
                     </Grid.Column>
                 </Grid.Row>
@@ -200,13 +243,17 @@ class UserPageHeader extends Component {
 
 const mapStateToProps = state => {
     return {
-        profileImgSrc: state.user.profileImgSrc
+        profileImgSrc: state.user.profileImgSrc,
+        headerImgSrc: state.user.headerImgSrc
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        onLoadUserProfileImage: (userId) => dispatch(loadUserProfileImage(userId))
+        onLoadUserProfileImage: (userId) => dispatch(loadUserProfileImage(userId)),
+        onUploadProfileImage: (userId, formData) => dispatch(uploadUserProfileImage(userId, formData)),
+        onLoadUserHeaderImage: (userId) => dispatch(loadUserHeaderImage(userId)),
+        onUploadHeaderImage: (userId, formData) => dispatch(uploadUserHeaderImage(userId, formData))
     };
 };
 

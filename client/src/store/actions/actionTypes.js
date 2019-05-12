@@ -22,5 +22,6 @@ export const SHARE_POST_FAIL = 'SHARE_POST_FAIL';
 export const LOAD_USER_POSTS_SUCCESS = 'LOAD_USER_POSTS_SUCCESS';
 export const LOAD_USER_POSTS_FAIL = 'LOAD_USER_POSTS_FAIL';
 
-// action types to load profile image
+// action types to load users' images
 export const LOAD_USER_PROFILE_IMAGE_SUCCESS = 'LOAD_USER_PROFILE_IMAGE_SUCCESS';
+export const LOAD_USER_HEADER_IMAGE_SUCCESS = 'LOAD_USER_HEADER_IMAGE_SUCCESS';

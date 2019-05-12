@@ -1,22 +1,19 @@
-import React, { Component, ReactDOM } from 'react';
+import React, { Component } from 'react';
 import ReactCrop from 'react-image-crop';
-import { connect } from 'react-redux';
 import "react-image-crop/dist/ReactCrop.css";
 import * as loadImage from 'blueimp-load-image';
-import { Loader, Modal, Dimmer, Button } from 'semantic-ui-react';
-import axios from 'axios';
+import { Loader, Dimmer, Button } from 'semantic-ui-react';
 
-import styles from './ProfilePictureUploader.module.css';
-import { uploadUserProfileImage } from "../../../store/actions/user";
+import styles from './ImageUploader.module.css';
 
-class ProfilePictureUploader extends Component {
+class ImageUploader extends Component {
     state = {
         isImageLoading: false,
         isFileSelected: false,
         src: null,
         crop: {
-            aspect: 1 / 1,
-            width: 150,
+            aspect: this.props.aspectRatio,
+            width: this.props.cropDefaultWidth,
             x: 0,
             y: 0
         },
@@ -45,8 +42,8 @@ class ProfilePictureUploader extends Component {
                     orientation: true,
                     minWidth: 150,
                     minHeight: 150,
-                    maxWidth: 700,
-                    maxHeight: 600
+                    maxWidth: this.props.maxWidth,
+                    maxHeight: this.props.maxHeight,
                 }
             );
         }
@@ -67,7 +64,7 @@ class ProfilePictureUploader extends Component {
     async makeClientCrop(crop) {
         if (this.imageRef && crop.width && crop.height) {
             const croppedImageUrl = await this.getCroppedImg(
-                this.imageRef, crop, "profileImage.jpeg"
+                this.imageRef, crop, this.props.newFilename
             );
             this.setState({croppedImageUrl});
         }
@@ -111,8 +108,8 @@ class ProfilePictureUploader extends Component {
     clickUploadHandler = () => {
         let formData = new FormData();
         formData.append('file', this.state.blob, this.state.blobName);
-        this.props.profileImgHandleClose();
-        this.props.onUploadProfileImage(this.props.userId, formData);
+        this.props.imgHandleClose();
+        this.props.onUploadImage(this.props.userId, formData);
     };
 
     render() {
@@ -151,7 +148,7 @@ class ProfilePictureUploader extends Component {
         return (
             <div className={styles.modalDiv}>
                 { imageLoadSpinner }
-                <div className={styles.modalHeaderDiv}>Upload New Profile Picture</div>
+                <div className={styles.modalHeaderDiv}>{this.props.headerSentence}</div>
                 <input type="file" className={styles.imgInput} accept=".jpg, .jpeg, .gif, .png"
                        onChange={this.onSelectFile}/>
                 <div className={styles.loadedImgDiv}>
@@ -163,10 +160,4 @@ class ProfilePictureUploader extends Component {
     }
 }
 
-const mapDispatchToProps = dispatch => {
-    return {
-        onUploadProfileImage: (userId, formData) => dispatch(uploadUserProfileImage(userId, formData))
-    }
-};
-
-export default connect(null, mapDispatchToProps)(ProfilePictureUploader);
+export default ImageUploader;
