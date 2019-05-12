@@ -121,8 +121,8 @@ def get_user_feed():
 
     # Reorder using SVD features
     clf = svd.SVD()
-    clf.db_load_user([user_id])
-    clf.db_load_post(cand_id_list)
+    clf.db_load_user(flask.g.pymysql_db, [user_id])
+    clf.db_load_post(flask.g.pymysql_db, cand_id_list)
 
     post_id_list = clf.get_recommendations(user_id,
                                            k=1000,
