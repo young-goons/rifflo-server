@@ -66,6 +66,19 @@ def get_user_exists_by_email(email):
         return make_response(jsonify({'userId': None}), 200)
 
 
+@blueprint.route('/user/id/facebook/<string:facebook_id>', methods=['GET'])
+def get_user_exists_by_facebook_id(facebook_id):
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'SELECT user_id FROM tbl_user WHERE facebook_id = %s'
+        cursor.execute(sql, facebook_id)
+        query_result = cursor.fetchone()
+    print(query_result)
+    if query_result is not None:
+        return make_response(jsonify({'userId': query_result[0]}), 200)
+    else:
+        return make_response(jsonify({'userId': None}), 200)
+
+
 @blueprint.route('/user/<int:user_id>/posts', methods=['GET'])
 @jwt_required
 def get_user_posts(user_id):
