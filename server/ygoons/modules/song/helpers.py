@@ -1,6 +1,5 @@
 # Helper functions for song module
 
-
 import flask
 
 
@@ -20,4 +19,3 @@ def get_similar_songs(partial_song_name):
         similar_songs.append(tuple(item))
 
     return tuple(similar_songs)
-

@@ -12,7 +12,6 @@ from flask import request, jsonify, make_response
 from ygoons.modules.song import blueprint, helpers
 import fuzzywuzzy as fw
 
-
 DEFAULT_NUM_RESULTS = 10
 
 
@@ -49,4 +48,3 @@ def get_search_results():
                     if len(results) > num_results: break
 
     return make_response(jsonify({'results': results}), 200)
-

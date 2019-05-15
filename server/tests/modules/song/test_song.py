@@ -7,8 +7,5 @@ from ygoons.modules.song.helpers import get_similar_songs
 
 
 def test_get_similar_songs(tester):
-    assert get_similar_songs('He') == (
-            ('Hello', 'Adele'),
-            ('Heartless', 'Kanye West')
-            )
-
+    assert get_similar_songs('He') == (('Hello', 'Adele'), ('Heartless',
+                                                            'Kanye West'))
