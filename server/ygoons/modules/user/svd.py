@@ -140,7 +140,8 @@ class SVD:
                 INSERT INTO tbl_user_bias (user_id, user_bias)
                 VALUES (%s, %s)
                 '''
-                cursor.execute(sql, (user_id, float(self.get_user_bias(user_id))))
+                cursor.execute(sql,
+                               (user_id, float(self.get_user_bias(user_id))))
 
             # Post bias
             cursor.execute('DELETE FROM tbl_post_bias')
@@ -149,7 +150,8 @@ class SVD:
                 INSERT INTO tbl_post_bias (post_id, post_bias)
                 VALUES (%s, %s)
                 '''
-                cursor.execute(sql, (post_id, float(self.get_post_bias(post_id))))
+                cursor.execute(sql,
+                               (post_id, float(self.get_post_bias(post_id))))
 
         # Commit changes
         connection.commit()

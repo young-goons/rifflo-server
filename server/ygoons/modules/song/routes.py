@@ -49,4 +49,3 @@ def get_search_results():
                     if len(results) > num_results: break
 
     return make_response(jsonify({'results': results}), 200)
-

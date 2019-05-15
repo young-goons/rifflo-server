@@ -11,4 +11,3 @@ def test_get_similar_songs(tester):
                                                             'Kanye West'))
     assert get_similar_songs('Photo') == (('Photograph', 'Ed Sheeran'), )
     assert get_similar_songs('Anim') == (('Animals', 'Maroon 5'), )
-
