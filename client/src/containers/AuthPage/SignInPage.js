@@ -1,17 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { NavLink, Redirect } from 'react-router-dom';
-import { Button, Form, Grid, Message, Icon, Image, Segment } from 'semantic-ui-react';
+import { Redirect } from 'react-router-dom';
+import FacebookLogin from 'react-facebook-login';
+import { Button, Form, Grid, Message, Icon, Image, Segment, Modal } from 'semantic-ui-react';
 
-import { auth } from '../../store/actions/auth';
+import { auth, authFacebook } from '../../store/actions/auth';
 import styles from './AuthPage.module.css';
+import FacebookModal from "./FacebookModal/FacebookModal";
 
 class SignInPage extends Component {
     state = {
         email: "",
         password: "",
         emailExists: true,
+        facebookModalOpen: false
     };
 
     emailInputHandler = (event) => {
@@ -40,7 +43,30 @@ class SignInPage extends Component {
             });
     };
 
+    facebookResponse = (response) => {
+        const facebookIdExistsUrl = "http://127.0.0.1:5000/user/id/facebook/" + response.userID;
+        const facebookAccessToken = response.accessToken;
+        const facebookEmail = response.email;
+        this.setState({facebookAccessToken});
+        axios({method: 'GET', url: facebookIdExistsUrl})
+            .then(response => {
+                if (response.data.userId) {
+                    this.props.onAuthFacebook(facebookAccessToken);
+                } else {
+                    this.setState({facebookAccessToken, facebookEmail}, () => {
+                        this.handleOpen();
+                    });
+                }
+            });
+    };
 
+    handleOpen = () => {
+        this.setState({facebookModalOpen: true});
+    };
+
+    handleClose = () => {
+        this.setState({facebookModalOpen: false});
+    };
 
     render () {
         let authRedirect = null;
@@ -96,7 +122,7 @@ class SignInPage extends Component {
                                 value={this.state.password}
                                 onChange={this.passwordInputHandler}
                             />
-                            <Button color="blue" fluid size="large" onClick={this.signInHandler}>
+                            <Button color="orange" fluid size="large" onClick={this.signInHandler}>
                                 Sign In
                             </Button>
                         </Form>
@@ -107,23 +133,26 @@ class SignInPage extends Component {
                     </div>
                     <div className={styles.orDiv}>Or</div>
                     <div className={styles.facebookButtonDiv}>
-                        <Button color="facebook" fluid size="large">
-                            <Icon name="facebook" size="small"/> Sign Up with Facebook
-                        </Button>
-                    </div>
-                    <div className={styles.googleButtonDiv}>
-                        <Button color="google plus" fluid size="large">
-                            <Icon name="google" size="small"/> Sign Up with Google
-                        </Button>
+                        <FacebookLogin
+                            appId={process.env.REACT_APP_FACEBOOK_API_KEY}
+                            autoLoad={false}
+                            fields="name,email,picture"
+                            callback={this.facebookResponse}
+                            cssClass={styles.facebookButton}
+                            textButton="Sign In With Facebook"
+                            icon={<Icon name="facebook" size="small"/>}
+                        />
                     </div>
                     <div className={styles.signUpDiv}>
                         Don't have an account yet?
-                        {/*<NavLink to={'/signup'} className={styles.signUpLink}>Sign Up!</NavLink>*/}
                         <span className={styles.signUpLink} onClick={this.props.signUpClickHandler}>
                             Sign Up!
                         </span>
                     </div>
                 </Grid.Column>
+                <Modal size="tiny" open={this.state.facebookModalOpen} onClose={this.handleClose}>
+                    <FacebookModal accessToken={this.state.facebookAccessToken} email={this.state.facebookEmail}/>
+                </Modal>
             </Grid>
         );
         return (
@@ -147,7 +176,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onAuth: (email, password) => dispatch(auth(email, password))
+        onAuth: (email, password) => dispatch(auth(email, password)),
+        onAuthFacebook: (accessToken) => dispatch(authFacebook(accessToken))
     };
 };
 

@@ -85,15 +85,49 @@ export const auth = (email, password) => {
             .then(response => {
                 if (response) {
                     dispatch(loadAuthUserInfo(response.data.user));
-                    // dispatch(authSuccess());
                     console.log(response.data.user)
                 }
             })
             .catch(error => {
                 dispatch(authFail(error));
+            });
+    };
+};
+
+export const authFacebook = (accessToken) => {
+    return dispatch => {
+        let url = "http://127.0.0.1:5000/signin/facebook";
+        const headers = {
+            'Facebook-Access-Token': accessToken
+        };
+        axios({method: 'POST', url: url, headers: headers})
+            .then(response => {
+                if (response.data.user) {
+                    window.localStorage.setItem('accessToken', response.data.user.access_token);
+                    window.localStorage.setItem('refreshToken', response.data.user.refresh_token);
+                    console.log(response);
+                    url =  "http://127.0.0.1:5000/user/" + response.data.user.user_id + "/info";
+                    const requestHeaders = {
+                        'Authorization': 'Bearer ' + response.data.user.access_token
+                    };
+                    return axios({method: 'GET', url: url, headers: requestHeaders})
+                } else {
+                    console.log("Facebook authentication failed");
+                    return;
+                }
+            })
+            .then(response => {
+                if (response) {
+                    dispatch(loadAuthUserInfo(response.data.user));
+                    console.log(response.data.user);
+                }
+            })
+            .catch(error => {
+                console.log(error);
             })
     };
 };
+
 
 /**
  * Refreshes authentication. Assumes there exists refreshToken in localStorage.

@@ -3,7 +3,6 @@ SVD for user-post recommendation.
 """
 
 import numpy as np
-import flask
 
 N_FACTORS = 40
 INIT_MEAN = 0
@@ -18,16 +17,26 @@ class SVD:
         self.user_bias = {}
         self.post_bias = {}
 
-    def db_load(self):
+    def db_load(self, connection):
         """Load latent vectors from database.
+        Args:
+            connection: MySQL connection.
         """
-        with flask.g.pymysql_db.cursor() as cursor:
+        with connection.cursor() as cursor:
+            # Load user and post vectors
             sql = 'SELECT * FROM tbl_user_svd'
             cursor.execute(sql)
             user_query = cursor.fetchall()
             sql = 'SELECT * FROM tbl_post_svd'
             cursor.execute(sql)
             post_query = cursor.fetchall()
+            # Load user and post biases
+            sql = 'SELECT * FROM tbl_user_bias'
+            cursor.execute(sql)
+            user_bias_query = cursor.fetchall()
+            sql = 'SELECT * FROM tbl_post_bias'
+            cursor.execute(sql)
+            post_bias_query = cursor.fetchall()
 
         for (user_id, latent_idx, value) in user_query:
             if user_id not in self.user_vecs:
@@ -39,14 +48,20 @@ class SVD:
                 self.post_vecs[post_id] = np.zeros(N_FACTORS)
             self.post_vecs[post_id][latent_idx] = value
 
-    def db_load_user(self, user_ids):
+        for (user_id, user_bias) in user_bias_query:
+            self.set_user_bias(user_id, user_bias)
+        for (post_id, post_bias) in post_bias_query:
+            self.set_post_bias(post_id, post_bias)
+
+    def db_load_user(self, connection, user_ids):
         """Load latent vectors of users from database.
         Args:
+            connection: MySQL connection.
             user_ids (list): list of users to fetch SVD from database
         """
         if not user_ids:
             return
-        with flask.g.pymysql_db.cursor() as cursor:
+        with connection.cursor() as cursor:
             user_tmp = ', '.join(list(map(str, user_ids)))
             sql = 'SELECT * FROM tbl_user_svd WHERE user_id in (%s)' % user_tmp
             cursor.execute(sql)
@@ -63,14 +78,15 @@ class SVD:
         for (user_id, user_bias) in bias_query:
             self.set_user_bias(user_id, user_bias)
 
-    def db_load_post(self, post_ids):
+    def db_load_post(self, connection, post_ids):
         """Load latent vectors from of posts from database.
         Args:
+            connection: MySQL connection.
             post_ids (list): list of posts to fetch SVD from database
         """
         if not post_ids:
             return
-        with flask.g.pymysql_db.cursor() as cursor:
+        with connection.cursor() as cursor:
             post_tmp = ', '.join(list(map(str, post_ids)))
             sql = 'SELECT * FROM tbl_post_svd WHERE post_id in (%s)' % post_tmp
             cursor.execute(sql)
@@ -87,10 +103,12 @@ class SVD:
         for (post_id, post_bias) in bias_query:
             self.set_post_bias(post_id, post_bias)
 
-    def db_save(self):
+    def db_save(self, connection):
         """Save latent vectors to database.
+        Args:
+            connection: MySQL connection.
         """
-        with flask.g.pymysql_db.cursor() as cursor:
+        with connection.cursor() as cursor:
             # Delete all old values from user svd table
             # TODO: Very unsafe! Eventually, want a safer way of doing this
             cursor.execute('DELETE FROM tbl_user_svd')
@@ -122,7 +140,8 @@ class SVD:
                 INSERT INTO tbl_user_bias (user_id, user_bias)
                 VALUES (%s, %s)
                 '''
-                cursor.execute(sql, (user_id, self.get_user_bias(user_id)))
+                cursor.execute(sql,
+                               (user_id, float(self.get_user_bias(user_id))))
 
             # Post bias
             cursor.execute('DELETE FROM tbl_post_bias')
@@ -131,10 +150,11 @@ class SVD:
                 INSERT INTO tbl_post_bias (post_id, post_bias)
                 VALUES (%s, %s)
                 '''
-                cursor.execute(sql, (post_id, self.get_post_bias(post_id)))
+                cursor.execute(sql,
+                               (post_id, float(self.get_post_bias(post_id))))
 
         # Commit changes
-        flask.g.pymysql_db.commit()
+        connection.commit()
 
     def get_user_vector(self, user_id):
         """Get user latent vector.

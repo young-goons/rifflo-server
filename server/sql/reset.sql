@@ -7,6 +7,9 @@ DROP DATABASE IF EXISTS ygoons_test;
 CREATE DATABASE ygoons_test;
 USE ygoons_test;
 
+SET NAMES utf8mb4;
+ALTER DATABASE ygoons_test CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
+
 -- Create the database schema.
 SOURCE sql/rifflet.sql
 

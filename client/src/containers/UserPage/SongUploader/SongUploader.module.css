@@ -16,7 +16,8 @@
 }
 
 .audioPlayDiv {
-    width: 480px;
+    /*width: 480px;*/
+    width: 92%;
     margin-left: 25px;
     margin-top: -5px;
 }
@@ -31,7 +32,8 @@
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    width: 430px;
+    /*width: 430px;*/
+    width: 87%;
     height: 18px;
 }
 
@@ -55,7 +57,7 @@
 .clipLengthDiv {
     float: right;
     position: relative;
-    right: 8px;
+    right: 15px;
     font-size: 1.1em;
 }
 

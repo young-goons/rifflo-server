@@ -1,7 +1,3 @@
--- DROP DATABASE IF EXISTS app_dev;
--- CREATE DATABASE app_dev;
--- USE app_dev;
-
 -- TODO: Apply indices
 
 -- Create the database schema.
@@ -31,15 +27,18 @@ DROP TABLE IF EXISTS tbl_post_bias;
 -- Create user table.
 CREATE TABLE tbl_user
 (
-    user_id    INT AUTO_INCREMENT,
-    email      VARCHAR(50) NOT NULL UNIQUE,
-    username   VARCHAR(20) NOT NULL UNIQUE,
+    user_id      INT AUTO_INCREMENT,
+    email        VARCHAR(50) NOT NULL UNIQUE,
+    username     VARCHAR(20) NOT NULL UNIQUE,
 
     -- first 256 bits (64 characters) correspond to salt
     -- and the remaining 512 bits (128 characters) correspond to the hash
-    password   CHAR(192) NOT NULL,
+    password     CHAR(192) NOT NULL,
 
-    join_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    -- Facebook id if the user linked account with Facebook
+    facebook_id  VARCHAR(30) UNIQUE,
+
+    join_date    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY(user_id)
 );
@@ -58,14 +57,14 @@ CREATE TABLE tbl_user_info
 CREATE TABLE tbl_song_info
 (
     song_id       INT AUTO_INCREMENT,
-    song_name     VARCHAR(50) NOT NULL,
-    artist        VARCHAR(50) NOT NULL,
+    song_name     VARCHAR(900) NOT NULL,
+    artist        VARCHAR(300) NOT NULL,
     release_date  DATE,
     album         VARCHAR(50),
-    song_path     VARCHAR(200) NOT NULL, -- path to the mp3 of full song
+    spotify_url   VARCHAR(200),
 
     PRIMARY KEY(song_id)
-);
+);-- CHARACTER SET=utf8;
 
 -- Create post table.
 CREATE TABLE tbl_post
@@ -256,3 +255,4 @@ CREATE TABLE tbl_post_bias
 
     PRIMARY KEY(post_id)
 );
+
