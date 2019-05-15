@@ -101,7 +101,8 @@ def sign_up_facebook():
 
     facebook_id = helpers.get_facebook_id(user_access_token)
     if facebook_id is None:
-        return make_response(jsonify({'msg': 'Error during Facebook authentication'}))
+        return make_response(
+            jsonify({'msg': 'Error during Facebook authentication'}))
 
     # for facebook auth, fill password with randomly generated string
     # TODO: check if this is a good practice
@@ -147,10 +148,7 @@ def sign_in_facebook():
     if len(query_result) != 1:
         return make_response(jsonify({'user': None}), 200)
 
-    user = {
-        'user_id': query_result[0][0],
-        'username': query_result[0][1]
-    }
+    user = {'user_id': query_result[0][0], 'username': query_result[0][1]}
 
     access_token = create_access_token(identity={
         'userId': user['user_id'],
@@ -169,4 +167,3 @@ def sign_in_facebook():
 @blueprint.route('/signout', methods=['POST'])
 def sign_out():
     return make_response(jsonify({'success': True}), 200)
-

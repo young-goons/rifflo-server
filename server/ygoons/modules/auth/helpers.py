@@ -27,5 +27,3 @@ def get_facebook_id(user_access_token):
         facebook_id = None
 
     return facebook_id
-
-
