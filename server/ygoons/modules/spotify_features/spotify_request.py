@@ -7,15 +7,17 @@ from ygoons.config import SPOTIFY_CLIENT_ID_KEY
 
 
 def get_access_token():
-    r = requests.post(url = 'https://accounts.spotify.com/api/token',
-            data={'grant_type': 'client_credentials'},
-            headers={'Authorization': f'Basic {SPOTIFY_CLIENT_ID_KEY}'})
+    r = requests.post(
+        url='https://accounts.spotify.com/api/token',
+        data={'grant_type': 'client_credentials'},
+        headers={'Authorization': f'Basic {SPOTIFY_CLIENT_ID_KEY}'})
     j = json.loads(r.text)
     try:
         return j['access_token']
     except:
         sys.stderr.write(f'get_access_token: {j}\n')
         return None
+
 
 def get_spotify_id(track, artist, album=None, year=None, token=None):
     """Attempt to find the Spotify ID of a song.
@@ -62,7 +64,6 @@ def get_spotify_id(track, artist, album=None, year=None, token=None):
     except KeyError:
         sys.stderr.write(f'get_spotify_id: {j}\n')
         return ''
-
 
 
 def get_audio_features(track_id, token=None):
