@@ -1,6 +1,5 @@
 import random
 import json
-import sys
 
 import flask
 from flask import request, jsonify, make_response

@@ -1,7 +1,3 @@
--- DROP DATABASE IF EXISTS app_dev;
--- CREATE DATABASE app_dev;
--- USE app_dev;
-
 -- TODO: Apply indices
 
 -- Create the database schema.
@@ -55,14 +51,15 @@ CREATE TABLE tbl_user_info
 CREATE TABLE tbl_song_info
 (
     song_id       INT AUTO_INCREMENT,
-    song_name     VARCHAR(50) NOT NULL,
-    artist        VARCHAR(50) NOT NULL,
+    song_name     VARCHAR(900) NOT NULL,
+    artist        VARCHAR(300) NOT NULL,
     release_date  DATE,
     album         VARCHAR(50),
     rel_path      VARCHAR(50),
+    spotify_url   VARCHAR(200),
 
     PRIMARY KEY(song_id)
-);
+);-- CHARACTER SET=utf8;
 
 -- Create post table.
 CREATE TABLE tbl_post
@@ -219,3 +216,4 @@ CREATE TABLE tbl_post_bias
 
     PRIMARY KEY(post_id)
 );
+
