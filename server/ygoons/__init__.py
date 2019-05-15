@@ -16,7 +16,7 @@ except ImportError:
     from ygoons import default_config as config
 
 from ygoons import constants
-from ygoons.modules import user, post, clip
+from ygoons.modules import user, post, clip, auth
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -26,6 +26,7 @@ CORS(app)  # Cross-Origin Resource Sharing
 app.register_blueprint(user.blueprint)
 app.register_blueprint(post.blueprint)
 app.register_blueprint(clip.blueprint)
+app.register_blueprint(auth.blueprint)
 
 # Set up JWT
 app.config['JWT_SECRET_KEY'] = config.JWT_SECRET_KEY

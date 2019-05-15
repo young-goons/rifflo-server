@@ -27,15 +27,18 @@ DROP TABLE IF EXISTS tbl_post_bias;
 -- Create user table.
 CREATE TABLE tbl_user
 (
-    user_id    INT AUTO_INCREMENT,
-    email      VARCHAR(50) NOT NULL UNIQUE,
-    username   VARCHAR(20) NOT NULL UNIQUE,
+    user_id      INT AUTO_INCREMENT,
+    email        VARCHAR(50) NOT NULL UNIQUE,
+    username     VARCHAR(20) NOT NULL UNIQUE,
 
     -- first 256 bits (64 characters) correspond to salt
     -- and the remaining 512 bits (128 characters) correspond to the hash
-    password   CHAR(192) NOT NULL,
+    password     CHAR(192) NOT NULL,
 
-    join_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    -- Facebook id if the user linked account with Facebook
+    facebook_id  VARCHAR(30) UNIQUE,
+
+    join_date    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY(user_id)
 );
