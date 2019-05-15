@@ -7,7 +7,9 @@ DROP VIEW IF EXISTS view_comment_count;
 DROP VIEW IF EXISTS view_follower_count;
 DROP VIEW IF EXISTS view_following_count;
 
+DROP TABLE IF EXISTS tbl_dislike;
 DROP TABLE IF EXISTS tbl_like;
+DROP TABLE IF EXISTS tbl_play_history;
 DROP TABLE IF EXISTS tbl_reply;
 DROP TABLE IF EXISTS tbl_comment;
 DROP TABLE IF EXISTS tbl_bookmark;
@@ -40,8 +42,9 @@ CREATE TABLE tbl_user
 
 CREATE TABLE tbl_user_info
 (
-    user_id               INT PRIMARY KEY,
-    profile_picture_path  VARCHAR(50),
+    user_id                  INT PRIMARY KEY,
+    profile_picture_path     VARCHAR(200),
+    background_picture_path  VARCHAR(200),
 
     FOREIGN KEY (user_id) REFERENCES tbl_user(user_id)
       ON DELETE CASCADE ON UPDATE CASCADE
@@ -55,7 +58,6 @@ CREATE TABLE tbl_song_info
     artist        VARCHAR(300) NOT NULL,
     release_date  DATE,
     album         VARCHAR(50),
-    rel_path      VARCHAR(50),
     spotify_url   VARCHAR(200),
 
     PRIMARY KEY(song_id)
@@ -64,13 +66,15 @@ CREATE TABLE tbl_song_info
 -- Create post table.
 CREATE TABLE tbl_post
 (
-    post_id        INT AUTO_INCREMENT,
-    user_id        INT NOT NULL,
-    upload_date    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    content        VARCHAR(100),
-    tags           VARCHAR(100),
-    song_id        INT NOT NULL,
-    clip_path      VARCHAR (50) NOT NULL,
+    post_id          INT AUTO_INCREMENT,
+    user_id          INT NOT NULL,
+    upload_date      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    content          VARCHAR(100),
+    tags             VARCHAR(100),
+    song_id          INT NOT NULL,
+    clip_start_time  FLOAT(5, 2) NOT NULL, -- start time of clip in seconds
+    clip_end_time    FLOAT(5, 2) NOT NULL, -- end time of clip in seconds
+    clip_path        VARCHAR(200) NOT NULL, -- path to the mp3 of clip
 
     PRIMARY KEY(post_id),
 
@@ -171,8 +175,8 @@ CREATE TABLE tbl_reply
 
 CREATE TABLE tbl_bookmark
 (
-    user_id  INT,
-    post_id  INT,
+    user_id       INT,
+    post_id       INT,
     bookmark_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY(user_id, post_id),
@@ -182,6 +186,38 @@ CREATE TABLE tbl_bookmark
     FOREIGN KEY(post_id) REFERENCES tbl_post(post_id)
       ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+-- Create dislike table
+CREATE TABLE tbl_dislike
+(
+    user_id       INT,
+    post_id       INT,
+    dislike_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY(user_id, post_id, dislike_date),
+
+    FOREIGN KEY(user_id) REFERENCES tbl_user(user_id)
+      ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(post_id) REFERENCES tbl_post(post_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Create user play history table
+CREATE TABLE tbl_play_history
+(
+    user_id    INT,
+    post_id    INT,
+    play_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY(user_id, post_id, play_date),
+
+    FOREIGN KEY(user_id) REFERENCES tbl_user(user_id)
+      ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(post_id) REFERENCES tbl_post(post_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Create user stop history table (songs that user did not hear until the end)
 
 CREATE TABLE tbl_user_svd
 (

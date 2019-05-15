@@ -27,7 +27,7 @@ def get_search_results():
         List of size `numresults` of potential matches, ordered in their
         closeness to `key`. Each match is a tuple of (title, artist).
 
-    todo:
+    TODO:
         helper function to select "substring%" song names
         order results with fuzzywuzzy and select first `numresults`
         eventually do metaphone matching (for misspellings)
@@ -36,6 +36,7 @@ def get_search_results():
     key = request.args.get('key', '')
     num_results = request.args.get('numresults', DEFAULT_NUM_RESULTS)
 
+    # TODO: move to helper function
     results = []
     if len(key) > 3:
         similar_songs = get_similar_songs(key)
@@ -48,3 +49,4 @@ def get_search_results():
                     if len(results) > num_results: break
 
     return make_response(jsonify({'results': results}), 200)
+

@@ -1,3 +1,17 @@
+# Set Up
+
+* Make sure ffmpeg is installed (`brew install ffmpeg` for Mac)
+* Set up `config.py` (example below)
+    * DB_HOST = 'localhost'
+    * DB_PORT = 3306
+    * DB_USER = 'root'
+    * DB_PASSWORD = [MYSQL_ROOT_PASSWORD]
+    * DB_NAME = 'app_dev'
+    * JWT_SECRET_KEY = [JWT_SECRET KEY]
+    * JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(days=1)
+    * SONG_STORAGE_PATH = [PATH_TO_STORE_SONGS]
+    * CLIP_STORAGE_PATH = [PATH_TO_STORE_CLIPS]
+
 # Usage
 
 Execute `run.py` to start the server

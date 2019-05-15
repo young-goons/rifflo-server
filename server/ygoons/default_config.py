@@ -7,3 +7,6 @@ DB_PORT = 3306
 DB_USER = 'ygoons_test'  # Should definitely not use root
 DB_PASSWORD = 'Public1!'
 DB_NAME = 'ygoons_test'
+SONG_STORAGE_PATH = '../../storage/song_storage'
+CLIP_STORAGE_PATH = '../../storage/clip_storage'
+IMAGE_STORAGE_PATH = '../../storage/image_storage'

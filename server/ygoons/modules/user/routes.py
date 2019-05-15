@@ -1,9 +1,12 @@
 import random
 import json
+import os
 
 import flask
-from flask import request, jsonify, make_response
+from flask import request, jsonify, make_response, send_from_directory
+from flask import current_app as app
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from werkzeug.utils import secure_filename
 
 from ygoons.modules.user import blueprint, helpers, feed, svd
 
@@ -18,11 +21,12 @@ def get_user_info(user_id):
     """
     # check if the identity of the token is equal to the identity of the request parameter
     if user_id == get_jwt_identity()['userId']:
-        user = get_user_data(user_id)
-        if user == None:
-            user = make_response(
+        user = helpers.get_user_data(user_id)
+        if user is None:
+            return make_response(
                 jsonify({'msg': 'Error fetching user info data'}), 400)
-        return make_response(jsonify({'user': user}), 200)
+        else:
+            return make_response(jsonify({'user': user}), 200)
     else:
         return make_response(
             jsonify({'msg': 'No authentication on requested data'}), 400)
@@ -116,8 +120,8 @@ def get_user_feed():
 
     # Reorder using SVD features
     clf = svd.SVD()
-    clf.db_load_user([user_id])
-    clf.db_load_post(cand_id_list)
+    clf.db_load_user(flask.g.pymysql_db, [user_id])
+    clf.db_load_post(flask.g.pymysql_db, cand_id_list)
 
     post_id_list = clf.get_recommendations(user_id,
                                            k=1000,
@@ -125,52 +129,6 @@ def get_user_feed():
 
     # TODO: introduce shuffling in top posts
     return make_response(jsonify({'postIdArr': post_id_list}), 200)
-
-
-@blueprint.route('/user/upload/song', methods=['POST'])
-@jwt_required
-def upload_song():
-    pass
-
-
-@blueprint.route('/user/upload/post', methods=['POST'])
-@jwt_required
-def upload_post():
-    """
-    Uploads the post whose content is received from user who is identified through jwt token
-    """
-    user = get_jwt_identity()
-    user_id = user['userId']
-    data = json.loads(request.data)
-    content = data['content']
-    tags = data['tags']
-
-    # temporary data for now
-    clip_path = ''
-    song_name = "abc"
-    artist = "def"
-
-    with flask.g.pymysql_db.cursor() as cursor:
-        sql = "INSERT INTO tbl_song_info (song_name, artist) " \
-              "VALUES (%s, %s)"
-        cursor.execute(sql, (song_name, artist))
-        song_id = cursor.lastrowid
-        post_id = None
-        if song_id:
-            sql = "INSERT INTO tbl_post (user_id, content, tags, song_id, clip_path) " \
-                  "VALUES (%s, %s, %s, %s, %s)"
-            cursor.execute(sql, (user_id, content, tags, song_id, clip_path))
-            post_id = cursor.lastrowid
-
-    if song_id and post_id:
-        flask.g.pymysql_db.commit()
-        return make_response(jsonify({
-            'postId': post_id,
-            'songId': song_id
-        }), 200)
-    else:
-        return make_response(jsonify({'msg': 'Error uploading post and song'}),
-                             400)
 
 
 # TODO: error-handling for insert? make sure insert is actually executed
@@ -187,9 +145,8 @@ def user_follow(followed_user_id):
     with flask.g.pymysql_db.cursor() as cursor:
         sql = 'INSERT INTO tbl_follow (followed_id, follower_id) ' \
               'VALUES (%s, %s)'
-        affected_row_cnt = cursor.execute(sql,
-                                          (followed_user_id, curr_user_id))
-    if affected_row_cnt == 1:
+        row_cnt = cursor.execute(sql, (followed_user_id, curr_user_id))
+    if row_cnt == 1:
         flask.g.pymysql_db.commit()
         return make_response(jsonify({'success': True}), 200)
     else:
@@ -253,3 +210,152 @@ def get_followers(user_id):
     for row in query_result:
         follower_list.append(row[0])
     return make_response(jsonify({'followerArr': follower_list}), 200)
+
+
+@blueprint.route('/user/history/played/<int:post_id>', methods=['POST'])
+@jwt_required
+def upload_play_history(post_id):
+    user_id = get_jwt_identity()['userId']
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'INSERT INTO tbl_play_history (user_id, post_id)' \
+              'VALUES (%s, %s)'
+        row_cnt = cursor.execute(sql, (user_id, post_id))
+    if row_cnt == 1:
+        flask.g.pymysql_db.commit()
+        return make_response(jsonify({'success': True}), 200)
+    else:
+        return make_response(jsonify({'success': False}), 400)
+
+
+@blueprint.route('/user/<int:user_id>/profile/image', methods=['GET'])
+def get_user_profile_image(user_id):
+    query_result = helpers.get_profile_picture_path(user_id)
+    if query_result is not None:
+        file_name = query_result.split('/')[-1]
+        file_path = '/'.join(query_result.split('/')[:-1])
+        return send_from_directory(file_path, file_name, mimetype='image/jpeg')
+    else:
+        return make_response(jsonify({'msg': "user_id is not found"}), 400)
+
+
+@blueprint.route('/user/<int:user_id>/profile/image', methods=['POST'])
+@jwt_required
+def upload_user_profile_image(user_id):
+    curr_user_id = get_jwt_identity()['userId']
+    if user_id != curr_user_id:
+        return make_response(
+            jsonify({
+                'msg': "Authorization failed",
+                'success': False
+            }), 400)
+
+    image = request.files['file']
+
+    if not os.path.isdir(
+            os.path.join(app.config["IMAGE_STORAGE_PATH"], str(user_id))):
+        os.makedirs(os.path.join(app.config["IMAGE_STORAGE_PATH"],
+                                 str(user_id)),
+                    exist_ok=True)
+    image_file_path = os.path.join(app.config['IMAGE_STORAGE_PATH'],
+                                   str(user_id),
+                                   secure_filename(image.filename))
+    image.save(image_file_path)
+
+    row_cnt = helpers.upload_profile_picture(user_id, image_file_path)
+    if row_cnt == 1:
+        flask.g.pymysql_db.commit()
+    return make_response(jsonify({'success': True}), 200)
+
+
+@blueprint.route('/user/<int:user_id>/profile/image', methods=['DELETE'])
+@jwt_required
+def delete_user_profile_image(user_id):
+    curr_user_id = get_jwt_identity()['userId']
+    if user_id != curr_user_id:
+        return make_response(
+            jsonify({
+                'msg': "Authorization failed",
+                'success': False
+            }), 400)
+
+    image_path = helpers.get_profile_picture_path(user_id)
+    if image_path is None:
+        return make_response(
+            jsonify({'msg': "Profile picture does not exist"}), 400)
+    else:
+        os.remove(image_path)
+
+    row_cnt = helpers.delete_profile_picture(user_id)
+    if row_cnt == 1:
+        flask.g.pymysql_db.commit()
+        return make_response(jsonify({'success': True}), 200)
+    else:
+        return make_response(
+            jsonify({'msg': "Error in deleting profile image"}), 400)
+
+
+@blueprint.route('/user/<int:user_id>/header/image', methods=['GET'])
+def get_user_header_image(user_id):
+    query_result = helpers.get_header_picture_path(user_id)
+    if query_result is not None:
+        file_name = query_result.split('/')[-1]
+        file_path = '/'.join(query_result.split('/')[:-1])
+        return send_from_directory(file_path, file_name, mimetype='image/jpeg')
+    else:
+        return make_response(jsonify({'msg': "user_id is not found"}), 400)
+
+
+@blueprint.route('/user/<int:user_id>/header/image', methods=['POST'])
+@jwt_required
+def upload_user_header_image(user_id):
+    curr_user_id = get_jwt_identity()['userId']
+    if user_id != curr_user_id:
+        return make_response(
+            jsonify({
+                'msg': "Authorization failed",
+                'success': False
+            }), 400)
+
+    image = request.files['file']
+
+    if not os.path.isdir(
+            os.path.join(app.config["IMAGE_STORAGE_PATH"], str(user_id))):
+        os.makedirs(os.path.join(app.config["IMAGE_STORAGE_PATH"],
+                                 str(user_id)),
+                    exist_ok=True)
+    image_file_path = os.path.join(app.config['IMAGE_STORAGE_PATH'],
+                                   str(user_id),
+                                   secure_filename(image.filename))
+    image.save(image_file_path)
+
+    row_cnt = helpers.upload_header_picture(user_id, image_file_path)
+    if row_cnt == 1:
+        flask.g.pymysql_db.commit()
+    return make_response(jsonify({'success': True}), 200)
+
+
+@blueprint.route('/user/<int:user_id>/header/image', methods=['DELETE'])
+@jwt_required
+def delete_user_header_image(user_id):
+    curr_user_id = get_jwt_identity()['userId']
+    if user_id != curr_user_id:
+        return make_response(
+            jsonify({
+                'msg': "Authorization failed",
+                'success': False
+            }), 400)
+
+    image_path = helpers.get_header_picture_path(user_id)
+    if image_path is None:
+        return make_response(jsonify({'msg': "Header image does not exist"}),
+                             200)
+    else:
+        os.remove(image_path)
+
+    row_cnt = helpers.delete_header_picture(user_id)
+    if row_cnt == 1:
+        flask.g.pymysql_db.commit()
+        return make_response(jsonify({'success': True}), 200)
+    else:
+        return make_response(
+            jsonify({'msg': "Error in deleting profile image"}), 400)

@@ -58,7 +58,7 @@ const signOut = (state, action) => {
 };
 
 // assume user info is loaded only when authentication is successful
-const loadUserInfo = (state, action) => {
+const loadAuthUserInfo = (state, action) => {
     return {
         ...state,
         authUserInfo: action.userInfo,
@@ -73,7 +73,7 @@ const reducer = (state = initialState, action) => {
         case actionTypes.WRONG_PASSWORD: return wrongPassword(state, action);
         case actionTypes.SET_AUTH_REDIRECT_PATH: return setAuthRedirectPath(state, action);
         case actionTypes.SIGN_OUT: return signOut(state, action);
-        case actionTypes.LOAD_USER_INFO: return loadUserInfo(state, action);
+        case actionTypes.LOAD_AUTH_USER_INFO: return loadAuthUserInfo(state, action);
         default:
             return state;
     }

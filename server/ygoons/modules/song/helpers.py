@@ -17,5 +17,6 @@ def get_similar_songs(partial_song_name):
     similar_songs = []
     for item in query_result:
         similar_songs.append(tuple(item))
+    similar_songs = tuple(similar_songs)
 
-    return tuple(similar_songs)
+    return similar_songs

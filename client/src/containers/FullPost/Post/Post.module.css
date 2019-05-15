@@ -1,0 +1,121 @@
+.postContainerDiv {
+    display: inline-block;
+    width: 600px;
+    border: 1px solid gray;
+
+    transform: translateY(30%);
+    -ms-transform: translateY(30%);
+    -moz-transform: translateY(30%);
+    -webkit-transform: translateY(30%);
+    -o-transform: translateY(30%);
+}
+
+.headerInfoColumn {
+    margin-left: -1.5em;
+    margin-top:0.2em;
+}
+
+.usernameRow {
+    margin-top: 0.6em;
+}
+
+.usernameSpan {
+    color: black;
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 2em;
+    width: 400px;
+}
+
+.uploadDateRow {
+    margin-top: 10px;
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-size: 1.2rem;
+}
+
+.songInfoRow {
+    margin-top: -10px;
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.bySpan {
+    font-size: 1.2rem;
+    font-color: gray;
+    margin-left: 0.4rem;
+    margin-right: 0.4rem;
+    font-weight: 400;
+}
+
+.tagsRow {
+    margin-top: -1.5em;
+}
+
+.tagsSpan {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 1.5em;
+    color: deepskyblue;
+}
+
+.contentRow {
+    margin-top: -1.5em;
+}
+
+.contentSpan {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 400;
+    font-size: 1.5em;
+}
+
+.actionRow {
+    margin-top: -1em;
+}
+
+.actionLabel {
+    color: lightslategray;
+}
+
+.actionIcon  {
+    cursor: pointer;
+}
+
+.commentArrRow {
+    margin-top: -1.2em;
+}
+
+.commentRow {
+    margin-bottom: 15px;
+}
+
+.commentUsernameSpan {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 1.2em;
+    padding-right: 0.6em;
+}
+
+.commentContentSpan {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 400;
+    font-size: 1.2em;
+}
+
+.commentDiv {
+    margin-bottom: 2px;
+}
+
+.dateSpan {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    margin-right: 15px;
+}
+
+.replySpan {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    color: gray;
+}
+
+.commentInputRow {
+    margin-top: -20px;
+}

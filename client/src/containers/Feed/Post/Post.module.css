@@ -3,7 +3,6 @@
     margin-top: 3rem;
     margin-bottom: 2rem;
     text-align: left;
-    width: 40em;
 }
 
 .postHeaderDiv {
@@ -12,19 +11,30 @@
 
 .profileImgDiv {
     margin-top: 5px;
+    width: 70px;
+    border: 1px solid black;
 }
 
 .profileImgColumn {
-    /*margin-bottom: -1em;*/
+    margin-left: 10px;
 }
 
 .headerInfoColumn {
-    margin-left: -1.5em;
-    margin-top:0.2em;
+    margin-left: -25px;
+    margin-top: 7px;
 }
 
 .songInfoRow {
-    margin-top: 0.4em;
+    margin-top: 13px;
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-size: 1.2rem;
+}
+
+.bySpan {
+    font-size: 1rem;
+    font-color: gray;
+    margin-left: 0.4rem;
+    margin-right: 0.4rem;
 }
 
 .playBarColumn {
@@ -87,6 +97,7 @@
 .buttonSpan {
     font-size: 1.2em;
 }
+
 .usernameSpan {
     color: black;
     font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
@@ -101,7 +112,32 @@
 }
 
 .songPlayRow {
-    margin-top: -0.8em;
+    margin-top: -5px;
+    margin-left: -5px;
+}
+
+.progressDiv {
+
+}
+
+.progressBar {
+    margin-left: 0px;
+    vertical-align: middle;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 470px;
+    height: 20px;
+}
+
+.progressBar::-webkit-progress-bar {
+    background-color: lightgray;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
+
+.progressBar::-webkit-progress-value {
+    background-color: darkorange;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
 }
 
 .commentPreviewRow {
@@ -124,3 +160,4 @@
 .commentInputRow {
     margin-top: -1em;
 }
+

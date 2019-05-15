@@ -1,71 +1,179 @@
 import React, { Component } from 'react';
-import { Grid, Form, Input, TextArea, Button, Segment } from 'semantic-ui-react';
+import { Grid, Form, Input, TextArea, Button, Segment, Modal } from 'semantic-ui-react';
 import axios from 'axios';
+import { connect } from 'react-redux';
 
+import SongUploader from '../SongUploader/SongUploader';
 import styles from './PostEditor.module.css';
+import { sharePost } from '../../../store/actions/upload';
 
 class PostEditor extends Component {
     state = {
-        songSearch: '',
+        content: '',
+        tags: '',
+        isSongUploaded: false,
+        songUploadWarning: false,
+        modalOpen: false
     };
 
-    songSearchHandler = (event) => {
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.songFile && nextProps.songInfo.termsChecked) {
+            this.setState({
+                isSongUploaded: true,
+                songUploadWarning: false,
+                modalOpen: false
+            });
+        }
+    }
+
+    contentInputHandler = (event) => {
         this.setState({
-            songSearch: event.target.value
-        })
+            content: event.target.value
+        });
+    };
+
+    tagsInputHandler = (event) => {
+        this.setState({
+            tags: event.target.value
+        });
+    };
+
+    handleOpen = () => {
+        this.setState({modalOpen: true});
+    };
+
+    handleClose = () => {
+        this.setState({modalOpen: false});
+    };
+
+    // TODO: error handling (if the content is too long)
+    sharePostHandler = () => {
+        if (this.state.isSongUploaded) {
+            this.props.onSharePost(this.props.songFile, this.props.clipRange, this.props.songInfo,
+                                   this.state.content, this.state.tags);
+            this.setState({isSongUploaded: false, content: '', tags: ''});
+        } else {
+            alert("Song not uploaded");
+            this.setState({songUploadWarning: true});
+        }
     };
 
     render() {
+        const browseButton = (
+            <div className={styles.browseButtonDiv}>
+                <Button onClick={this.handleOpen}>Browse</Button>
+            </div>
+        );
+        const editButton = (
+            <div className={styles.editUploadButtonDiv}>
+                <Button onClick={this.handleOpen} size="mini">Edit Upload</Button>
+            </div>
+        );
+        const songUploadModal = (
+            <Modal trigger={ this.state.isSongUploaded ? editButton : browseButton } size="tiny"
+                   open={this.state.modalOpen} onClose={this.handleClose}>
+                <SongUploader />
+            </Modal>
+        );
+
+        let songUploadDiv = (
+            <div className={styles.uploadSongDiv}>
+                <div className={styles.browseHeaderDiv}>Upload Your Song (.mp3, .wav)</div>
+                { songUploadModal }
+            </div>
+        );
+        if (this.state.isSongUploaded && this.props.songInfo) {
+            const songInfoDiv = (
+                <Grid>
+                    <Grid.Row className={styles.songInfoFirstRow}>
+                        <Grid.Column width="5" textAlign="left" className={styles.songInfoLabelColumn}>
+                            Track
+                        </Grid.Column>
+                        <Grid.Column width="11" textAlign="left" className={styles.songInfoColumn}>
+                            {this.props.songInfo.track}
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row className={styles.songInfoRow}>
+                        <Grid.Column width="5" textAlign="left" className={styles.songInfoLabelColumn}>
+                            Artist
+                        </Grid.Column>
+                        <Grid.Column width="11" textAlign="left" className={styles.songInfoColumn}>
+                            {this.props.songInfo.artist}
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row className={styles.songInfoRow}>
+                        <Grid.Column width="5" textAlign="left" className={styles.songInfoLabelColumn}>
+                            Clip Start
+                        </Grid.Column>
+                        <Grid.Column width="11" textAlign="left" className={styles.songInfoColumn}>
+                            {this.props.clipRange.startTime.toFixed(2)}
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row className={styles.songInfoRow}>
+                        <Grid.Column width="5" textAlign="left" className={styles.songInfoLabelColumn}>
+                            Clip End
+                        </Grid.Column>
+                        <Grid.Column width="11" textAlign="left" className={styles.songInfoColumn}>
+                            {this.props.clipRange.endTime.toFixed(2)}
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
+            );
+            songUploadDiv = (
+                <div className={styles.uploadSongDiv}>
+                    { songInfoDiv }
+                    { songUploadModal }
+                </div>
+            )
+        }
         return (
             <Grid columns="2">
-                <Grid.Row>
-                    <Grid.Column verticalAlign="middle">
-                        <div className={styles.shareClipDiv}>
-                            <span>Share a clip</span>
-                        </div>
-                        <div className={styles.searchSongInputDiv}>
-                            <input
-                                placeholder="Search a song"
-                                className={styles.uploadInput}
-                                onChange={this.songSearchHandler}
-                                value={this.props.songSearch}
-                            />
-                        </div>
-                    </Grid.Column>
-                    <Grid.Column>
+                <Grid.Column>
+                    { songUploadDiv }
+                </Grid.Column>
+                <Grid.Column>
+                    <Grid.Row>
                         <div className={styles.tagInputDiv}>
                             <input
                                 placeholder="Write tags"
                                 className={styles.uploadInput}
-                                onChange={this.props.tagsInputHandler}
-                                value={this.props.tags}
+                                onChange={this.tagsInputHandler}
+                                value={this.state.tags}
                             />
                         </div>
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row className={styles.songUploadRow}>
-                    <Grid.Column width={8} stretched>
-                        <div className={styles.uploadSongDiv}>
-                            Upload a song
-                        </div>
-                    </Grid.Column>
-                    <Grid.Column width={8}>
+                    </Grid.Row>
+                    <Grid.Row className={styles.songUploadRow}>
                         <div className={styles.postInputDiv}>
                             <textarea
                                 placeholder="Write post"
                                 className={styles.postTextArea}
-                                onChange={this.props.contentInputHandler}
-                                value={this.props.content}
+                                onChange={this.contentInputHandler}
+                                value={this.state.content}
                             />
                             <div className={styles.shareButtonDiv}>
-                                <Button fluid onClick={this.props.sharePostHandler}>Share</Button>
+                                <Button fluid onClick={this.sharePostHandler}>Share</Button>
                             </div>
                         </div>
-                    </Grid.Column>
-                </Grid.Row>
+                    </Grid.Row>
+                </Grid.Column>
             </Grid>
         );
     }
 }
 
-export default PostEditor
+const mapStateToProps = state => {
+    return {
+        songFile: state.upload.songFile,
+        clipRange: state.upload.clipRange,
+        songInfo: state.upload.songInfo,
+        newPostId: state.upload.newPostId
+    };
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onSharePost: (songFile, clipRange, songInfo, postContent, tags) => dispatch(sharePost(songFile, clipRange, songInfo, postContent, tags))
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PostEditor);
