@@ -1,6 +1,5 @@
 import random
 import json
-import sys
 import os
 
 import flask
