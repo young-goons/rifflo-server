@@ -65,3 +65,13 @@
 .headerImgModal:hover {
     cursor: pointer;
 }
+
+.editIconSpan {
+    margin-left: 15px;
+    color: lightgray;
+}
+
+.editIconSpan:hover {
+    color: white;
+    cursor: pointer;
+}

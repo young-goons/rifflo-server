@@ -68,7 +68,6 @@ export const loadUserPosts = (userId) => {
                         }
                     }
                 }
-                console.log(postArr);
                 dispatch(loadUserPostsSuccess(postArr));
             })
             .catch(error => {

@@ -27,7 +27,6 @@ class UserPage extends Component {
     };
 
     componentDidMount() {
-        console.log(this.props.postArr);
         if (this.state.authUserId) {
             if (!this.props.authUserInfo) {
                 console.log("loading user info");
@@ -37,7 +36,6 @@ class UserPage extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps);
         if (nextProps.authUserInfo) {
             if (!nextProps.postArr && !nextProps.newPostId) { // upon sign in
                 this.setState({authUserInfo: nextProps.authUserInfo});
@@ -123,6 +121,7 @@ class UserPage extends Component {
                             userId={this.state.userId}
                             username={this.props.match.params.username}
                             shareCnt={this.state.postArr.length}
+                            history={this.props.history}
                         />
                         <div className={styles.userPageContentDiv}>
                             {postUploadDiv}

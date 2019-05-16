@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Grid, Image, Button, Label, Modal } from 'semantic-ui-react';
+import { Grid, Image, Button, Label, Modal, Icon } from 'semantic-ui-react';
 import axios from 'axios';
 
 import styles from './UserPageHeader.module.css';
 import defaultProfileImage from '../../../resources/defaultProfileImage.jpg';
 import defaultHeaderImage from '../../../resources/defaultHeaderImage.jpg';
 import ImageUploader from "../ImageUploader/ImageUploader";
+import EditInfoModal from "./EditInfoModal/EditInfoModal";
 import { loadUserProfileImage, loadUserHeaderImage, uploadUserHeaderImage, deleteUserHeaderImage,
          uploadUserProfileImage, deleteUserProfileImage
 } from "../../../store/actions/user";
@@ -19,7 +20,8 @@ class UserPageHeader extends Component {
         profileImgModalOpen: false,
         profileImageReady: false,
         headerImgModalOpen: false,
-        headerImageReady: false
+        headerImageReady: false,
+        editInfoModalOpen: false
     };
 
     componentDidMount() {
@@ -35,8 +37,6 @@ class UserPageHeader extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log("component will receive props");
-        console.log(nextProps);
         if (nextProps.userId) {
             if (this.state.isFollowed === null && this.state.followerArr === null) {
                 this.getFollowers(nextProps.userId);
@@ -136,10 +136,19 @@ class UserPageHeader extends Component {
         this.setState({headerImgModalOpen: false});
     };
 
+    editInfoHandleOpen = () => {
+        this.setState({editInfoModalOpen: true});
+    };
+
+    editInfoHandleClose = () => {
+        this.setState({editInfoModalOpen: false});
+    };
+
     render () {
         let followButtonDiv;
         let profileImgModal, profileImg;
         let headerImgModal, headerImg;
+        let editInfoModal, editInfoIcon;
         if (this.props.authUserId != this.props.userId) {
             followButtonDiv = (
                 <div className={styles.followButtonDiv}>
@@ -168,6 +177,11 @@ class UserPageHeader extends Component {
             headerImg = <img className={styles.headerImg + " " + styles.headerImgModal} alt="headerImage"
                              src={this.props.headerImgSrc ? this.props.headerImgSrc : defaultHeaderImage }
                              onClick={this.headerImgHandleOpen} />;
+            editInfoIcon = (
+                <span className={styles.editIconSpan}>
+                    <Icon name="pencil" size="tiny" onClick={this.editInfoHandleOpen}/>
+                </span>
+            );
             profileImgModal = (
                 <Modal trigger={profileImg} size="small" centered={false}
                        open={this.state.profileImgModalOpen} onClose={this.profileImgHandleClose}>
@@ -204,12 +218,26 @@ class UserPageHeader extends Component {
                     />
                 </Modal>
             );
+            editInfoModal = (
+                <Modal trigger={editInfoIcon} size="tiny" centered={true}
+                       open={this.state.editInfoModalOpen} onClose={this.editInfoHandleClose}>
+                    <EditInfoModal
+                        username={this.props.username}
+                        userId={this.props.userId}
+                        history={this.props.history}
+                        handleClose={this.editInfoHandleClose}
+                    />
+                </Modal>
+            )
         }
 
         return (
             <Grid>
                 <Grid.Row>
-                    <div className={styles.usernameDiv}>{this.props.username}</div>
+                    <div className={styles.usernameDiv}>
+                        {this.props.username}
+                        { editInfoModal }
+                    </div>
                     { this.props.authUserId === this.props.userId ? profileImgModal : profileImg }
                     { followButtonDiv }
                     <Grid.Column width={16}>
