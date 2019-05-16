@@ -61,7 +61,7 @@ def sign_in():
     email = request.args.get('email')
     password = request.args.get('password')
     with flask.g.pymysql_db.cursor() as cursor:
-        sql = 'SELECT user_id, username FROM tbl_user ' \
+        sql = 'SELECT user_id, username, password FROM tbl_user ' \
               'WHERE email = %s'
         cursor.execute(sql, (email, ))
         query_result = cursor.fetchall()
@@ -75,6 +75,7 @@ def sign_in():
         'username': query_result[0][1],
     }
 
+    print(query_result)
     # validate user password
     stored_password = query_result[0][2]
     if verify_password(stored_password, password):

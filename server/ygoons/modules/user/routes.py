@@ -32,6 +32,31 @@ def get_user_info(user_id):
             jsonify({'msg': 'No authentication on requested data'}), 400)
 
 
+@blueprint.route('/user/<int:user_id>/info', methods=['PUT'])
+@jwt_required
+def update_user_info(user_id):
+    """
+    Updates user information stored in tbl_user and tbl_user_info
+    :param user_id: user_id of request
+    """
+    if user_id == get_jwt_identity()['userId']:
+        updated_data = json.loads(request.data)
+        row_cnt = 0
+        if 'username' in updated_data:
+            new_username = updated_data['username']
+            row_cnt += helpers.update_username(user_id, new_username)
+
+        if row_cnt > 0:
+            flask.g.pymysql_db.commit()
+            return make_response(jsonify({'newUsername': new_username}), 200)
+        else:
+            return make_response(jsonify({'msg': 'Username update failed'}),
+                                 400)
+    else:
+        return make_response(
+            jsonify({'msg': 'Authentication failed for request'}), 400)
+
+
 @blueprint.route('/user/id/username/<string:username>', methods=['GET'])
 def get_user_exists_by_username(username):
     """

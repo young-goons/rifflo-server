@@ -198,18 +198,6 @@ def get_post_likes(post_id):
     return make_response(jsonify({'users': like_user_list}))
 
 
-@blueprint.route('/post/<int:post_id>/bookmark', methods=['POST'])
-@jwt_required
-def bookmark_post(post_id):
-    pass
-
-
-@blueprint.route('/post/<int:post_id>/bookmark', methods=['DELETE'])
-@jwt_required
-def remove_bookmark(post_id):
-    pass
-
-
 @blueprint.route('/post/<int:post_id>/comment', methods=['POST'])
 @jwt_required
 def post_comment(post_id):

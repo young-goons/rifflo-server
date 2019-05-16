@@ -24,6 +24,14 @@ def get_user_data(user_id):
     return user
 
 
+def update_username(user_id, username):
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'UPDATE tbl_user SET username = %s WHERE user_id = %s'
+        row_cnt = cursor.execute(sql, (username, user_id))
+
+    return row_cnt
+
+
 def upload_profile_picture(user_id, profile_img_path):
     with flask.g.pymysql_db.cursor() as cursor:
         sql = "UPDATE tbl_user_info SET profile_picture_path = %s WHERE user_id = %s"
