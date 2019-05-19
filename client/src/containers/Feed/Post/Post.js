@@ -74,7 +74,7 @@ class Post extends Component {
                 });
         }
         if (!this.state.profileImgSrc) {
-            let url = "http://127.0.0.1:5000/user/" + this.props.userId + "/profile/image";
+            url = "http://127.0.0.1:5000/user/" + this.props.userId + "/profile/image";
             axios({method: 'GET', url})
                 .then(response => {
                     this.setState({profileImgSrc: url + "?" + Date.now()});

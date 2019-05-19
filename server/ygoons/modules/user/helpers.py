@@ -3,7 +3,7 @@
 import flask
 
 
-def get_user_data(user_id):
+def get_user_data(user_id, private=False):
     with flask.g.pymysql_db.cursor() as cursor:
         sql = 'SELECT user_id, username, email, profile_picture_path ' \
               'FROM tbl_user NATURAL JOIN' \
@@ -17,9 +17,11 @@ def get_user_data(user_id):
     user = {
         'userId': query_result[0][0],
         'username': query_result[0][1],
-        'email': query_result[0][2],
         'profile_picture_path': query_result[0][3]
     }
+
+    if not private:
+        user['email'] = query_result[0][2]
 
     return user
 

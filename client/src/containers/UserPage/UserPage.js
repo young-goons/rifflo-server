@@ -5,9 +5,9 @@ import { Grid, Column, Container } from 'semantic-ui-react';
 
 import SiteHeader from '../SiteHeader/SiteHeader';
 import AuthPage from '../AuthPage/AuthPage';
-import Post from '../Feed/Post/Post';
 import UserPageHeader from './UserPageHeader/UserPageHeader';
 import SharedPost from './SharedPost/SharedPost';
+import FollowList from './FollowList/FollowList';
 import NoUserPage from '../../components/ErrorPage/NoUserPage/NoUserPage';
 import PostEditor from './PostEditor/PostEditor';
 import styles from './UserPage.module.css';
@@ -23,7 +23,8 @@ class UserPage extends Component {
         isSignedOut: false,
         isFollowed: null,
         followerCnt: null,
-        postArr: []
+        postArr: [],
+        pageContent: 'shares' // one of "shares", "followers", "following"
     };
 
     componentDidMount() {
@@ -85,8 +86,23 @@ class UserPage extends Component {
             })
     };
 
+    sharesClickHandler = () => {
+        console.log("shares clicked");
+        this.setState({pageContent: 'shares'});
+    };
+
+    followersClickHandler = () => {
+        console.log("followers clicked");
+        this.setState({pageContent: 'followers'});
+    };
+
+    followingClickHandler = () => {
+        console.log("following clicked");
+        this.setState({pageContent: 'following'});
+    };
+
     render() {
-        let renderDiv;
+        let renderDiv, contentDiv;
         const username = this.props.match.params.username;
         // TODO: psuedo-randomize the order
         const postDivArr = this.state.postArr.map((post, idx) => {
@@ -101,6 +117,14 @@ class UserPage extends Component {
                 </div>
             );
         });
+
+        if (this.state.pageContent === 'shares') {
+            contentDiv = postDivArr;
+        } else if (this.state.pageContent === 'followers') {
+            contentDiv = <FollowList followType='followers' userId={this.state.userId}/>;
+        } else if (this.state.pageContent === 'following') {
+            contentDiv = <FollowList followType='following' userId={this.state.userId}/>;
+        }
 
         if (this.props.authUserInfo) {
             let userPageDiv;
@@ -122,10 +146,13 @@ class UserPage extends Component {
                             username={this.props.match.params.username}
                             shareCnt={this.state.postArr.length}
                             history={this.props.history}
+                            sharesClickHandler={this.sharesClickHandler}
+                            followersClickHandler={this.followersClickHandler}
+                            followingClickHandler={this.followingClickHandler}
                         />
                         <div className={styles.userPageContentDiv}>
-                            {postUploadDiv}
-                            {postDivArr}
+                            { this.state.pageContent === 'shares' ? postUploadDiv : null }
+                            { contentDiv }
                         </div>
                     </div>
                 );
