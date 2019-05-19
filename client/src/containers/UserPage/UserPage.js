@@ -28,15 +28,16 @@ class UserPage extends Component {
     };
 
     componentDidMount() {
+        console.log("component mounted");
         if (this.state.authUserId) {
             if (!this.props.authUserInfo) {
-                console.log("loading user info");
                 this.props.onLoadUser(this.state.authUserId);
             }
         }
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log(nextProps);
         if (nextProps.authUserInfo) {
             if (!nextProps.postArr && !nextProps.newPostId) { // upon sign in
                 this.setState({authUserInfo: nextProps.authUserInfo});

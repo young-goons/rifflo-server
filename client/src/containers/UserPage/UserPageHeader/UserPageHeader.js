@@ -25,7 +25,6 @@ class UserPageHeader extends Component {
     };
 
     componentDidMount() {
-        console.log("component did mount");
         if (this.props.userId) {
             if (this.state.isFollowed === null && this.state.followerArr === null) {
                 this.getFollowers(this.props.userId);

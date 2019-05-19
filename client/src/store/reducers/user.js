@@ -54,6 +54,17 @@ const deleteUserHeaderImageSuccess = (state, action) => {
     };
 };
 
+const resetUser = (state, action) => {
+    return {
+        ...state,
+        postArr: null,
+        postLoaded: false,
+        error: null,
+        profileImgSrc: null,
+        headerImgSrc: null
+    };
+};
+
 const reducer = (state = initialState, action) => {
     switch (action.type) {
         case actionTypes.LOAD_USER_POSTS_SUCCESS: return loadUserPostsSuccess(state, action);
@@ -62,6 +73,7 @@ const reducer = (state = initialState, action) => {
         case actionTypes.LOAD_USER_HEADER_IMAGE_SUCCESS: return loadUserHeaderImageSuccess(state, action);
         case actionTypes.DELETE_USER_PROFILE_IMAGE_SUCCESS: return deleteUserProfileImageSuccess(state, action);
         case actionTypes.DELETE_USER_HEADER_IMAGE_SUCCESS: return deleteUserHeaderImageSuccess(state, action);
+        case actionTypes.RESET_USER: return resetUser(state, action);
         default:
             return state;
     }
