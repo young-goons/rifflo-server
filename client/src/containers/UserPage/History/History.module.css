@@ -1,0 +1,49 @@
+.menuDiv {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.contentDiv {
+    background-color: rgba(0, 0, 0, 0.05);
+    margin: -16px 1px 15px;
+    padding-top: 30px;
+}
+
+.historyRow {
+    margin-top: -15px;
+    margin-left: 15px;
+    margin-right: 20px;
+}
+
+.dislikeRow {
+    margin-top: -15px;
+    margin-left: 15px;
+    margin-right: 20px;
+}
+
+.removedSpan {
+    font-size: 15px;
+    color: gray;
+}
+
+.songNameSpan {
+    font-size: 15px;
+}
+
+.artistSpan {
+    font-size: 15px;
+}
+
+.dateSpan {
+    font-size: 15px;
+}
+
+.bySpan {
+    margin-left: 7px;
+    margin-right: 7px;
+    color: dimgray;
+}
+
+.removeDislikeIcon:hover {
+    cursor: pointer;
+}

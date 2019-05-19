@@ -88,3 +88,84 @@ def delete_header_picture(user_id):
         row_cnt = cursor.execute(sql, (user_id, ))
 
     return row_cnt
+
+
+def get_user_play_history(user_id):
+    """ Obtains the list of song information that the user played """
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'SELECT song_id, song_name, artist, play_date, ' \
+              'spotify_url, youtube_url, soundcloud_url, bandcamp_url FROM ' \
+              '(SELECT post_id, play_date FROM tbl_play_history WHERE user_id = %s) tbl_user_play NATURAL JOIN ' \
+              'tbl_post NATURAL JOIN tbl_song_info ORDER BY play_date DESC'
+        cursor.execute(sql, (user_id, ))
+        query_result = cursor.fetchall()
+
+    play_list = []
+    for row in query_result:
+        play_dict = {
+            'songId': row[0],
+            'songName': row[1],
+            'artist': row[2],
+            'date': row[3],
+            'spotifyUrl': row[4],
+            'youtubeUrl': row[5],
+            'soundcloudUrl': row[6],
+            'bandcampUrl': row[7]
+        }
+        play_list.append(play_dict)
+
+    return play_list
+
+
+def get_user_full_song_history(user_id):
+    """ Obtains the list of full songs the user played """
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'SELECT song_id, song_name, artist, listen_date, ' \
+              'spotify_url, youtube_url, soundcloud_url, bandcamp_url FROM ' \
+              '(SELECT post_id, listen_date FROM tbl_full_song_history WHERE user_id = %s) tbl_user_play ' \
+              'NATURAL JOIN tbl_post NATURAL JOIN tbl_song_info ORDER BY listen_date DESC'
+        cursor.execute(sql, (user_id, ))
+        query_result = cursor.fetchall()
+
+    full_song_list = []
+    for row in query_result:
+        full_song_dict = {
+            'songId': row[0],
+            'songName': row[1],
+            'artist': row[2],
+            'date': row[3],
+            'spotifyUrl': row[4],
+            'youtubeUrl': row[5],
+            'soundcloudUrl': row[6],
+            'bandcampUrl': row[7]
+        }
+        full_song_list.append(full_song_dict)
+
+    return full_song_list
+
+
+def get_user_disliked(user_id):
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'SELECT song_id, post_id, song_name, artist, dislike_date, ' \
+              'spotify_url, youtube_url, soundcloud_url, bandcamp_url FROM ' \
+              '(SELECT post_id, dislike_date FROM tbl_dislike WHERE user_id = %s) tbl_user_dislike NATURAL JOIN ' \
+              'tbl_post NATURAL JOIN tbl_song_info ORDER BY dislike_date DESC'
+        cursor.execute(sql, (user_id, ))
+        query_result = cursor.fetchall()
+
+    dislike_list = []
+    for row in query_result:
+        dislike_dict = {
+            'songId': row[0],
+            'postId': row[1],
+            'songName': row[2],
+            'artist': row[3],
+            'date': row[4],
+            'spotifyUrl': row[5],
+            'youtubeUrl': row[6],
+            'soundcloudUrl': row[7],
+            'bandcampUrl': row[8]
+        }
+        dislike_list.append(dislike_dict)
+
+    return dislike_list

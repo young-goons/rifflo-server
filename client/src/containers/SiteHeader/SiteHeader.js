@@ -5,6 +5,7 @@ import { Sticky, Grid, Search, Icon, Dropdown } from 'semantic-ui-react';
 
 import styles from './SiteHeader.module.css';
 import { signOut } from '../../store/actions/auth';
+import { resetUser } from '../../store/actions/user';
 
 class SiteHeader extends Component {
     state = {
@@ -13,6 +14,7 @@ class SiteHeader extends Component {
 
     signOutClickHandler = () => {
         this.props.onSignOut();
+        this.props.onResetUser();
     };
 
     render() {
@@ -65,7 +67,8 @@ class SiteHeader extends Component {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onSignOut: () => dispatch(signOut())
+        onSignOut: () => dispatch(signOut()),
+        onResetUser: () => dispatch(resetUser())
     };
 };
 

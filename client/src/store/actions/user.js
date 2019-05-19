@@ -43,6 +43,12 @@ export const deleteUserHeaderImageSuccess = () => {
     };
 };
 
+export const resetUserSuccess = () => {
+    return {
+        type: actionTypes.RESET_USER
+    };
+};
+
 export const loadUserPosts = (userId) => {
     return dispatch => {
         const userPostUrl = "http://127.0.0.1:5000/user/" + userId + "/posts";
@@ -187,5 +193,11 @@ export const deleteUserHeaderImage = (userId) => {
             .catch(error => {
                 console.log(error);
             });
+    };
+};
+
+export const resetUser = () => {
+    return dispatch => {
+        dispatch(resetUserSuccess());
     };
 };

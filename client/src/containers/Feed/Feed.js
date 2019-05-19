@@ -149,7 +149,7 @@ class Feed extends Component {
                             artist={post.artist}
                         />
                     </div>
-                )
+                );
             });
 
             const showMoreButton = (

@@ -181,6 +181,19 @@ def dislike_post(post_id):
         return make_response(jsonify({'msg': "Dislike failed"}), 400)
 
 
+@blueprint.route('/post/<int:post_id>/dislike', methods=['DELETE'])
+@jwt_required
+def delete_dislike_post(post_id):
+    curr_user = get_jwt_identity()
+    curr_user_id = curr_user['userId']
+    affected_row_cnt = helpers.delete_post_dislike(post_id, curr_user_id)
+    if affected_row_cnt == 1:
+        flask.g.pymysql_db.commit()
+        return make_response(jsonify({'success': True}), 200)
+    else:
+        return make_response(jsonify({'msg': "Delete dislike failed"}), 400)
+
+
 @blueprint.route('/post/<int:post_id>/like', methods=['GET'])
 @jwt_required
 def get_post_likes(post_id):

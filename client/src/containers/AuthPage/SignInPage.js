@@ -70,7 +70,6 @@ class SignInPage extends Component {
 
     render () {
         let authRedirect = null;
-        console.log(this.props.isAuthenticated, this.props.userInfo);
         if (this.props.isAuthenticated && this.props.userInfo) {
             authRedirect = <Redirect to={this.props.authRedirectPath}/>;
             // this.props.history.push(this.props.authRedirectPath);
