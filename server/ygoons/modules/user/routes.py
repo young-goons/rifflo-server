@@ -17,19 +17,17 @@ from ygoons.modules.user import blueprint, helpers, feed, svd
 def get_user_info(user_id):
     """
     Fetches and returns user information stored in tbl_user_info
+    user_id, username, email, profile_picture_path returned
     :param user_id: user_id of request
     """
     # check if the identity of the token is equal to the identity of the request parameter
-    if user_id == get_jwt_identity()['userId']:
-        user = helpers.get_user_data(user_id)
-        if user is None:
-            return make_response(
-                jsonify({'msg': 'Error fetching user info data'}), 400)
-        else:
-            return make_response(jsonify({'user': user}), 200)
+    private = user_id == get_jwt_identity()['userId']
+    user = helpers.get_user_data(user_id, private)
+    if user is None:
+        return make_response(jsonify({'msg': 'Error fetching user info data'}),
+                             400)
     else:
-        return make_response(
-            jsonify({'msg': 'No authentication on requested data'}), 400)
+        return make_response(jsonify({'user': user}), 200)
 
 
 @blueprint.route('/user/<int:user_id>/info', methods=['PUT'])
@@ -214,6 +212,7 @@ def user_unfollow(followed_user_id):
 
 
 @blueprint.route('/user/<int:user_id>/following', methods=['GET'])
+@jwt_required
 def get_following(user_id):
     """
     Obtain the list of ids of the users that the user of user_id is following

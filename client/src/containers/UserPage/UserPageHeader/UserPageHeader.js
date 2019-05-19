@@ -250,22 +250,28 @@ class UserPageHeader extends Component {
                     <Grid.Column width={3} textAlign="center">
                         <div className={styles.userPageLeftmostMenuEntry}>"</div>
                     </Grid.Column>
-                    <Grid.Column width={3} textAlign="center" className={styles.userPageMenu}>
+                    <Grid.Column width={4} textAlign="center" className={styles.userPageMenu}>
                         <div className={styles.userPageMenuEntry}>
-                            {this.props.shareCnt} shares
+                            <span className={styles.pageSubheader} onClick={this.props.sharesClickHandler}>
+                                {this.props.shareCnt} { this.state.shareCnt <= 1 ? "share" : "shares" }
+                            </span>
                         </div>
                     </Grid.Column>
-                    <Grid.Column width={3} textAlign="center" className={styles.userPageMenu}>
-                        <div className={styles.userPageMenuEntry}>3 playlists</div>
-                    </Grid.Column>
-                    <Grid.Column width={3} textAlign="center" className={styles.userPageMenu}>
+                    {/*<Grid.Column width={3} textAlign="center" className={styles.userPageMenu}>*/}
+                    {/*    <div className={styles.userPageMenuEntry}>3 playlists</div>*/}
+                    {/*</Grid.Column>*/}
+                    <Grid.Column width={4} textAlign="center" className={styles.userPageMenu}>
                         <div className={styles.userPageMenuEntry}>
-                            {this.state.followerArr ? this.state.followerArr.length : 0} followers
+                            <span className={styles.pageSubheader} onClick={this.props.followersClickHandler}>
+                                {this.state.followerArr ? this.state.followerArr.length : 0} followers
+                            </span>
                         </div>
                     </Grid.Column>
-                    <Grid.Column width={3} textAlign="center" className={styles.userPageMenu}>
+                    <Grid.Column width={4} textAlign="center" className={styles.userPageMenu}>
                         <div className={styles.userPageMenuEntry}>
-                            {this.state.followingArr ? this.state.followingArr.length : 0} following
+                            <span className={styles.pageSubheader} onClick={this.props.followingClickHandler}>
+                                {this.state.followingArr ? this.state.followingArr.length : 0} following
+                            </span>
                         </div>
                     </Grid.Column>
                 </Grid.Row>
