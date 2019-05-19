@@ -328,7 +328,6 @@ class Post extends Component {
                             <Grid.Column width={5}>
                                 { fullSongModal }
                                 <span className={styles.actionLabel}>Full Song</span>
-
                             </Grid.Column>
                             <Grid.Column width={5} textAlign="right">
                                 <Icon

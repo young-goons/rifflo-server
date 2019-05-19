@@ -396,3 +396,27 @@ def delete_user_header_image(user_id):
     else:
         return make_response(
             jsonify({'msg': "Error in deleting profile image"}), 400)
+
+
+@blueprint.route('/user/<int:user_id>/played', methods=['GET'])
+@jwt_required
+def get_user_played(user_id):
+    """ Get the list of clip ids that the user played"""
+    play_history = helpers.get_user_play_history(user_id)
+    return make_response(jsonify({'playArr': play_history}), 200)
+
+
+@blueprint.route('/user/<int:user_id>/listened', methods=['GET'])
+@jwt_required
+def get_user_listened(user_id):
+    """ Get the list of song ids that the user clicked the full song link """
+    full_song_history = helpers.get_user_full_song_history(user_id)
+    return make_response(jsonify({'fullSongArr': full_song_history}), 200)
+
+
+@blueprint.route('/user/<int:user_id>/disliked', methods=['GET'])
+@jwt_required
+def get_user_dislike(user_id):
+    """ Get the list of song ids that the user disliked """
+    dislike_history = helpers.get_user_disliked(user_id)
+    return make_response(jsonify({'dislikeArr': dislike_history}), 200)

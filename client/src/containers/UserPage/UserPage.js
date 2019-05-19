@@ -7,6 +7,7 @@ import SiteHeader from '../SiteHeader/SiteHeader';
 import AuthPage from '../AuthPage/AuthPage';
 import UserPageHeader from './UserPageHeader/UserPageHeader';
 import SharedPost from './SharedPost/SharedPost';
+import History from './History/History';
 import FollowList from './FollowList/FollowList';
 import NoUserPage from '../../components/ErrorPage/NoUserPage/NoUserPage';
 import PostEditor from './PostEditor/PostEditor';
@@ -24,7 +25,7 @@ class UserPage extends Component {
         isFollowed: null,
         followerCnt: null,
         postArr: [],
-        pageContent: 'shares' // one of "shares", "followers", "following"
+        pageContent: 'shares' // one of "shares", "followers", "following", "history"
     };
 
     componentDidMount() {
@@ -88,17 +89,18 @@ class UserPage extends Component {
     };
 
     sharesClickHandler = () => {
-        console.log("shares clicked");
         this.setState({pageContent: 'shares'});
     };
 
+    historyClickHandler = () => {
+        this.setState({pageContent: 'history'});
+    };
+
     followersClickHandler = () => {
-        console.log("followers clicked");
         this.setState({pageContent: 'followers'});
     };
 
     followingClickHandler = () => {
-        console.log("following clicked");
         this.setState({pageContent: 'following'});
     };
 
@@ -125,6 +127,8 @@ class UserPage extends Component {
             contentDiv = <FollowList followType='followers' userId={this.state.userId}/>;
         } else if (this.state.pageContent === 'following') {
             contentDiv = <FollowList followType='following' userId={this.state.userId}/>;
+        } else if (this.state.pageContent === 'history') {
+            contentDiv = <History authUserId={this.state.authUserId} userId={this.state.userId}/>
         }
 
         if (this.props.authUserInfo) {
@@ -148,6 +152,7 @@ class UserPage extends Component {
                             shareCnt={this.state.postArr.length}
                             history={this.props.history}
                             sharesClickHandler={this.sharesClickHandler}
+                            historyClickHandler={this.historyClickHandler}
                             followersClickHandler={this.followersClickHandler}
                             followingClickHandler={this.followingClickHandler}
                         />
