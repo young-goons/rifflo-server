@@ -124,7 +124,7 @@ def get_user_full_song_history(user_id):
               'spotify_url, youtube_url, soundcloud_url, bandcamp_url FROM ' \
               '(SELECT post_id, listen_date FROM tbl_full_song_history WHERE user_id = %s) tbl_user_play ' \
               'NATURAL JOIN tbl_post NATURAL JOIN tbl_song_info ORDER BY listen_date DESC'
-        cursor.execute(sql, (user_id,))
+        cursor.execute(sql, (user_id, ))
         query_result = cursor.fetchall()
 
     full_song_list = []
@@ -169,4 +169,3 @@ def get_user_disliked(user_id):
         dislike_list.append(dislike_dict)
 
     return dislike_list
-

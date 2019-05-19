@@ -65,7 +65,7 @@ CREATE TABLE tbl_song_info
     spotify_url     VARCHAR(200),
     youtube_url     VARCHAR(200),
     soundcloud_url  VARCHAR(200),
-    bandcacmp_url   VARCHAR(200)
+    bandcacmp_url   VARCHAR(200),
 
     PRIMARY KEY(song_id)
 );-- CHARACTER SET=utf8;
