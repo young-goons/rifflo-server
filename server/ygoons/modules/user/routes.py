@@ -40,13 +40,21 @@ def update_user_info(user_id):
     if user_id == get_jwt_identity()['userId']:
         updated_data = json.loads(request.data)
         row_cnt = 0
+        new_username = None
         if 'username' in updated_data:
             new_username = updated_data['username']
             row_cnt += helpers.update_username(user_id, new_username)
+            del updated_data['username']
+
+        if len(updated_data) > 0:
+            row_cnt += helpers.update_user_info(user_id, updated_data)
 
         if row_cnt > 0:
             flask.g.pymysql_db.commit()
-            return make_response(jsonify({'newUsername': new_username}), 200)
+            if new_username is not None:
+                return make_response(jsonify({'newUsername': new_username}), 200)
+            else:
+                return make_response(jsonify({'success': True}), 200)
         else:
             return make_response(jsonify({'msg': 'Username update failed'}),
                                  400)
