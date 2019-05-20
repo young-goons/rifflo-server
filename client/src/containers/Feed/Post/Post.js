@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 
 import styles from './Post.module.css';
 import profileImg from '../../../resources/defaultProfileImage.jpg';
+import FullSongModal from './FullSongModal/FullSongModal';
 import { convertDateToStr } from '../../../shared/dateUtils';
-import { loadUserProfileImage } from '../../../store/actions/user';
 
 class Post extends Component {
     state = {
@@ -93,11 +93,11 @@ class Post extends Component {
     };
 
     songPlayHandler = () => {
-        if (!this.state.isPlayed) {
+        if (!this.state.isPlayed &&
+            (this.props.isClipPlaying === null || this.props.isClipPlaying === this.props.postId)) {
             this.audioRef.current.play();
             this.setState({isPlaying: true});
-        } else {
-            alert("Clip has been already played");
+            this.props.startPlayingClip(this.props.postId);
         }
     };
 
@@ -122,7 +122,8 @@ class Post extends Component {
             isPlaying: false,
             isPlayed: true,
             progressPercent: 1
-        })
+        });
+        this.props.endPlayingClip();
     };
 
     initProgressBar = () => {
@@ -260,17 +261,31 @@ class Post extends Component {
             );
         }
 
-        const fullSongModal = (
-            <Modal trigger={<Icon name="headphones" size="large" onClick={this.handleOpen}
-                            className={styles.actionIcon} />}
-                   size="tiny" open={this.state.fullSongModalOpen} onClose={this.handleClose}>
-                <div>
-                    <div>Spotify URL</div>
-                    <div>Youtube URL</div>
-                    <div>SoundCloud URL</div>
-                </div>
-            </Modal>
-        );
+        let fullSongModal = <Icon name="headphones" size="large" color="grey"/>;
+        if (this.state.isPlayed) {
+            fullSongModal = (
+                <Modal trigger={<Icon name="headphones" size="large" onClick={this.handleOpen}
+                                      className={styles.actionIcon}/>}
+                       size="tiny" open={this.state.fullSongModalOpen} onClose={this.handleClose}>
+                    <FullSongModal songName={this.props.songName} artist={this.props.artist}
+                                   urlObj={this.props.urlObj}/>
+                </Modal>
+            );
+        }
+
+        let playIcon;
+        if (!this.state.isPlayed &&
+            (this.props.isClipPlaying === null || this.props.isClipPlaying === this.props.postId)) { // can be played
+            if (this.state.isPlaying) {
+                playIcon = <Icon name="pause" size="big" onClick={this.songPauseHandler} className={styles.playIcon} />
+            } else {
+                playIcon = <Icon name="play" size="big" onClick={this.songPlayHandler} className={styles.playIcon} />
+            }
+        } else { // cannot be played
+            playIcon = (
+                <Icon name="play" size="big" color="grey"/>
+            );
+        }
 
         return (
             <Container className={styles.postDiv}>
@@ -304,10 +319,7 @@ class Post extends Component {
                         <Grid.Row className={styles.songPlayRow}>
                             { audioDiv }
                             <Grid.Column width={2}>
-                                { this.state.isPlaying || this.state.isPlayed ?
-                                    <Icon name="pause" size="big" onClick={this.songPauseHandler}/> :
-                                    <Icon name="play" size="big" onClick={this.songPlayHandler}/>
-                                }
+                                { playIcon }
                             </Grid.Column>
                             <Grid.Column width={14} verticalAlign="middle" className={styles.playBarColumn}>
                                 <div className={styles.progressDiv}>

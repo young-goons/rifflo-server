@@ -33,7 +33,8 @@ def get_posts(id_list):
         # TODO - there must be a better way of putting multiple ids in IN () clause
         # obtain information about the post
         sql = 'SELECT post_id, user_id, username, upload_date, content, tags, ' \
-              '  song_id, clip_path, song_name, artist ' \
+              '  song_id, clip_path, song_name, artist, ' \
+              '  spotify_url, youtube_url, soundcloud_url, bandcamp_url ' \
               'FROM (SELECT * FROM tbl_post WHERE post_id IN ({})) tbl_post_id ' \
               'NATURAL JOIN (SELECT user_id, username FROM tbl_user) tbl_user_id ' \
               'NATURAL JOIN tbl_song_info'.format(id_list)
@@ -52,9 +53,14 @@ def get_posts(id_list):
             'clipPath': row[7],
             'songName': row[8],
             'artist': row[9],
+            'urlObj': {
+                'spotifyUrl': row[10],
+                'youtubeUrl': row[11],
+                'soundcloudUrl': row[12],
+                'bandcampUrl': row[13],
+            }
         }
         post_dict[row[0]] = post_data
-    print(post_dict)
     return make_response(jsonify({'posts': post_dict}), 200)
 
 

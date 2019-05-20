@@ -15,7 +15,8 @@ class Feed extends Component {
         isFeedLoaded: false,
         feedPostIdArr: [],
         feedPostIdx: 0, // the next post index to be fetched from feedPostIdArr
-        postArr: []
+        postArr: [],
+        isClipPlaying: null,
     };
 
     // numPosts = FEED_POSTS_LOAD_NUM;
@@ -128,6 +129,14 @@ class Feed extends Component {
             });
     };
 
+    startPlayingClip = (postId) => {
+        this.setState({isClipPlaying: postId});
+    };
+
+    endPlayingClip = () => {
+        this.setState({isClipPlaying: null});
+    };
+
     render() {
         let renderDiv;
         if (this.props.authUserInfo) { // load posts after user info is loaded
@@ -147,6 +156,10 @@ class Feed extends Component {
                             followerCnt={post.followerCnt}
                             songName={post.songName}
                             artist={post.artist}
+                            urlObj={post.urlObj}
+                            startPlayingClip={this.startPlayingClip}
+                            endPlayingClip={this.endPlayingClip}
+                            isClipPlaying={this.state.isClipPlaying}
                         />
                     </div>
                 );
@@ -178,7 +191,6 @@ class Feed extends Component {
                     { feedDiv }
                 </div>
             );
-            console.log("Feed loaded");
         } else if (this.state.authUserId) {
             renderDiv = <div></div>;
         } else { // authPage;

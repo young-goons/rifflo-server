@@ -58,11 +58,6 @@ class UserPageHeader extends Component {
                 this.props.onLoadUserHeaderImage(nextProps.userId);
                 this.setState({headerImageReady: true});
             }
-            // if (!this.state.userInfoReq) {
-            //     console.log("loading user info");
-            //     this.props.onLoadUserInfo(nextProps.userId);
-            //     this.setState({userInfoReq: true});
-            // }
         }
     }
 
