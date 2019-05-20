@@ -11,7 +11,7 @@ DROP TABLE IF EXISTS tbl_user_svd;
 DROP TABLE IF EXISTS tbl_post_svd;
 DROP TABLE IF EXISTS tbl_user_bias;
 DROP TABLE IF EXISTS tbl_post_bias;
-DROP TABLE IF EXISTS tbl_user_music_profile;
+DROP TABLE IF EXISTS tbl_music_analysis;
 DROP TABLE IF EXISTS tbl_dislike;
 DROP TABLE IF EXISTS tbl_like;
 DROP TABLE IF EXISTS tbl_play_history;
@@ -289,22 +289,19 @@ CREATE TABLE tbl_post_bias
       ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE tbl_user_music_profile
+CREATE TABLE tbl_music_analysis
 (
-    user_id INT,
     song_id INT,
-    danceability FLOAT,
-    energy FLOAT,
-    loudness FLOAT,
-    acousticness FLOAT,
-    instrumentalness FLOAT,
-    liveness FLOAT,
-    valence FLOAT,
+    danceability DOUBLE,
+    energy DOUBLE,
+    loudness DOUBLE,
+    acousticness DOUBLE,
+    instrumentalness DOUBLE,
+    liveness DOUBLE,
+    valence DOUBLE,
 
-    PRIMARY KEY (user_id, song_id),
+    PRIMARY KEY(song_id),
 
-    FOREIGN KEY(user_id) REFERENCES tbl_user(user_id)
-      ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (song_id) REFERENCES tbl_song_info(song_id)
       ON DELETE CASCADE ON UPDATE CASCADE
 );
