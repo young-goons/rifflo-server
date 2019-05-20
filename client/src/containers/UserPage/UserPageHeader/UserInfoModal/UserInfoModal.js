@@ -13,26 +13,36 @@ class UserInfoModal extends Component  {
     }
 
     render() {
-        console.log(this.props.userId);
         return (
             <div>
                 <div className={styles.userInfoHeader}>
                     User Info
                 </div>
-                <Grid>
-                    <Grid.Row>
-                        <Grid.Column>
+                <Grid verticalAlign="middle">
+                    <Grid.Row className={styles.userInfoRow}>
+                        <Grid.Column width={4} textAlign="center">
+                            <span className={styles.labelSpan}>Name</span>
                         </Grid.Column>
-                        <Grid.Column>
-                            {this.props.userInfo ? this.props.userInfo.name : null}
+                        <Grid.Column width={12}>
+                            <div className={styles.infoDiv}>
+                                {this.props.userInfo ? this.props.userInfo.name : null}
+                            </div>
                         </Grid.Column>
                     </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column>
-
+                    <Grid.Row className={styles.userInfoRow}>
+                        <Grid.Column width={4} textAlign="center">
+                            <span className={styles.labelSpan}>Location</span>
+                        </Grid.Column>
+                        <Grid.Column width={12}>
+                            <div className={styles.infoDiv}>
+                                {this.props.userInfo ? this.props.userInfo.location : null}
+                            </div>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
+                <div className={styles.userFooter}>
+
+                </div>
             </div>
         );
     }

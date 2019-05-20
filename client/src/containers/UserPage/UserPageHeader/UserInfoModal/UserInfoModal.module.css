@@ -4,4 +4,23 @@
     font-weight: 700;
     font-size: 1.5rem;
     margin-top: 10px;
+    margin-bottom: 25px;
+}
+
+.userInfoRow {
+    margin-top: -15px;
+}
+
+.labelSpan {
+    font-size: 1.2rem;
+    margin-left: 10px;
+}
+
+.infoDiv {
+    margin-right: 20px;
+    font-size: 1.2rem;
+}
+
+.userFooter {
+    margin-bottom: 15px;
 }
