@@ -7,9 +7,19 @@ from ygoons.modules.user.helpers import get_user_data
 
 
 def test_get_user_data(tester):
-    assert get_user_data(1) == {
+    assert get_user_data(1, private=True) == {
         'userId': 1,
         'username': 'johnguackmbl',
         'email': 'johnguackmbl@gmail.com',
-        'profile_picture_path': None
+        'profile_picture_path': None,
+        'name': None,
+        'location': None
+    }
+
+    assert get_user_data(1, private=False) == {
+        'userId': 1,
+        'username': 'johnguackmbl',
+        'profile_picture_path': None,
+        'name': None,
+        'location': None
     }

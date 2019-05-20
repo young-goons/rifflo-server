@@ -8,20 +8,25 @@ import defaultProfileImage from '../../../resources/defaultProfileImage.jpg';
 import defaultHeaderImage from '../../../resources/defaultHeaderImage.jpg';
 import ImageUploader from "../ImageUploader/ImageUploader";
 import EditInfoModal from "./EditInfoModal/EditInfoModal";
+import UserInfoModal from "./UserInfoModal/UserInfoModal";
 import { loadUserProfileImage, loadUserHeaderImage, uploadUserHeaderImage, deleteUserHeaderImage,
          uploadUserProfileImage, deleteUserProfileImage
 } from "../../../store/actions/user";
 
 class UserPageHeader extends Component {
     state = {
+        userInfoReq: false, // flag user info requested
         isFollowed: null,
+        followerReq: false, // flag to check if follower is requested
+        followingReq: false, // flag to check if following is requested
         followerArr: null,
         followingArr: null,
         profileImgModalOpen: false,
         profileImageReady: false,
         headerImgModalOpen: false,
         headerImageReady: false,
-        editInfoModalOpen: false
+        editInfoModalOpen: false,
+        userInfoModalOpen: false
     };
 
     componentDidMount() {
@@ -37,10 +42,12 @@ class UserPageHeader extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.userId) {
-            if (this.state.isFollowed === null && this.state.followerArr === null) {
+            if (this.state.isFollowed === null && this.state.followerArr === null && !this.state.followerReq) {
+                this.setState({followerReq: true});
                 this.getFollowers(nextProps.userId);
             }
-            if (this.state.followingArr === null) {
+            if (this.state.followingArr === null && !this.state.followingReq) {
+                this.setState({followingReq: true});
                 this.getFollowing(nextProps.userId);
             }
             if (!this.state.profileImageReady) {
@@ -51,6 +58,11 @@ class UserPageHeader extends Component {
                 this.props.onLoadUserHeaderImage(nextProps.userId);
                 this.setState({headerImageReady: true});
             }
+            // if (!this.state.userInfoReq) {
+            //     console.log("loading user info");
+            //     this.props.onLoadUserInfo(nextProps.userId);
+            //     this.setState({userInfoReq: true});
+            // }
         }
     }
 
@@ -135,6 +147,14 @@ class UserPageHeader extends Component {
         this.setState({headerImgModalOpen: false});
     };
 
+    userInfoHandleOpen = () => {
+        this.setState({userInfoModalOpen: true});
+    };
+
+    userInfoHandleClose = () => {
+        this.setState({userInfoModalOpen: false});
+    };
+
     editInfoHandleOpen = () => {
         this.setState({editInfoModalOpen: true});
     };
@@ -148,6 +168,7 @@ class UserPageHeader extends Component {
         let profileImgModal, profileImg;
         let headerImgModal, headerImg;
         let editInfoModal, editInfoIcon;
+        let userInfoModal, userInfoIcon;
         if (this.props.authUserId != this.props.userId) {
             followButtonDiv = (
                 <div className={styles.followButtonDiv}>
@@ -169,6 +190,19 @@ class UserPageHeader extends Component {
                               src={this.props.profileImgSrc ? this.props.profileImgSrc : defaultProfileImage} />;
             headerImg = <img className={styles.headerImg} alt="headerImage"
                              src={this.props.headerImgSrc ? this.props.headerImgSrc : defaultHeaderImage} />;
+            userInfoIcon = (
+                 <span className={styles.userIconSpan}>
+                     <Icon name="info" size="tiny" onClick={this.userInfoHandleOpen}/>
+                 </span>
+            );
+            userInfoModal = (
+                <Modal trigger={userInfoIcon} size="tiny" centered={true}
+                       open={this.state.userInfoModalOpen} onClose={this.userInfoHandleClose}>
+                    <UserInfoModal
+                        userId={this.props.userId}
+                    />
+                </Modal>
+            );
         } else {
             profileImg = <img className={styles.profileImg + " " + styles.profileImgModal} alt="profileImage"
                               src={this.props.profileImgSrc ? this.props.profileImgSrc : defaultProfileImage}
@@ -177,7 +211,7 @@ class UserPageHeader extends Component {
                              src={this.props.headerImgSrc ? this.props.headerImgSrc : defaultHeaderImage }
                              onClick={this.headerImgHandleOpen} />;
             editInfoIcon = (
-                <span className={styles.editIconSpan}>
+                <span className={styles.userIconSpan}>
                     <Icon name="pencil" size="tiny" onClick={this.editInfoHandleOpen}/>
                 </span>
             );
@@ -223,6 +257,7 @@ class UserPageHeader extends Component {
                     <EditInfoModal
                         username={this.props.username}
                         userId={this.props.userId}
+                        name={this.props.name}
                         history={this.props.history}
                         handleClose={this.editInfoHandleClose}
                     />
@@ -236,6 +271,7 @@ class UserPageHeader extends Component {
                     <div className={styles.usernameDiv}>
                         {this.props.username}
                         { editInfoModal }
+                        { userInfoModal }
                     </div>
                     { this.props.authUserId === this.props.userId ? profileImgModal : profileImg }
                     { followButtonDiv }

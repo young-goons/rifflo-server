@@ -42,7 +42,7 @@ export const loadAuthUserInfo = (userInfo) => {
     };
 };
 
-export const loadUser = (user_id) => {
+export const loadAuthUser = (user_id) => {
     return dispatch => {
         const url = "http://127.0.0.1:5000/user/" + user_id + "/info";
         const headers = {
@@ -51,10 +51,9 @@ export const loadUser = (user_id) => {
         axios({method: 'GET', url: url, headers: headers})
             .then(response => {
                 dispatch(loadAuthUserInfo(response.data.user));
-                console.log("User " + user_id + " loaded");
             })
             .catch(error => {
-                alert(error);
+                console.log(error);
             })
     };
 };

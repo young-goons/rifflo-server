@@ -110,20 +110,20 @@ def upload_post():
         release_date = None
 
     with flask.g.pymysql_db.cursor() as cursor:
-        sql = "INSERT INTO tbl_song_info (song_name, artist, release_date, album, song_path) " \
-              "VALUES (%s, %s, %s, %s, %s)"
-        cursor.execute(sql,
-                       (request.form['track'], request.form['artist'],
-                        release_date, request.form['album'], song_file_path))
+        sql = "INSERT INTO tbl_song_info (song_name, artist, release_date, album) " \
+              "VALUES (%s, %s, %s, %s)"
+        cursor.execute(sql, (request.form['track'], request.form['artist'],
+                             release_date, request.form['album']))
         song_id = cursor.lastrowid
         post_id = None
         if song_id:
-            sql = "INSERT INTO tbl_post (user_id, content, tags, song_id, clip_start_time, clip_end_time, clip_path) " \
-                  "VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            sql = "INSERT INTO tbl_post " \
+                  "(user_id, content, tags, song_id, clip_start_time, clip_end_time, clip_path, song_path) " \
+                  "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
             cursor.execute(
                 sql, (user_id, request.form['content'], request.form['tags'],
                       song_id, request.form['clipStart'],
-                      request.form['clipEnd'], clip_file_path))
+                      request.form['clipEnd'], clip_file_path, song_file_path))
             post_id = cursor.lastrowid
 
     if song_id and post_id:

@@ -5,7 +5,7 @@ import flask
 
 def get_user_data(user_id, private=False):
     with flask.g.pymysql_db.cursor() as cursor:
-        sql = 'SELECT user_id, username, email, profile_picture_path ' \
+        sql = 'SELECT user_id, username, email, name, location, profile_picture_path ' \
               'FROM tbl_user NATURAL JOIN' \
               '(SELECT * FROM tbl_user_info WHERE user_id = %s) tbl_user_info_id'
         cursor.execute(sql, (user_id, ))
@@ -17,10 +17,12 @@ def get_user_data(user_id, private=False):
     user = {
         'userId': query_result[0][0],
         'username': query_result[0][1],
-        'profile_picture_path': query_result[0][3]
+        'name': query_result[0][3],
+        'location': query_result[0][4],
+        'profile_picture_path': query_result[0][5]
     }
 
-    if not private:
+    if private:
         user['email'] = query_result[0][2]
 
     return user
@@ -30,6 +32,19 @@ def update_username(user_id, username):
     with flask.g.pymysql_db.cursor() as cursor:
         sql = 'UPDATE tbl_user SET username = %s WHERE user_id = %s'
         row_cnt = cursor.execute(sql, (username, user_id))
+
+    return row_cnt
+
+
+def update_user_info(user_id, updated_data):
+    row_cnt = 0
+    with flask.g.pymysql_db.cursor() as cursor:
+        if 'name' in updated_data:
+            sql = 'UPDATE tbl_user_info SET name = %s WHERE user_id = %s'
+            row_cnt += cursor.execute(sql, (updated_data['name'], user_id))
+        if 'location' in updated_data:
+            sql = 'UPDATE tbl_user_info SET location = %s WHERE user_id = %s'
+            row_cnt += cursor.execute(sql, (updated_data['location'], user_id))
 
     return row_cnt
 

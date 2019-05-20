@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Image, Modal, Icon, Container, Input, Dropdown } from 'semantic-ui-react';
+import { Grid, Image, Modal, Icon, Container, Input, Dropdown, Message } from 'semantic-ui-react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 
@@ -22,7 +22,8 @@ class Post extends Component {
         isPlaying: false,
         progressPercent: 0,
         fullSongModalOpen: false,
-        profileImgSrc: null
+        profileImgSrc: null,
+        dislikeClicked: false
     };
 
     audioRef = React.createRef();
@@ -162,7 +163,7 @@ class Post extends Component {
         };
         axios({method: 'POST', url: url, headers: requestHeaders})
             .then(response => {
-                alert("Song added to skip list. (Go to my page to edit the list of disliked songs");
+                this.setState({dislikeClicked: true});
             })
             .catch(error => {
                 console.log(error);
@@ -248,6 +249,15 @@ class Post extends Component {
             audioDiv = <audio src={"http://127.0.0.1:5000/clip/" + this.props.postId}
                               ref={this.audioRef} onTimeUpdate={this.initProgressBar}
                               onEnded={this.onAudioEnd}/>;
+        }
+
+        let dislikeMessage;
+        if (this.state.dislikeClicked) {
+            dislikeMessage = (
+                <Message attached="bottom" negative size="small">
+                    The song is added to Dislike list. View the list on "History" Tab in User Page.
+                </Message>
+            );
         }
 
         const fullSongModal = (
@@ -336,6 +346,9 @@ class Post extends Component {
                                 />
                                 <span className={styles.actionLabel}>Not My Taste</span>
                             </Grid.Column>
+                            <div className={styles.messageDiv}>
+                                { dislikeMessage }
+                            </div>
                         </Grid.Row>
                         <Grid.Row className={styles.commentHeaderRow}>
                             <Grid.Column>
