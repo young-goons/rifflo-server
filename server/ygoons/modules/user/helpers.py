@@ -22,7 +22,7 @@ def get_user_data(user_id, private=False):
         'profile_picture_path': query_result[0][5]
     }
 
-    if not private:
+    if private:
         user['email'] = query_result[0][2]
 
     return user

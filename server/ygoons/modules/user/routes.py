@@ -22,7 +22,7 @@ def get_user_info(user_id):
     """
     # check if the identity of the token is equal to the identity of the request parameter
     private = user_id == get_jwt_identity()['userId']
-    user = helpers.get_user_data(user_id, private)
+    user = helpers.get_user_data(user_id, private=private)
     if user is None:
         return make_response(jsonify({'msg': 'Error fetching user info data'}),
                              400)
@@ -52,7 +52,8 @@ def update_user_info(user_id):
         if row_cnt > 0:
             flask.g.pymysql_db.commit()
             if new_username is not None:
-                return make_response(jsonify({'newUsername': new_username}), 200)
+                return make_response(jsonify({'newUsername': new_username}),
+                                     200)
             else:
                 return make_response(jsonify({'success': True}), 200)
         else:

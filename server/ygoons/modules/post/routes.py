@@ -112,9 +112,8 @@ def upload_post():
     with flask.g.pymysql_db.cursor() as cursor:
         sql = "INSERT INTO tbl_song_info (song_name, artist, release_date, album) " \
               "VALUES (%s, %s, %s, %s)"
-        cursor.execute(sql,
-                       (request.form['track'], request.form['artist'],
-                        release_date, request.form['album']))
+        cursor.execute(sql, (request.form['track'], request.form['artist'],
+                             release_date, request.form['album']))
         song_id = cursor.lastrowid
         post_id = None
         if song_id:
