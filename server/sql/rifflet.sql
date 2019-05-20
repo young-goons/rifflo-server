@@ -7,6 +7,11 @@ DROP VIEW IF EXISTS view_comment_count;
 DROP VIEW IF EXISTS view_follower_count;
 DROP VIEW IF EXISTS view_following_count;
 
+DROP TABLE IF EXISTS tbl_user_svd;
+DROP TABLE IF EXISTS tbl_post_svd;
+DROP TABLE IF EXISTS tbl_user_bias;
+DROP TABLE IF EXISTS tbl_post_bias;
+DROP TABLE IF EXISTS tbl_user_music_profile;
 DROP TABLE IF EXISTS tbl_dislike;
 DROP TABLE IF EXISTS tbl_like;
 DROP TABLE IF EXISTS tbl_play_history;
@@ -19,10 +24,6 @@ DROP TABLE IF EXISTS tbl_post;
 DROP TABLE IF EXISTS tbl_song_info;
 DROP TABLE IF EXISTS tbl_user_info;
 DROP TABLE IF EXISTS tbl_user;
-DROP TABLE IF EXISTS tbl_user_svd;
-DROP TABLE IF EXISTS tbl_post_svd;
-DROP TABLE IF EXISTS tbl_user_bias;
-DROP TABLE IF EXISTS tbl_post_bias;
 
 
 -- Create user table.
@@ -248,7 +249,10 @@ CREATE TABLE tbl_user_svd
     latent_idx INT,
     value DOUBLE,
 
-    PRIMARY KEY(user_id, latent_idx)
+    PRIMARY KEY(user_id, latent_idx),
+
+    FOREIGN KEY(user_id) REFERENCES tbl_user(user_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE tbl_post_svd
@@ -257,7 +261,10 @@ CREATE TABLE tbl_post_svd
     latent_idx INT,
     value DOUBLE,
 
-    PRIMARY KEY(post_id, latent_idx)
+    PRIMARY KEY(post_id, latent_idx),
+
+    FOREIGN KEY(post_id) REFERENCES tbl_post(post_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE tbl_user_bias
@@ -265,7 +272,10 @@ CREATE TABLE tbl_user_bias
     user_id INT,
     user_bias DOUBLE,
 
-    PRIMARY KEY(user_id)
+    PRIMARY KEY(user_id),
+
+    FOREIGN KEY(user_id) REFERENCES tbl_user(user_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE tbl_post_bias
@@ -273,6 +283,28 @@ CREATE TABLE tbl_post_bias
     post_id INT,
     post_bias DOUBLE,
 
-    PRIMARY KEY(post_id)
+    PRIMARY KEY(post_id),
+
+    FOREIGN KEY(post_id) REFERENCES tbl_post(post_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE tbl_user_music_profile
+(
+    user_id INT,
+    song_id INT,
+    danceability FLOAT,
+    energy FLOAT,
+    loudness FLOAT,
+    acousticness FLOAT,
+    instrumentalness FLOAT,
+    liveness FLOAT,
+    valence FLOAT,
+
+    PRIMARY KEY (user_id, song_id),
+
+    FOREIGN KEY(user_id) REFERENCES tbl_user(user_id)
+      ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (song_id) REFERENCES tbl_song_info(song_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+);

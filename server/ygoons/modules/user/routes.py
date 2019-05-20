@@ -420,3 +420,13 @@ def get_user_dislike(user_id):
     """ Get the list of song ids that the user disliked """
     dislike_history = helpers.get_user_disliked(user_id)
     return make_response(jsonify({'dislikeArr': dislike_history}), 200)
+
+
+@blueprint.route('/user/suggest_follow', methods=['GET'])
+@jwt_required
+def get_user_suggest_follow():
+    """ Obtains the list of user_ids to make follow suggestion """
+    user_id = get_jwt_identity()['userId']
+
+    user_id_list = helpers.get_user_suggest_follow(user_id)
+    return make_response(jsonify({'userIdArr': user_id_list}), 200)
