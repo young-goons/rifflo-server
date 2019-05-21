@@ -26,9 +26,18 @@ def _sort_similarity(user_id, cands, cnx):
     Returns:
         list: cands ordered by decreasing similarity
     """
-    users_tmp = ', '.join(list(map(str, [user_id] + cands)))
+    fmt_str = ','.join(['%s'] * (1 + len(cands)))
     sql = '''
-    WITH all_songs_analysis AS
+    SELECT
+        user_id,
+        AVG(danceability),
+        AVG(energy),
+        AVG(loudness),
+        AVG(acousticness),
+        AVG(instrumentalness),
+        AVG(liveness),
+        AVG(valence)
+    FROM
     (
         SELECT
             tbl_like.user_id AS user_id,
@@ -45,21 +54,11 @@ def _sort_similarity(user_id, cands, cnx):
             JOIN tbl_music_analysis
             ON (tbl_post.song_id = tbl_music_analysis.song_id)
         WHERE tbl_like.user_id IN (%s)
-    )
-    SELECT
-        user_id,
-        AVG(danceability),
-        AVG(energy),
-        AVG(loudness),
-        AVG(acousticness),
-        AVG(instrumentalness),
-        AVG(liveness),
-        AVG(valence)
-    FROM all_songs_analysis
+    ) all_songs_analysis
     GROUP BY user_id
-    ''' % (users_tmp)
+    ''' % fmt_str
     with cnx.cursor() as cursor:
-        cursor.execute(sql)
+        cursor.execute(sql, ([user_id] + cands))
         res = cursor.fetchall()
     attributes_map = {}
     for i in range(len(res)):
@@ -93,7 +92,7 @@ def _get_degree_2(user_id, cnx):
         list: list of user_ids
     """
     sql = '''
-    WITH tmp_suggest (followed_id) AS
+    SELECT followed_id, COUNT(*) AS num_mutual FROM
     (
         SELECT b.followed_id AS followed_id
         FROM
@@ -103,12 +102,11 @@ def _get_degree_2(user_id, cnx):
         AND b.followed_id NOT IN
             (SELECT followed_id FROM tbl_follow WHERE follower_id = %s)
         AND b.followed_id != %s
-    )
-    SELECT followed_id, COUNT(*) AS num_mutual FROM tmp_suggest
+    ) tbl_all_followed
     GROUP BY followed_id
     ORDER BY num_mutual DESC
-    ''' % (user_id, user_id, user_id)
+    '''
     with cnx.cursor() as cursor:
-        cursor.execute(sql)
+        cursor.execute(sql, (user_id, user_id, user_id))
         res = cursor.fetchall()
     return list(map(lambda x: x[0], res))
