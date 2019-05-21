@@ -105,8 +105,8 @@ def _get_degree_2(user_id, cnx):
     ') ' \
     'SELECT followed_id, COUNT(*) AS num_mutual FROM tmp_suggest ' \
     'GROUP BY followed_id ' \
-    'ORDER BY num_mutual DESC'
+    'ORDER BY num_mutual DESC' % (user_id, user_id, user_id)
     with cnx.cursor() as cursor:
-        cursor.execute(sql, (user_id, user_id, user_id))
+        cursor.execute(sql)
         res = cursor.fetchall()
     return list(map(lambda x: x[0], res))
