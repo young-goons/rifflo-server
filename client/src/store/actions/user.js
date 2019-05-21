@@ -49,6 +49,29 @@ export const resetUserSuccess = () => {
     };
 };
 
+export const loadUserInfo = (userInfo) => {
+    return {
+        type: actionTypes.LOAD_USER_INFO,
+        userInfo: userInfo
+    };
+};
+
+export const loadUser = (user_id) => {
+    return dispatch => {
+        const url = "http://127.0.0.1:5000/user/" + user_id + "/info";
+        const headers = {
+            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
+        };
+        axios({method: 'GET', url: url, headers: headers})
+            .then(response => {
+                dispatch(loadUserInfo(response.data.user));
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    };
+};
+
 export const loadUserPosts = (userId) => {
     return dispatch => {
         const userPostUrl = "http://127.0.0.1:5000/user/" + userId + "/posts";

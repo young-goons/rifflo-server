@@ -161,3 +161,11 @@
     margin-top: -1em;
 }
 
+.messageDiv {
+    /*margin-left: 32px;*/
+    width: 90%;
+    margin-left: 5%;
+    margin-top: 10px;
+    margin-bottom: -2px;
+    text-align: center;
+}

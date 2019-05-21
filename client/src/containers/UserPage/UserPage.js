@@ -12,7 +12,7 @@ import FollowList from './FollowList/FollowList';
 import NoUserPage from '../../components/ErrorPage/NoUserPage/NoUserPage';
 import PostEditor from './PostEditor/PostEditor';
 import styles from './UserPage.module.css';
-import { loadUser } from "../../store/actions/auth";
+import { loadAuthUser } from "../../store/actions/auth";
 import { loadUserPosts, loadUserUpdatedPosts } from "../../store/actions/user";
 
 class UserPage extends Component {
@@ -21,10 +21,12 @@ class UserPage extends Component {
         authUserInfo: null,
         isUserPageLoaded: false,
         userId: null,
+        userInfo: null,
         isSignedOut: false,
         isFollowed: null,
         followerCnt: null,
         postArr: [],
+        postLoadReq: false,
         pageContent: 'shares' // one of "shares", "followers", "following", "history"
     };
 
@@ -32,13 +34,12 @@ class UserPage extends Component {
         console.log("component mounted");
         if (this.state.authUserId) {
             if (!this.props.authUserInfo) {
-                this.props.onLoadUser(this.state.authUserId);
+                this.props.onLoadAuthUser(this.state.authUserId);
             }
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps);
         if (nextProps.authUserInfo) {
             if (!nextProps.postArr && !nextProps.newPostId) { // upon sign in
                 this.setState({authUserInfo: nextProps.authUserInfo});
@@ -68,8 +69,9 @@ class UserPage extends Component {
     }
 
     componentDidUpdate() {
-        if (!this.props.postLoaded && this.state.userId && this.state.authUserInfo) {
+        if (!this.props.postLoaded && this.state.userId && this.state.authUserInfo && !this.state.postLoadReq) {
             console.log("load user posts");
+            this.setState({postLoadReq: true});
             this.props.onLoadUserPosts(this.state.userId);
         }
     }
@@ -149,6 +151,7 @@ class UserPage extends Component {
                             authUserId={this.state.authUserId}
                             userId={this.state.userId}
                             username={this.props.match.params.username}
+                            userInfo={this.props.userInfo}
                             shareCnt={this.state.postArr.length}
                             history={this.props.history}
                             sharesClickHandler={this.sharesClickHandler}
@@ -186,6 +189,7 @@ class UserPage extends Component {
 const mapStateToProps = state => {
     return {
         authUserInfo: state.auth.authUserInfo,
+        userInfo: state.user.userInfo,
         postArr: state.user.postArr,
         postLoaded: state.user.postLoaded,
         newPostId: state.upload.newPostId
@@ -194,7 +198,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onLoadUser: (userId) => dispatch(loadUser(userId)),
+        onLoadAuthUser: (userId) => dispatch(loadAuthUser(userId)),
         onLoadUserPosts: (userId) => dispatch(loadUserPosts(userId)),
         onLoadUserUpdatedPosts: (postId, postArr) => dispatch(loadUserUpdatedPosts(postId, postArr))
     };

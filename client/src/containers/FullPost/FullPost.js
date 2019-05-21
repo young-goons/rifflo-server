@@ -7,7 +7,7 @@ import AuthPage from '../AuthPage/AuthPage';
 import Post from './Post/Post';
 import NoPostPage from '../../components/ErrorPage/NoPostPage/NoPostPage';
 import styles from './FullPost.module.css';
-import { loadUser } from '../../store/actions/auth';
+import { loadAuthUser } from '../../store/actions/auth';
 
 class FullPost extends Component {
     state = {
@@ -112,7 +112,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onLoadUser: (userId) => dispatch(loadUser(userId))
+        onLoadUser: (userId) => dispatch(loadAuthUser(userId))
     };
 };
 
