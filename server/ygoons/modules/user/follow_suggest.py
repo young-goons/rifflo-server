@@ -92,7 +92,7 @@ def _get_degree_2(user_id, cnx):
     Returns:
         list: list of user_ids
     """
-    sql = 'WITH tmp_suggest AS ' \
+    sql = 'WITH tmp_suggest (followed_id) AS ' \
     '(' \
         'SELECT b.followed_id AS followed_id ' \
         'FROM ' \
