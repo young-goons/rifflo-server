@@ -273,6 +273,22 @@ def upload_play_history(post_id):
         return make_response(jsonify({'success': False}), 400)
 
 
+@blueprint.route('/user/history/full_song/<int:post_id>', methods=['POST'])
+@jwt_required
+def upload_full_song_history(post_id):
+    user_id = get_jwt_identity()['userId']
+    service_type = json.loads(request.data)['serviceType']
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'INSERT INTO tbl_full_song_history (user_id, post_id, service_type) ' \
+              'VALUES (%s, %s, %s)'
+        row_cnt = cursor.execute(sql, (user_id, post_id, service_type))
+    if row_cnt == 1:
+        flask.g.pymysql_db.commit()
+        return make_response(jsonify({'success': True}), 200)
+    else:
+        return make_response(jsonify({'success': False}), 400)
+
+
 @blueprint.route('/user/<int:user_id>/profile/image', methods=['GET'])
 def get_user_profile_image(user_id):
     query_result = helpers.get_profile_picture_path(user_id)

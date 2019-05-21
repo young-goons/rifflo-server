@@ -268,7 +268,7 @@ class Post extends Component {
                                       className={styles.actionIcon}/>}
                        size="tiny" open={this.state.fullSongModalOpen} onClose={this.handleClose}>
                     <FullSongModal songName={this.props.songName} artist={this.props.artist}
-                                   urlObj={this.props.urlObj}/>
+                                   postId={this.props.postId} urlObj={this.props.urlObj}/>
                 </Modal>
             );
         }

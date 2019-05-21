@@ -1,7 +1,25 @@
 import React from 'react';
 import { List, Icon } from 'semantic-ui-react';
+import axios from 'axios';
 
 import styles from './FullSongModal.module.css';
+
+const onClickFullSong = (postId, serviceType) => {
+    const url = "http://127.0.0.1:5000/user/history/full_song/" + postId;
+    const headers = {
+        'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
+    };
+    const data = {
+        'serviceType': serviceType
+    };
+    axios({method: 'POST', url: url, headers: headers, data: data})
+        .then(response => {
+
+        })
+        .catch(error => {
+            console.log(error);
+        })
+};
 
 const FullSongModal = (props) => {
     let spotifyUrlItem, youtubeUrlItem, soundcloudUrlItem, bandcampUrlItem;
@@ -9,7 +27,8 @@ const FullSongModal = (props) => {
         spotifyUrlItem = (
             <List.Item>
                 <List.Content>
-                    <a href={props.urlObj['spotifyUrl']}>
+                    <a href={props.urlObj['spotifyUrl']} style={{display: "table-cell"}} target="_blank"
+                       onClick={() => onClickFullSong(props.postId, 'spotify')}>
                         <Icon name="spotify" size="big" color="green"/>
                         Spotify
                     </a>
@@ -21,7 +40,8 @@ const FullSongModal = (props) => {
         youtubeUrlItem = (
             <List.Item>
                 <List.Content>
-                    <a href={props.urlObj['youtubeUrl']}>
+                    <a href={props.urlObj['youtubeUrl']} style={{display: "table-cell"}} target="_blank"
+                       onClick={() => onClickFullSong(props.postId,'youtube')}>
                         <Icon name="youtube" size="big" color="red"/>
                         Youtube
                     </a>
@@ -33,7 +53,8 @@ const FullSongModal = (props) => {
         soundcloudUrlItem = (
             <List.Item>
                 <List.Content>
-                    <a href={props.urlObj['soundcloudUrl']}>
+                    <a href={props.urlObj['soundcloudUrl']} style={{display: "table-cell"}} target="_blank"
+                       onClick={() => onClickFullSong(props.postId, 'soundcloud')}>
                         <Icon name="soundcloud" size="big" color="orange"/>
                         SoundCloud
                     </a>
@@ -45,7 +66,10 @@ const FullSongModal = (props) => {
         bandcampUrlItem = (
             <List.Item>
                 <List.Content>
-                    BandCamp
+                    <a href={props.urlObj['bandcampUrl']} style={{display: "table-cell"}} target="_blank"
+                       onClick={() => onClickFullSong(props.postId, 'bandcamp')}>
+                        BandCamp
+                    </a>
                 </List.Content>
             </List.Item>
         );
