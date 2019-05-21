@@ -1,13 +1,13 @@
-.editInfoHeader {
+.userInfoHeader {
     text-align: center;
     font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
     font-weight: 700;
     font-size: 1.5rem;
     margin-top: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
-.editInfoRow {
+.userInfoRow {
     margin-top: -15px;
 }
 
@@ -16,16 +16,11 @@
     margin-left: 10px;
 }
 
-.inputDiv {
+.infoDiv {
     margin-right: 20px;
-    margin-left: -14px;
+    font-size: 1.2rem;
 }
 
-.authWarningDiv {
-    margin: 15px 20px;
+.userFooter {
+    margin-bottom: 15px;
 }
-
-.editButtonDiv {
-    margin: 15px 20px 20px;
-}
-

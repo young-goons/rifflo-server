@@ -7,7 +7,7 @@ import SiteHeader from '../SiteHeader/SiteHeader';
 import AuthPage from '../AuthPage/AuthPage';
 import { FEED_POSTS_LOAD_NUM } from "../../shared/config";
 import styles from './Feed.module.css';
-import { loadUser } from "../../store/actions/auth";
+import { loadAuthUser } from "../../store/actions/auth";
 
 class Feed extends Component {
     state = {
@@ -27,7 +27,7 @@ class Feed extends Component {
         if (this.state.authUserId) {
             if (!this.props.authUserInfo) {
                 console.log("loading user info");
-                this.props.onLoadUser(this.state.authUserId);
+                this.props.onLoadAuthUser(this.state.authUserId);
             }
         }
     }
@@ -200,7 +200,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onLoadUser: (userId) => dispatch(loadUser(userId))
+        onLoadAuthUser: (userId) => dispatch(loadAuthUser(userId))
     };
 };
 

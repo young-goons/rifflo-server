@@ -66,12 +66,12 @@
     cursor: pointer;
 }
 
-.editIconSpan {
+.userIconSpan {
     margin-left: 15px;
     color: lightgray;
 }
 
-.editIconSpan:hover {
+.userIconSpan:hover {
     color: white;
     cursor: pointer;
 }
