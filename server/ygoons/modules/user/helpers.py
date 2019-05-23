@@ -6,9 +6,14 @@ from ygoons.modules.user import follow_suggest
 
 def get_user_data(user_id, private=False):
     with flask.g.pymysql_db.cursor() as cursor:
-        sql = 'SELECT user_id, username, email, name, location, profile_picture_path ' \
-              'FROM tbl_user NATURAL JOIN' \
-              '(SELECT * FROM tbl_user_info WHERE user_id = %s) tbl_user_info_id'
+        sql = '''
+        SELECT user_id, username, email, name, location, profile_picture_path
+        FROM tbl_user
+        NATURAL JOIN (
+            SELECT * FROM tbl_user_info
+            WHERE user_id = %s
+        ) tbl_user_info_id
+        '''
         cursor.execute(sql, (user_id, ))
         query_result = cursor.fetchall()
 
@@ -27,6 +32,27 @@ def get_user_data(user_id, private=False):
         user['email'] = query_result[0][2]
 
     return user
+
+
+def get_user_post_ids(user_id):
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = '''
+        SELECT post_id, upload_date
+        FROM tbl_post
+        NATURAL JOIN (
+            SELECT user_id, username
+            FROM tbl_user
+            WHERE user_id = %s
+        ) tbl_user_id
+        ORDER BY upload_date DESC
+        '''
+        cursor.execute(sql, (user_id))
+        query_result = cursor.fetchall()
+    post_id_list = []
+    for row in query_result:
+        post_id_list.append(row[0])
+
+    return post_id_list
 
 
 def update_username(user_id, username):
@@ -107,12 +133,22 @@ def delete_header_picture(user_id):
 
 
 def get_user_play_history(user_id):
-    """ Obtains the list of song information that the user played """
+    """ Obtains the list of song information that the user played i.e. listened to the whole clip """
     with flask.g.pymysql_db.cursor() as cursor:
-        sql = 'SELECT song_id, song_name, artist, play_date, ' \
-              'spotify_url, youtube_url, soundcloud_url, bandcamp_url FROM ' \
-              '(SELECT post_id, play_date FROM tbl_play_history WHERE user_id = %s) tbl_user_play NATURAL JOIN ' \
-              'tbl_post NATURAL JOIN tbl_song_info ORDER BY play_date DESC'
+        sql = '''
+        SELECT
+            song_id, song_name, artist, play_date,
+            spotify_url, youtube_url, soundcloud_url, bandcamp_url
+        FROM
+        (
+            SELECT post_id, play_date
+            FROM tbl_play_history
+            WHERE user_id = %s
+        ) tbl_user_play
+        NATURAL JOIN tbl_post
+        NATURAL JOIN tbl_song_info
+        ORDER BY play_date DESC
+        '''
         cursor.execute(sql, (user_id, ))
         query_result = cursor.fetchall()
 
@@ -136,10 +172,21 @@ def get_user_play_history(user_id):
 def get_user_full_song_history(user_id):
     """ Obtains the list of full songs the user played """
     with flask.g.pymysql_db.cursor() as cursor:
-        sql = 'SELECT song_id, song_name, artist, listen_date, ' \
-              'spotify_url, youtube_url, soundcloud_url, bandcamp_url FROM ' \
-              '(SELECT post_id, listen_date FROM tbl_full_song_history WHERE user_id = %s) tbl_user_play ' \
-              'NATURAL JOIN tbl_post NATURAL JOIN tbl_song_info ORDER BY listen_date DESC'
+        sql = '''
+        SELECT
+            song_id, song_name, artist, listen_date,
+            spotify_url, youtube_url, soundcloud_url, bandcamp_url
+        FROM
+        (
+            SELECT post_id, listen_date
+            FROM tbl_full_song_history
+            WHERE user_id = %s
+        ) tbl_user_play
+        NATURAL JOIN tbl_post
+        NATURAL JOIN tbl_song_info
+        ORDER BY listen_date DESC
+        '''
+
         cursor.execute(sql, (user_id, ))
         query_result = cursor.fetchall()
 

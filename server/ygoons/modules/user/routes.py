@@ -116,14 +116,8 @@ def get_user_exists_by_facebook_id(facebook_id):
 def get_user_posts(user_id):
     """ Obtains the list of ids of the posts that the user has posted """
     shuffle = request.args.get('shuffle')
-    with flask.g.pymysql_db.cursor() as cursor:
-        sql = 'SELECT post_id FROM tbl_post NATURAL JOIN ' \
-              '(SELECT user_id, username FROM tbl_user WHERE user_id = %s) tbl_user_id'
-        cursor.execute(sql, (user_id))
-        query_result = cursor.fetchall()
-    post_id_list = []
-    for row in query_result:
-        post_id_list.append(row[0])
+    post_id_list = helpers.get_user_post_ids(user_id)
+
     if shuffle:
         random.shuffle(post_id_list)
     return make_response(jsonify({'postIdArr': post_id_list}), 200)
@@ -139,7 +133,8 @@ def get_user_feed():
     with flask.g.pymysql_db.cursor() as cursor:
         # obtain the list of ids of the top posts shared by other users for now...
         # TODO: is this limit reasonable
-        sql = '''SELECT tbl_post.post_id, like_cnt
+        sql = '''
+        SELECT tbl_post.post_id, like_cnt
         FROM tbl_post LEFT JOIN view_like_count
         ON tbl_post.post_id = view_like_count.post_id
         WHERE user_id != %s
@@ -149,7 +144,8 @@ def get_user_feed():
         top_posts = cursor.fetchall()
 
         # obtain list of ids of top posts shared by followed users
-        sql = '''SELECT tbl_post.post_id, like_cnt
+        sql = '''
+        SELECT tbl_post.post_id, like_cnt
         FROM tbl_post LEFT JOIN view_like_count
         ON tbl_post.post_id = view_like_count.post_id
         WHERE user_id in

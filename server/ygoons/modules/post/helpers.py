@@ -48,6 +48,22 @@ def get_post_data(id_list):
     return post_dict
 
 
+def get_comment_data(post_id):
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = '''
+        SELECT comment_id, user_id, username, comment_date, content
+        FROM (
+            SELECT * FROM tbl_comment
+            WHERE post_id = %s
+        ) tbl_post_comment
+        NATURAL JOIN tbl_user
+        ORDER BY comment_date DESC
+        '''
+        cursor.execute(sql, (post_id, ))
+        query_result = cursor.fetchall()
+    return query_result
+
+
 def upload_post_dislike(post_id, curr_user_id):
     with flask.g.pymysql_db.cursor() as cursor:
         sql = '''
