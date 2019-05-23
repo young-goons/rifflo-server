@@ -67,9 +67,11 @@ CREATE TABLE tbl_song_info
     release_date    DATE,
     album           VARCHAR(50),
     spotify_url     VARCHAR(200),
+    applemusic_url  VARCHAR(200),
     youtube_url     VARCHAR(200),
     soundcloud_url  VARCHAR(200),
-    bandcamp_url   VARCHAR(200),
+    bandcamp_url    VARCHAR(200),
+    other_url       VARCHAR(200),
 
     PRIMARY KEY(song_id)
 );-- CHARACTER SET=utf8;

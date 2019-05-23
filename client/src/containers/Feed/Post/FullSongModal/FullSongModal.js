@@ -4,7 +4,12 @@ import axios from 'axios';
 
 import styles from './FullSongModal.module.css';
 
-const onClickFullSong = (postId, serviceType) => {
+const onClickFullSong = (postId, serviceType, linkUrl) => {
+    const newWindow = window.open();
+    window.opener = null;
+    newWindow.location = linkUrl;
+    newWindow.target = "_blank";
+
     const url = "http://127.0.0.1:5000/user/history/full_song/" + postId;
     const headers = {
         'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
@@ -22,16 +27,33 @@ const onClickFullSong = (postId, serviceType) => {
 };
 
 const FullSongModal = (props) => {
-    let spotifyUrlItem, youtubeUrlItem, soundcloudUrlItem, bandcampUrlItem;
+    let spotifyUrlItem, applemusicUrlItem, youtubeUrlItem, soundcloudUrlItem, bandcampUrlItem, otherUrlItem;
     if (props.urlObj['spotifyUrl']) {
         spotifyUrlItem = (
             <List.Item>
                 <List.Content>
-                    <a href={props.urlObj['spotifyUrl']} style={{display: "table-cell"}} target="_blank"
-                       onClick={() => onClickFullSong(props.postId, 'spotify')}>
-                        <Icon name="spotify" size="big" color="green"/>
+                    <Icon name="spotify" size="big" color="green" className={styles.fullSongLink}
+                          onClick={() => onClickFullSong(props.postId, 'spotify', props.urlObj.spotifyUrl)}
+                    />
+                    <span className={styles.fullSongLink}
+                          onClick={() => onClickFullSong(props.postId, 'spotify', props.urlObj.spotifyUrl)}>
                         Spotify
-                    </a>
+                    </span>
+                </List.Content>
+            </List.Item>
+        );
+    }
+    if (props.urlObj['applemusicUrl']) {
+        applemusicUrlItem = (
+            <List.Item>
+                <List.Content>
+                    <Icon name="itunes" size="big" color="white" className={styles.fullSongLink}
+                          onClick={() => onClickFullSong(props.postId, 'applemusic', props.urlObj.applemusicUrl)}
+                    />
+                    <span className={styles.fullSongLink}
+                          onClick={() => onClickFullSong(props.postId, 'applemusic', props.urlObj.applemusicUrl)}>
+                        Apple Music
+                    </span>
                 </List.Content>
             </List.Item>
         );
@@ -40,11 +62,13 @@ const FullSongModal = (props) => {
         youtubeUrlItem = (
             <List.Item>
                 <List.Content>
-                    <a href={props.urlObj['youtubeUrl']} style={{display: "table-cell"}} target="_blank"
-                       onClick={() => onClickFullSong(props.postId,'youtube')}>
-                        <Icon name="youtube" size="big" color="red"/>
+                    <Icon name="youtube" size="big" color="red" className={styles.fullSongLink}
+                          onClick={() => onClickFullSong(props.postId, 'youtube', props.urlObj.youtubeUrl)}
+                    />
+                    <span className={styles.fullSongLink}
+                          onClick={() => onClickFullSong(props.postId, 'youtube', props.urlObj.youtubeUrl)}>
                         Youtube
-                    </a>
+                    </span>
                 </List.Content>
             </List.Item>
         );
@@ -53,11 +77,13 @@ const FullSongModal = (props) => {
         soundcloudUrlItem = (
             <List.Item>
                 <List.Content>
-                    <a href={props.urlObj['soundcloudUrl']} style={{display: "table-cell"}} target="_blank"
-                       onClick={() => onClickFullSong(props.postId, 'soundcloud')}>
-                        <Icon name="soundcloud" size="big" color="orange"/>
+                    <Icon name="soundcloud" size="big" color="orange" className={styles.fullSongLink}
+                          onClick={() => onClickFullSong(props.postId, 'soundcloud', props.urlObj.soundcloudUrl)}
+                    />
+                    <span className={styles.fullSongLink}
+                          onClick={() => onClickFullSong(props.postId, 'soundcloud', props.urlObj.soundcloudUrl)}>
                         SoundCloud
-                    </a>
+                    </span>
                 </List.Content>
             </List.Item>
         );
@@ -66,10 +92,28 @@ const FullSongModal = (props) => {
         bandcampUrlItem = (
             <List.Item>
                 <List.Content>
-                    <a href={props.urlObj['bandcampUrl']} style={{display: "table-cell"}} target="_blank"
-                       onClick={() => onClickFullSong(props.postId, 'bandcamp')}>
-                        BandCamp
-                    </a>
+                    <Icon name="linkify" size="big" color="black" className={styles.fullSongLink}
+                          onClick={() => onClickFullSong(props.postId, 'bandcamp', props.urlObj.bandcampUrl)}
+                    />
+                    <span className={styles.fullSongLink}
+                          onClick={() => onClickFullSong(props.postId, 'bandcamp', props.urlObj.bandcampUrl)}>
+                        SoundCloud
+                    </span>
+                </List.Content>
+            </List.Item>
+        );
+    }
+    if (props.urlObj['otherUrl']) {
+        otherUrlItem = (
+            <List.Item>
+                <List.Content>
+                    <Icon name="linkify" size="big" color="black" className={styles.fullSongLink}
+                          onClick={() => onClickFullSong(props.postId, 'other', props.urlObj.otherUrl)}
+                    />
+                    <span className={styles.fullSongLink}
+                          onClick={() => onClickFullSong(props.postId, 'other', props.urlObj.otherUrl)}>
+                        SoundCloud
+                    </span>
                 </List.Content>
             </List.Item>
         );
@@ -86,9 +130,11 @@ const FullSongModal = (props) => {
             </div>
             <List horizontal relaxed='very' size="large">
                 { spotifyUrlItem }
+                { applemusicUrlItem }
                 { youtubeUrlItem }
                 { soundcloudUrlItem }
                 { bandcampUrlItem }
+                { otherUrlItem }
             </List>
         </div>
     );

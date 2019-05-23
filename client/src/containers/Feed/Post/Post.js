@@ -46,12 +46,12 @@ class Post extends Component {
                     });
                 })
                 .catch(error => {
-                    alert(error);
-                })
+                    console.log(error);
+                });
         }
         if (this.state.commentCnt === null && this.state.commentPreviewArr === null) {
             url = "http://127.0.0.1:5000/post/" + this.props.postId + "/comment";
-            axios({url: url, headers: headers, params: {preview: true}})
+            axios({method: 'GET', url: url, headers: headers, params: {preview: true}})
                 .then(response => {
                     this.setState({
                         commentCnt: response.data.commentCnt,
@@ -59,8 +59,8 @@ class Post extends Component {
                     });
                 })
                 .catch(error => {
-                    alert(error);
-                })
+                    console.log(error);
+                });
         }
         if (!this.state.audioReady) {
             url = "http://127.0.0.1:5000/clip/" + this.props.postId;
@@ -73,7 +73,7 @@ class Post extends Component {
                 })
                 .catch(error => {
                     console.log(error);
-                    alert(error);
+                    console.log(error);
                 });
         }
         if (!this.state.profileImgSrc) {
@@ -84,7 +84,7 @@ class Post extends Component {
                 })
                 .catch(error => {
                     console.log(error);
-                })
+                });
         }
     }
 

@@ -21,3 +21,7 @@
 .bySpan {
     font-size: 1.3rem;
 }
+
+.fullSongLink:hover {
+    cursor: pointer;
+}

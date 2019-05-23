@@ -12,7 +12,7 @@ def get_post_data(id_list):
                 SELECT
                     post_id, user_id, username, upload_date, content, tags,
                     song_id, clip_path, song_name, artist,
-                    spotify_url, youtube_url, soundcloud_url, bandcamp_url
+                    spotify_url, applemusic_url, youtube_url, soundcloud_url, bandcamp_url, other_url
                 FROM (
                     SELECT * FROM tbl_post
                     WHERE post_id IN (%s)
@@ -39,9 +39,11 @@ def get_post_data(id_list):
             'artist': row[9],
             'urlObj': {
                 'spotifyUrl': row[10],
-                'youtubeUrl': row[11],
-                'soundcloudUrl': row[12],
-                'bandcampUrl': row[13],
+                'applemusic_url': row[11],
+                'youtubeUrl': row[12],
+                'soundcloudUrl': row[13],
+                'bandcampUrl': row[14],
+                'otherUrl': row[15]
             }
         }
         post_dict[row[0]] = post_data

@@ -26,7 +26,8 @@ class UserPage extends Component {
         followerCnt: null,
         postArr: [],
         postLoadReq: false,
-        pageContent: 'shares' // one of "shares", "followers", "following", "history"
+        pageContent: 'shares', // one of "shares", "followers", "following", "history",
+        isClipPlaying: null
     };
 
     componentDidMount() {
@@ -105,6 +106,14 @@ class UserPage extends Component {
         this.setState({pageContent: 'following'});
     };
 
+    startPlayingClip = (postId) => {
+        this.setState({isClipPlaying: postId});
+    };
+
+    endPlayingClip = () => {
+        this.setState({isClipPlaying: null});
+    };
+
     render() {
         let renderDiv, contentDiv;
         const username = this.props.match.params.username;
@@ -117,6 +126,10 @@ class UserPage extends Component {
                         songName={post.songName}
                         artist={post.artist}
                         tags={post.tags}
+                        urlObj={post.urlObj}
+                        startPlayingClip={this.startPlayingClip}
+                        endPlayingClip={this.endPlayingClip}
+                        isClipPlaying={this.state.isClipPlaying}
                     />
                 </div>
             );
