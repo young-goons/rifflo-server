@@ -243,6 +243,7 @@ class Post extends Component {
                         </Grid.Row>
                     )
                 });
+                commentPreviewDiv.reverse();
                 commentPreviewRow = (
                     <Grid.Row className={styles.commentPreviewRow}>
                         <Grid.Column>

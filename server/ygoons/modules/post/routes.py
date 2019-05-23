@@ -233,18 +233,12 @@ def post_comment(post_id):
 
 @blueprint.route('/post/<int:post_id>/comment', methods=['GET'])
 def get_post_comments(post_id):
-    with flask.g.pymysql_db.cursor() as cursor:
-        sql = '''
-        SELECT comment_id, user_id, username, comment_date, content
-        FROM (
-            SELECT * FROM tbl_comment
-            WHERE post_id = %s
-        ) tbl_post_comment
-        NATURAL JOIN tbl_user
-        ORDER BY comment_date DESC
-        '''
-        cursor.execute(sql, (post_id, ))
-        query_result = cursor.fetchall()
+    """ Get comments of post with post_id.
+        Returns 2 comments if preview is requested. Otherwise return all.
+    """
+    # query result in descending order of date
+    query_result = helpers.get_comment_data(post_id)
+
     # choose the two most recent comments for preview
     comment_preview_list = []
     for idx, row in enumerate(query_result):
@@ -258,7 +252,7 @@ def get_post_comments(post_id):
         if request.args['preview'] == 'true' and idx >= 2:
             break
         comment_preview_list.append(comment)
-    comment_preview_list.reverse()
+
     return make_response(
         jsonify({
             'commentPreviewArr': comment_preview_list,
