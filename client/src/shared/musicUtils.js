@@ -19,8 +19,8 @@ export const getEndTimeStr = (length) => {
  * @returns {string} input time converted to a string of format MM:SS
  */
 export const getCurrentTimeStr = (currentTime) => {
-    const currentHour = parseInt(currentTime / 3600) % 24,
-          currentMinute = parseInt(Math.floor(currentTime / 60)) % 60,
+    // const currentHour = parseInt(currentTime / 3600) % 24;
+    const currentMinute = parseInt(Math.floor(currentTime / 60)) % 60,
           currentSeconds = Math.floor(currentTime) % 60;
 
     return (currentMinute < 10 ? "0" + currentMinute : currentMinute) + ":" +
@@ -34,8 +34,8 @@ export const getCurrentTimeStr = (currentTime) => {
  */
 export const getCurrentTimeFloatStr = (currentTime) => {
     // TODO: there is a potential error due to toFixed (when it is rounded up from .99999 or sth => find other way)
-    const currentHour = parseInt(currentTime / 3600) % 24,
-          currentMinute = parseInt(Math.floor(currentTime) / 60) % 60,
+    // const currentHour = parseInt(currentTime / 3600) % 24;
+    const currentMinute = parseInt(Math.floor(currentTime) / 60) % 60,
           currentSeconds = Math.floor(currentTime) % 60,
           currentMSeconds = (currentTime - Math.floor(currentTime)).toFixed(2) * 100;
 

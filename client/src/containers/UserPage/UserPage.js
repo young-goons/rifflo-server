@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { Grid, Column, Container } from 'semantic-ui-react';
 
 import SiteHeader from '../SiteHeader/SiteHeader';
 import AuthPage from '../AuthPage/AuthPage';

@@ -161,10 +161,20 @@ def get_user_full_song_history(user_id):
 
 def get_user_disliked(user_id):
     with flask.g.pymysql_db.cursor() as cursor:
-        sql = 'SELECT song_id, post_id, song_name, artist, dislike_date, ' \
-              'spotify_url, youtube_url, soundcloud_url, bandcamp_url FROM ' \
-              '(SELECT post_id, dislike_date FROM tbl_dislike WHERE user_id = %s) tbl_user_dislike NATURAL JOIN ' \
-              'tbl_post NATURAL JOIN tbl_song_info ORDER BY dislike_date DESC'
+        sql = '''
+        SELECT
+            song_id, post_id, song_name, artist, dislike_date,
+            spotify_url, youtube_url, soundcloud_url, bandcamp_url
+        FROM
+        (
+            SELECT post_id, dislike_date
+            FROM tbl_dislike
+            WHERE user_id = %s
+        ) tbl_user_dislike
+        NATURAL JOIN  tbl_post
+        NATURAL JOIN tbl_song_info
+        ORDER BY dislike_date DESC
+        '''
         cursor.execute(sql, (user_id, ))
         query_result = cursor.fetchall()
 

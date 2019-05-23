@@ -205,7 +205,23 @@ CREATE TABLE tbl_dislike
     post_id       INT,
     dislike_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    PRIMARY KEY(user_id, post_id, dislike_date),
+    PRIMARY KEY(user_id, post_id),
+
+    FOREIGN KEY(user_id) REFERENCES tbl_user(user_id)
+      ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(post_id) REFERENCES tbl_post(post_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Create table that records reporting on a post
+CREATE TABLE tbl_post_report
+(
+    post_id      INT,
+    user_id      INT,
+    content      VARCHAR(500),
+    report_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY(user_id, post_id, report_date),
 
     FOREIGN KEY(user_id) REFERENCES tbl_user(user_id)
       ON DELETE CASCADE ON UPDATE CASCADE,

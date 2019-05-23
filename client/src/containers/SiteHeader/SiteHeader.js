@@ -1,7 +1,6 @@
-import React, { Component, createRef } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { NavLink } from 'react-router-dom';
-import { Sticky, Grid, Search, Icon, Dropdown } from 'semantic-ui-react';
+import { Sticky, Grid, Search, Icon } from 'semantic-ui-react';
 
 import styles from './SiteHeader.module.css';
 import { signOut } from '../../store/actions/auth';

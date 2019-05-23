@@ -19,8 +19,7 @@ class Feed extends Component {
         isClipPlaying: null,
     };
 
-    // numPosts = FEED_POSTS_LOAD_NUM;
-    numPosts = 2;
+    numPosts = FEED_POSTS_LOAD_NUM;
 
     contextRef = createRef();
 

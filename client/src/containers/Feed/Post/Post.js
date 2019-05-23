@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { Grid, Image, Modal, Icon, Container, Input, Dropdown, Message } from 'semantic-ui-react';
 import axios from 'axios';
-import { connect } from 'react-redux';
 
 import styles from './Post.module.css';
 import profileImg from '../../../resources/defaultProfileImage.jpg';
 import FullSongModal from './FullSongModal/FullSongModal';
+import ReportModal from './ReportModal/ReportModal';
 import { convertDateToStr } from '../../../shared/dateUtils';
 
 class Post extends Component {
@@ -18,12 +18,14 @@ class Post extends Component {
         followerCnt: null,
         commentPreviewArr: null,
         audioReady: false,
+        startedPlaying: false,
         isPlayed: false,
         isPlaying: false,
         progressPercent: 0,
         fullSongModalOpen: false,
         profileImgSrc: null,
-        dislikeClicked: false
+        dislikeClicked: false,
+        reportModalOpen: false
     };
 
     audioRef = React.createRef();
@@ -96,7 +98,17 @@ class Post extends Component {
         if (!this.state.isPlayed &&
             (this.props.isClipPlaying === null || this.props.isClipPlaying === this.props.postId)) {
             this.audioRef.current.play();
-            this.setState({isPlaying: true});
+            if (!this.state.startedPlaying) {
+                const url = "http://127.0.0.1:5000/user/history/played/" + this.props.postId;
+                const requestHeaders = {
+                    'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken'),
+                };
+                axios({method: 'POST', url: url, headers: requestHeaders})
+                    .catch(error => {
+                        console.log(error);
+                    });
+            }
+            this.setState({isPlaying: true, startedPlaying: true});
             this.props.startPlayingClip(this.props.postId);
         }
     };
@@ -107,14 +119,11 @@ class Post extends Component {
     };
 
     onAudioEnd = () => {
-        const url = "http://127.0.0.1:5000/user/history/played/" + this.props.postId;
+        const url = "http://127.0.0.1:5000/user/history/played_full/" + this.props.postId;
         const requestHeaders = {
             'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken'),
         };
         axios({method: 'POST', url: url, headers: requestHeaders})
-            .then(response => {
-                console.log(response.data);
-            })
             .catch(error => {
                 console.log(error);
             });
@@ -164,7 +173,9 @@ class Post extends Component {
         };
         axios({method: 'POST', url: url, headers: requestHeaders})
             .then(response => {
-                this.setState({dislikeClicked: true});
+                if (response.data.success) {
+                    this.setState({dislikeClicked: true});
+                }
             })
             .catch(error => {
                 console.log(error);
@@ -202,12 +213,20 @@ class Post extends Component {
             });
     };
 
-    handleOpen = () => {
+    fullSongHandleOpen = () => {
         this.setState({fullSongModalOpen: true});
     };
 
-    handleClose = () => {
+    fullSongHandleClose = () => {
         this.setState({fullSongModalOpen: false});
+    };
+
+    reportHandleOpen = () => {
+        this.setState({reportModalOpen: true});
+    };
+
+    reportHandleClose = () => {
+        this.setState({reportModalOpen: false});
     };
 
     render() {
@@ -261,18 +280,6 @@ class Post extends Component {
             );
         }
 
-        let fullSongModal = <Icon name="headphones" size="large" color="grey"/>;
-        if (this.state.isPlayed) {
-            fullSongModal = (
-                <Modal trigger={<Icon name="headphones" size="large" onClick={this.handleOpen}
-                                      className={styles.actionIcon}/>}
-                       size="tiny" open={this.state.fullSongModalOpen} onClose={this.handleClose}>
-                    <FullSongModal songName={this.props.songName} artist={this.props.artist}
-                                   postId={this.props.postId} urlObj={this.props.urlObj}/>
-                </Modal>
-            );
-        }
-
         let playIcon;
         if (!this.state.isPlayed &&
             (this.props.isClipPlaying === null || this.props.isClipPlaying === this.props.postId)) { // can be played
@@ -284,6 +291,31 @@ class Post extends Component {
         } else { // cannot be played
             playIcon = (
                 <Icon name="play" size="big" color="grey"/>
+            );
+        }
+
+        let fullSongModal = <Icon name="headphones" size="large" color="grey"/>;
+        if (this.state.isPlayed) {
+            fullSongModal = (
+                <Modal trigger={<Icon name="headphones" size="large" onClick={this.fullSongHandleOpen}
+                                      className={styles.actionIcon}/>}
+                       size="tiny" open={this.state.fullSongModalOpen} onClose={this.fullSongHandleClose}>
+                    <FullSongModal songName={this.props.songName} artist={this.props.artist}
+                                   postId={this.props.postId} urlObj={this.props.urlObj}/>
+                </Modal>
+            );
+        }
+
+        let reportModal;
+        if (this.state.audioReady) {
+            reportModal = (
+                <Modal open={this.state.reportModalOpen} onClose={this.reportHandleClose} size="tiny">
+                    <ReportModal
+                        postId={this.props.postId}
+                        username={this.props.username}
+                        reportModalClose={this.reportHandleClose}
+                    />
+                </Modal>
             );
         }
 
@@ -305,9 +337,10 @@ class Post extends Component {
                                     </div>
                                     <Dropdown icon="options" className={styles.dropdown}>
                                         <Dropdown.Menu>
-                                            <Dropdown.Item text="Report"/>
+                                            <Dropdown.Item text="Report" onClick={this.reportHandleOpen}/>
                                         </Dropdown.Menu>
                                     </Dropdown>
+                                    { reportModal }
                                 </div>
                             </Grid.Row>
                             <Grid.Row className={styles.songInfoRow}>

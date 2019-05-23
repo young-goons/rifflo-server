@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Grid, Image, Button, Label, Modal, Icon } from 'semantic-ui-react';
+import { Grid, Button, Label, Modal, Icon } from 'semantic-ui-react';
 import axios from 'axios';
 
 import styles from './UserPageHeader.module.css';
@@ -164,7 +164,7 @@ class UserPageHeader extends Component {
         let headerImgModal, headerImg;
         let editInfoModal, editInfoIcon;
         let userInfoModal, userInfoIcon;
-        if (this.props.authUserId != this.props.userId) {
+        if (this.props.authUserId !== this.props.userId) {
             followButtonDiv = (
                 <div className={styles.followButtonDiv}>
                     <Button as='div' labelPosition='right' size='large' compact className={styles.followButton}>

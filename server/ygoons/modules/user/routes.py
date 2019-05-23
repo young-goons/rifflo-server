@@ -273,6 +273,21 @@ def upload_play_history(post_id):
         return make_response(jsonify({'success': False}), 400)
 
 
+@blueprint.route('/user/history/played_full/<int:post_id>', methods=['POST'])
+@jwt_required
+def upload_play_full_history(post_id):
+    user_id = get_jwt_identity()['userId']
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = 'INSERT INTO tbl_play_full_history (user_id, post_id)' \
+              'VALUES (%s, %s)'
+        row_cnt = cursor.execute(sql, (user_id, post_id))
+    if row_cnt == 1:
+        flask.g.pymysql_db.commit()
+        return make_response(jsonify({'success': True}), 200)
+    else:
+        return make_response(jsonify({'success': False}), 400)
+
+
 @blueprint.route('/user/history/full_song/<int:post_id>', methods=['POST'])
 @jwt_required
 def upload_full_song_history(post_id):
