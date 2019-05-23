@@ -15,6 +15,7 @@ DROP TABLE IF EXISTS tbl_music_analysis;
 DROP TABLE IF EXISTS tbl_dislike;
 DROP TABLE IF EXISTS tbl_like;
 DROP TABLE IF EXISTS tbl_play_history;
+DROP TABLE IF EXISTS tbl_play_full_history;
 DROP TABLE IF EXISTS tbl_full_song_history;
 DROP TABLE IF EXISTS tbl_reply;
 DROP TABLE IF EXISTS tbl_comment;
@@ -205,7 +206,7 @@ CREATE TABLE tbl_dislike
     post_id       INT,
     dislike_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    PRIMARY KEY(user_id, post_id, dislike_date),
+    PRIMARY KEY(user_id, post_id),
 
     FOREIGN KEY(user_id) REFERENCES tbl_user(user_id)
       ON DELETE CASCADE ON UPDATE CASCADE,
@@ -213,7 +214,23 @@ CREATE TABLE tbl_dislike
       ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Create table to record clips that the user played
+-- Create table that records reporting on a post
+CREATE TABLE tbl_post_report
+(
+    post_id      INT,
+    user_id      INT,
+    content      VARCHAR(500),
+    report_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY(user_id, post_id, report_date),
+
+    FOREIGN KEY(user_id) REFERENCES tbl_user(user_id)
+      ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(post_id) REFERENCES tbl_post(post_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Create table to record clips that the user clicked play
 CREATE TABLE tbl_play_history
 (
     user_id    INT,
@@ -228,12 +245,28 @@ CREATE TABLE tbl_play_history
       ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Create table to record full songs that user listened to
+-- Create table to record clips that the user fully played
+CREATE TABLE tbl_play_full_history
+(
+    user_id    INT,
+    post_id    INT,
+    play_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY(user_id, post_id, play_date),
+
+    FOREIGN KEY(user_id) REFERENCES tbl_user(user_id)
+      ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(post_id) REFERENCES tbl_post(post_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Create table to record when the user clicks the full song link
 CREATE TABLE tbl_full_song_history
 (
-    user_id      INT,
-    post_id      INT,
-    listen_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id       INT,
+    post_id       INT,
+    service_type  VARCHAR(15), -- 'youtube', 'spotify', 'soundcloud', 'bandcamp'
+    listen_date   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY(user_id, post_id, listen_date),
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Checkbox, Input, Button } from 'semantic-ui-react';
+import { Grid, Checkbox, Input } from 'semantic-ui-react';
 
 import styles from './SongUploader.module.css';
 

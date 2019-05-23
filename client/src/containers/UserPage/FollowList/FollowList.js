@@ -6,7 +6,7 @@ import { DEFAULT_FOLLOW_LOAD_NUM } from "../../../shared/config";
 import FollowItem from "./FollowItem";
 import styles from './FollowList.module.css';
 
-const load_num = 3;
+const load_num = DEFAULT_FOLLOW_LOAD_NUM;
 
 class FollowList extends Component {
     state = {

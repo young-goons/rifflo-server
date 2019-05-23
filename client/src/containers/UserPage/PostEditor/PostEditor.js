@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Form, Input, TextArea, Button, Segment, Modal } from 'semantic-ui-react';
-import axios from 'axios';
+import { Grid, Button, Modal } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import SongUploader from '../SongUploader/SongUploader';

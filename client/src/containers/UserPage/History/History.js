@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Menu, Icon } from 'semantic-ui-react';
+import { Grid, Menu } from 'semantic-ui-react';
 import axios from 'axios';
 
 import styles from './History.module.css';

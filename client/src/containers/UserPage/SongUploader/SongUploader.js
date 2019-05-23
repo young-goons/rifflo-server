@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Input, Icon, Button } from 'semantic-ui-react';
+import { Icon, Button } from 'semantic-ui-react';
 
 import { uploadSong } from '../../../store/actions/upload';
 import { getEndTimeStr, getCurrentTimeStr,

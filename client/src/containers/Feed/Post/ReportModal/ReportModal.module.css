@@ -1,0 +1,24 @@
+.modalDiv {
+    text-align: center;
+    margin: 10px 15px 15px;
+}
+
+.headerDiv {
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 400;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.usernameSpan {
+    font-weight: 700;
+    font-size: 1.4rem;
+}
+
+.textAreaDiv {
+    margin-bottom: 15px;
+}
+
+.buttonDiv {
+
+}

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { NavLink, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { Button, Form, Grid, Icon, Image, Segment, Message, Modal } from 'semantic-ui-react';
 
 import styles from './AuthPage.module.css';

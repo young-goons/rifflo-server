@@ -29,32 +29,9 @@ def get_posts(id_list):
     if not re.match(r'^\d+(?:,\d+)*,?$', id_list):
         return make_response(jsonify({'msg': "id_list is in wrong format"}),
                              400)
-    with flask.g.pymysql_db.cursor() as cursor:
-        # TODO - there must be a better way of putting multiple ids in IN () clause
-        # obtain information about the post
-        sql = 'SELECT post_id, user_id, username, upload_date, content, tags, ' \
-              '  song_id, clip_path, song_name, artist ' \
-              'FROM (SELECT * FROM tbl_post WHERE post_id IN ({})) tbl_post_id ' \
-              'NATURAL JOIN (SELECT user_id, username FROM tbl_user) tbl_user_id ' \
-              'NATURAL JOIN tbl_song_info'.format(id_list)
-        cursor.execute(sql)
-        query_result = cursor.fetchall()
-    post_dict = {}
-    for row in query_result:
-        post_data = {
-            'postId': row[0],
-            'userId': row[1],
-            'username': row[2],
-            'uploadDate': row[3],
-            'content': row[4],
-            'tags': row[5],
-            'songId': row[6],
-            'clipPath': row[7],
-            'songName': row[8],
-            'artist': row[9],
-        }
-        post_dict[row[0]] = post_data
-    print(post_dict)
+    id_list = list(map(lambda x: int(x), id_list.split(',')))
+    post_dict = helpers.get_post_data(id_list)
+
     return make_response(jsonify({'posts': post_dict}), 200)
 
 
@@ -171,14 +148,33 @@ def unlike_post(post_id):
 @blueprint.route('/post/<int:post_id>/dislike', methods=['POST'])
 @jwt_required
 def dislike_post(post_id):
+    # A single post can be disliked once
     curr_user = get_jwt_identity()
     curr_user_id = curr_user['userId']
     affected_row_cnt = helpers.upload_post_dislike(post_id, curr_user_id)
     if affected_row_cnt == 1:
         flask.g.pymysql_db.commit()
         return make_response(jsonify({'success': True}), 200)
+    elif affected_row_cnt == -1:
+        return make_response(jsonify({'success': False}), 200)
     else:
         return make_response(jsonify({'msg': "Dislike failed"}), 400)
+
+
+@blueprint.route('/post/<int:post_id>/report', methods=['POST'])
+@jwt_required
+def report_post(post_id):
+    curr_user = get_jwt_identity()
+    curr_user_id = curr_user['userId']
+    data = json.loads(request.data)
+    content = data['content']
+    affected_row_cnt = helpers.upload_post_report(post_id, curr_user_id,
+                                                  content)
+    if affected_row_cnt == 1:
+        flask.g.pymysql_db.commit()
+        return make_response(jsonify({'success': True}), 200)
+    else:
+        return make_response(jsonify({'msg': "Report failed"}), 400)
 
 
 @blueprint.route('/post/<int:post_id>/dislike', methods=['DELETE'])
@@ -238,10 +234,15 @@ def post_comment(post_id):
 @blueprint.route('/post/<int:post_id>/comment', methods=['GET'])
 def get_post_comments(post_id):
     with flask.g.pymysql_db.cursor() as cursor:
-        sql = 'SELECT comment_id, user_id, username, comment_date, content ' \
-              'FROM (SELECT * FROM tbl_comment WHERE post_id = %s) tbl_post_comment ' \
-              'NATURAL JOIN tbl_user ' \
-              'ORDER BY comment_date DESC'
+        sql = '''
+        SELECT comment_id, user_id, username, comment_date, content
+        FROM (
+            SELECT * FROM tbl_comment
+            WHERE post_id = %s
+        ) tbl_post_comment
+        NATURAL JOIN tbl_user
+        ORDER BY comment_date DESC
+        '''
         cursor.execute(sql, (post_id, ))
         query_result = cursor.fetchall()
     # choose the two most recent comments for preview
