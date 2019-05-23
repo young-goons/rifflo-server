@@ -89,6 +89,7 @@ def upload_post_report(post_id, curr_user_id, content):
         INSERT INTO tbl_post_report (post_id, user_id, content)
         VALUES (%s, %s, %s)
         '''
-        affected_row_cnt = cursor.execute(sql, (post_id, curr_user_id, content))
+        affected_row_cnt = cursor.execute(sql,
+                                          (post_id, curr_user_id, content))
 
     return affected_row_cnt

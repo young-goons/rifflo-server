@@ -168,7 +168,8 @@ def report_post(post_id):
     curr_user_id = curr_user['userId']
     data = json.loads(request.data)
     content = data['content']
-    affected_row_cnt = helpers.upload_post_report(post_id, curr_user_id, content)
+    affected_row_cnt = helpers.upload_post_report(post_id, curr_user_id,
+                                                  content)
     if affected_row_cnt == 1:
         flask.g.pymysql_db.commit()
         return make_response(jsonify({'success': True}), 200)
