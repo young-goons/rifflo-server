@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import { Form, TextArea, Button } from "semantic-ui-react";
 
+import axios from '../../../../shared/axios';
 import styles from './ReportModal.module.css';
 
 class ReportModal extends Component {
@@ -14,14 +14,11 @@ class ReportModal extends Component {
     };
 
     clickSubmitHandler = () => {
-        const url = "http://127.0.0.1:5000/post/" + this.props.postId + "/report";
-        const headers = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
+        const url = "/post/" + this.props.postId + "/report";
         const data = {
             content: this.state.content
         };
-        axios({method: 'POST', url: url, headers: headers, data: data})
+        axios({method: 'POST', url: url, data: data})
             .then(response => {
                 this.props.reportModalClose();
             })

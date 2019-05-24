@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { List, Grid, Button } from 'semantic-ui-react';
-import axios from 'axios';
 
 import { DEFAULT_FOLLOW_LOAD_NUM } from "../../../shared/config";
+import axios from '../../../shared/axios';
 import FollowItem from "./FollowItem";
 import styles from './FollowList.module.css';
 
@@ -35,11 +35,8 @@ class FollowList extends Component {
 
     loadFollowers = () => {
         let loadCnt;
-        const url = "http://127.0.0.1:5000/user/" + this.props.userId + "/followers";
-        const headers = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        axios({methods: 'GET', url: url, headers: headers})
+        const url = "/user/" + this.props.userId + "/followers";
+        axios({methods: 'GET', url: url})
             .then(response => {
                 if (response.data.followerArr.length < load_num) {
                     loadCnt = response.data.followerArr.length;
@@ -58,11 +55,8 @@ class FollowList extends Component {
 
     loadFollowing = () => {
         let loadCnt;
-        const url = "http://127.0.0.1:5000/user/" + this.props.userId + "/following";
-        const headers = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        axios({method: 'GET', url: url, headers: headers})
+        const url = "/user/" + this.props.userId + "/following";
+        axios({method: 'GET', url: url})
             .then(response => {
                 if (response.data.followingArr.length < load_num) {
                     loadCnt = response.data.followingArr.length;

@@ -1,7 +1,7 @@
 import React, { Component, createRef } from 'react';
 import { connect } from 'react-redux';
-import axios from "axios";
 
+import axios from "../../shared/axios";
 import Post from './Post/Post';
 import SiteHeader from '../SiteHeader/SiteHeader';
 import AuthPage from '../AuthPage/AuthPage';
@@ -55,12 +55,9 @@ class Feed extends Component {
      *                  of ids in the feedPostIdArr
      */
     loadFeed = (isNewLoad, callback) => {
-        const url = "http://127.0.0.1:5000/user/feed";
-        const requestHeaders = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
+        const url = "/user/feed";
         console.log("load feed");
-        axios({method: 'GET', url: url, headers: requestHeaders})
+        axios({method: 'GET', url: url})
             .then(response => {
                 console.log(response.data);
                 let updatedState;
@@ -107,7 +104,7 @@ class Feed extends Component {
 
         const postIdArr = this.state.feedPostIdArr.slice(this.state.feedPostIdx,
             this.state.feedPostIdx + this.numPosts);
-        let url = "http://127.0.0.1:5000/post/" + postIdArr.join(',');
+        let url = "/post/" + postIdArr.join(',');
         const postArr = [];
         axios({method: 'GET', url: url})
             .then(response => {

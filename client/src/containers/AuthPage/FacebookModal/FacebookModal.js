@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import axios from 'axios';
 import { Form, Button, Segment, Message } from 'semantic-ui-react';
 
+import axios from '../../../shared/axios';
 import styles from './FacebookModal.module.css';
 import { authFacebook } from '../../../store/actions/auth'
 
@@ -17,7 +17,7 @@ class FacebookModal extends Component {
     };
 
     registerHandler = () => {
-        const usernameExistsUrl = "http://127.0.0.1:5000/user/id/username/" + this.state.username;
+        const usernameExistsUrl = "/user/id/username/" + this.state.username;
         axios({method: 'GET', url: usernameExistsUrl})
             .then(response => {
                 if (response.data.userId) {
@@ -25,7 +25,7 @@ class FacebookModal extends Component {
                     return;
                 } else {
                     this.setState({usernameExists: false});
-                    const url = "http://127.0.0.1:5000/signup/facebook";
+                    const url = "/signup/facebook";
                     const requestParams = {
                         email: this.props.email,
                         username: this.state.username

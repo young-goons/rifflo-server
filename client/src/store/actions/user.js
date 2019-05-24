@@ -1,5 +1,7 @@
 import * as actionTypes from './actionTypes';
-import axios from "axios";
+
+import axios from '../../shared/axios';
+import { BASE_URL } from "../../shared/config";
 
 export const loadUserPostsSuccess = (postArr) => {
     return {
@@ -58,11 +60,8 @@ export const loadUserInfo = (userInfo) => {
 
 export const loadUser = (user_id) => {
     return dispatch => {
-        const url = "http://127.0.0.1:5000/user/" + user_id + "/info";
-        const headers = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        axios({method: 'GET', url: url, headers: headers})
+        const url = "/user/" + user_id + "/info";
+        axios({method: 'GET', url: url})
             .then(response => {
                 dispatch(loadUserInfo(response.data.user));
             })
@@ -74,19 +73,16 @@ export const loadUser = (user_id) => {
 
 export const loadUserPosts = (userId) => {
     return dispatch => {
-        const userPostUrl = "http://127.0.0.1:5000/user/" + userId + "/posts";
-        const requestHeaders = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
+        const userPostUrl = "/user/" + userId + "/posts";
         let postIdArr;
-        axios({method: 'GET', url: userPostUrl, headers: requestHeaders})
+        axios({method: 'GET', url: userPostUrl})
             .then(response => {
                 postIdArr = response.data.postIdArr;
                 if (postIdArr.length === 0) {
                     return;
                 }
-                const postUrl = "http://127.0.0.1:5000/post/" + postIdArr.join(',');
-                return axios({method: 'GET', url: postUrl, headers: requestHeaders});
+                const postUrl = "/post/" + postIdArr.join(',');
+                return axios({method: 'GET', url: postUrl});
             })
             .then(response => {
                 const postArr = [];
@@ -109,11 +105,8 @@ export const loadUserPosts = (userId) => {
 
 export const loadUserUpdatedPosts = (postId, postArr) => {
     return dispatch => {
-        const url = "http://127.0.0.1:5000/post/" + postId;
-        const requestHeaders = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken'),
-        };
-        axios({method: 'GET', url: url, headers: requestHeaders})
+        const url = "/post/" + postId;
+        axios({method: 'GET', url: url})
             .then(response => {
                 const updatedPostArr = [...postArr, response.data.posts[postId]];
                 dispatch(loadUserPostsSuccess(updatedPostArr));
@@ -127,10 +120,10 @@ export const loadUserUpdatedPosts = (postId, postArr) => {
 export const loadUserProfileImage = (userId) => {
     return dispatch => {
         console.log('requesting profile image load');
-        let url = "http://127.0.0.1:5000/user/" + userId + "/profile/image";
+        let url = "/user/" + userId + "/profile/image";
         axios({method: 'GET', url: url})
             .then(response => {
-                dispatch(loadUserProfileImageSuccess(url + "?" + Date.now()));
+                dispatch(loadUserProfileImageSuccess(BASE_URL + url + "?" + Date.now()));
             })
             .catch(error => {
                 console.log(error);
@@ -140,15 +133,14 @@ export const loadUserProfileImage = (userId) => {
 
 export const uploadUserProfileImage = (userId, formData) => {
     return dispatch => {
-        let url = "http://127.0.0.1:5000/user/" + userId + "/profile/image";
+        let url = "/user/" + userId + "/profile/image";
         console.log("uploading profile image");
         const requestHeaders = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken'),
             'Content-Type': 'multipart/form-data'
         };
         axios({method: 'POST', url: url, headers: requestHeaders, data: formData})
             .then(response => {
-                dispatch(loadUserProfileImageSuccess(url + "?" + Date.now()));
+                dispatch(loadUserProfileImageSuccess(BASE_URL + url + "?" + Date.now()));
             })
             .catch(error => {
                 console.log(error);
@@ -158,11 +150,8 @@ export const uploadUserProfileImage = (userId, formData) => {
 
 export const deleteUserProfileImage = (userId) => {
     return dispatch => {
-        const url = "http://127.0.0.1:5000/user/" + userId + "/profile/image";
-        const requestHeaders = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken'),
-        };
-        axios({method: 'DELETE', url: url, headers: requestHeaders})
+        const url = "/user/" + userId + "/profile/image";
+        axios({method: 'DELETE', url: url})
             .then(response => {
                 dispatch(deleteUserProfileImageSuccess());
             })
@@ -174,10 +163,10 @@ export const deleteUserProfileImage = (userId) => {
 
 export const loadUserHeaderImage = (userId) => {
     return dispatch => {
-        let url = "http://127.0.0.1:5000/user/" + userId + "/header/image";
+        let url = "/user/" + userId + "/header/image";
         axios({method: 'GET', url: url})
             .then(response => {
-                dispatch(loadUserHeaderImageSuccess(url + "?" + Date.now()));
+                dispatch(loadUserHeaderImageSuccess(BASE_URL + url + "?" + Date.now()));
             })
             .catch(error => {
                 console.log(error);
@@ -187,15 +176,14 @@ export const loadUserHeaderImage = (userId) => {
 
 export const uploadUserHeaderImage = (userId, formData) => {
     return dispatch => {
-        let url = "http://127.0.0.1:5000/user/" + userId + "/header/image";
+        let url = "/user/" + userId + "/header/image";
         console.log("uploading header image");
         const requestHeaders = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken'),
             'Content-Type': 'multipart/form-data'
         };
         axios({method: 'POST', url: url, headers: requestHeaders, data: formData})
             .then(response => {
-                dispatch(loadUserHeaderImageSuccess(url + "?" + Date.now()));
+                dispatch(loadUserHeaderImageSuccess(BASE_URL + url + "?" + Date.now()));
             })
             .catch(error => {
                 console.log(error);
@@ -205,11 +193,8 @@ export const uploadUserHeaderImage = (userId, formData) => {
 
 export const deleteUserHeaderImage = (userId) => {
     return dispatch => {
-        const url = "http://127.0.0.1:5000/user/" + userId + "/header/image";
-        const requestHeaders = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken'),
-        };
-        axios({method: 'DELETE', url: url, headers: requestHeaders})
+        const url = "/user/" + userId + "/header/image";
+        axios({method: 'DELETE', url: url})
             .then(response => {
                 dispatch(deleteUserHeaderImageSuccess());
             })

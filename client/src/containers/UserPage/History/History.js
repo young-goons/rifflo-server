@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Grid, Menu } from 'semantic-ui-react';
-import axios from 'axios';
 
+import axios from '../../../shared/axios';
 import styles from './History.module.css';
 import HistoryRow from './HistoryRow';
 
@@ -27,11 +27,8 @@ class History extends Component {
     }
 
     loadPlayHistory = () => {
-        const headers = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        const url = "http://127.0.0.1:5000/user/" + this.props.userId + "/played";
-        axios({method: 'GET', url: url, headers: headers})
+        const url = "/user/" + this.props.userId + "/played";
+        axios({method: 'GET', url: url})
             .then(response => {
                 this.setState({playArr: response.data.playArr});
             })
@@ -41,11 +38,8 @@ class History extends Component {
     };
 
     loadListenHistory = () => {
-        const headers = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        const url = "http://127.0.0.1:5000/user/" + this.props.userId + "/listened";
-        axios({method: 'GET', url: url, headers: headers})
+        const url = "/user/" + this.props.userId + "/listened";
+        axios({method: 'GET', url: url})
             .then(response => {
                 this.setState({listenArr: response.data.fullSongArr});
             })
@@ -55,11 +49,8 @@ class History extends Component {
     };
 
     loadDislikeHistory = () => {
-        const headers = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        const url = "http://127.0.0.1:5000/user/" + this.props.userId + "/disliked";
-        axios({method: 'GET', url: url, headers: headers})
+        const url = "/user/" + this.props.userId + "/disliked";
+        axios({method: 'GET', url: url})
             .then(response => {
                 console.log(response.data);
                 this.setState({dislikeArr: response.data.dislikeArr});

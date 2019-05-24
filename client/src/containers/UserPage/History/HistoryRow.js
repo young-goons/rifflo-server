@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import {Grid, Icon} from "semantic-ui-react";
 import {convertDateToStr} from "../../../shared/dateUtils";
-import axios from 'axios';
 
+import axios from '../../../shared/axios';
 import styles from "./History.module.css";
 
 class HistoryRow extends Component {
@@ -11,11 +11,8 @@ class HistoryRow extends Component {
     };
 
     removeDislike = (postId) => {
-        const url = 'http://127.0.0.1:5000/post/' + postId + '/dislike';
-        const headers = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        axios({method: 'DELETE', url: url, headers: headers})
+        const url = '/post/' + postId + '/dislike';
+        axios({method: 'DELETE', url: url})
             .then(response => {
                 this.setState({removed: true});
             })
@@ -25,11 +22,8 @@ class HistoryRow extends Component {
     };
 
     addDislike = (postId) => {
-        const url = 'http://127.0.0.1:5000/post/' + postId + '/dislike';
-        const headers = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        axios({method: 'POST', url: url, headers: headers})
+        const url = '/post/' + postId + '/dislike';
+        axios({method: 'POST', url: url})
             .then(response => {
                 this.setState({removed: false});
             })

@@ -1,7 +1,7 @@
 import React from 'react';
 import { List, Icon } from 'semantic-ui-react';
-import axios from 'axios';
 
+import axios from '../../../../shared/axios';
 import styles from './FullSongModal.module.css';
 
 const onClickFullSong = (postId, serviceType, linkUrl) => {
@@ -10,14 +10,11 @@ const onClickFullSong = (postId, serviceType, linkUrl) => {
     newWindow.location = linkUrl;
     newWindow.target = "_blank";
 
-    const url = "http://127.0.0.1:5000/user/history/full_song/" + postId;
-    const headers = {
-        'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-    };
+    const url = "user/history/full_song/" + postId;
     const data = {
         'serviceType': serviceType
     };
-    axios({method: 'POST', url: url, headers: headers, data: data})
+    axios({method: 'POST', url: url, data: data})
         .then(response => {
 
         })

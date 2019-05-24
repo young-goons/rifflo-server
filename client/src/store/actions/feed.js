@@ -1,5 +1,4 @@
-import axios from 'axios';
-
+import axios from '../../shared/axios';
 import * as actionTypes from './actionTypes';
 
 export const loadFeedSuccess = (feedPostIdArr) => {
@@ -32,11 +31,8 @@ export const loadFeedPostsFail = (error) => {
 
 export const loadFeed = () => {
     return dispatch => {
-        const url = "http://127.0.0.1:5000/user/feed";
-        const requestHeaders = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        axios({method: 'GET', url: url, headers: requestHeaders})
+        const url = "/user/feed";
+        axios({method: 'GET', url: url})
             .then(response => {
                 dispatch(loadFeedSuccess(response.data.postIdArr));
             })

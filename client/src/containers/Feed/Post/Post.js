@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Grid, Image, Modal, Icon, Container, Input, Dropdown, Message } from 'semantic-ui-react';
-import axios from 'axios';
 
+import axios from '../../../shared/axios';
+import { BASE_URL } from "../../../shared/config";
 import styles from './Post.module.css';
 import profileImg from '../../../resources/defaultProfileImage.jpg';
 import FullSongModal from './FullSongModal/FullSongModal';
@@ -33,12 +34,9 @@ class Post extends Component {
     componentDidMount() {
         // get the list of ids of users who liked the post
         let url;
-        const headers = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
         if (this.state.likeCnt === null && this.state.isLiked === null) {
-            url = "http://127.0.0.1:5000/post/" + this.props.postId + "/like";
-            axios({method: 'GET', url: url, headers: headers})
+            url = "/post/" + this.props.postId + "/like";
+            axios({method: 'GET', url: url})
                 .then(response => {
                     this.setState({
                         likeCnt: response.data.users.length,
@@ -50,8 +48,8 @@ class Post extends Component {
                 });
         }
         if (this.state.commentCnt === null && this.state.commentPreviewArr === null) {
-            url = "http://127.0.0.1:5000/post/" + this.props.postId + "/comment";
-            axios({method: 'GET', url: url, headers: headers, params: {preview: true}})
+            url = "/post/" + this.props.postId + "/comment";
+            axios({method: 'GET', url: url, params: {preview: true}})
                 .then(response => {
                     this.setState({
                         commentCnt: response.data.commentCnt,
@@ -63,11 +61,8 @@ class Post extends Component {
                 });
         }
         if (!this.state.audioReady) {
-            url = "http://127.0.0.1:5000/clip/" + this.props.postId;
-            const requestHeaders = {
-                'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken'),
-            };
-            axios({method: 'GET', url: url, headers: requestHeaders})
+            url = "/clip/" + this.props.postId;
+            axios({method: 'GET', url: url})
                 .then(response => {
                     this.setState({audioReady: true});
                 })
@@ -77,10 +72,10 @@ class Post extends Component {
                 });
         }
         if (!this.state.profileImgSrc) {
-            url = "http://127.0.0.1:5000/user/" + this.props.userId + "/profile/image";
+            url = "/user/" + this.props.userId + "/profile/image";
             axios({method: 'GET', url})
                 .then(response => {
-                    this.setState({profileImgSrc: url + "?" + Date.now()});
+                    this.setState({profileImgSrc: BASE_URL + url + "?" + Date.now()});
                 })
                 .catch(error => {
                     console.log(error);
@@ -99,11 +94,8 @@ class Post extends Component {
             (this.props.isClipPlaying === null || this.props.isClipPlaying === this.props.postId)) {
             this.audioRef.current.play();
             if (!this.state.startedPlaying) {
-                const url = "http://127.0.0.1:5000/user/history/played/" + this.props.postId;
-                const requestHeaders = {
-                    'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken'),
-                };
-                axios({method: 'POST', url: url, headers: requestHeaders})
+                const url = "/user/history/played/" + this.props.postId;
+                axios({method: 'POST', url: url})
                     .catch(error => {
                         console.log(error);
                     });
@@ -119,11 +111,8 @@ class Post extends Component {
     };
 
     onAudioEnd = () => {
-        const url = "http://127.0.0.1:5000/user/history/played_full/" + this.props.postId;
-        const requestHeaders = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken'),
-        };
-        axios({method: 'POST', url: url, headers: requestHeaders})
+        const url = "/user/history/played_full/" + this.props.postId;
+        axios({method: 'POST', url: url})
             .catch(error => {
                 console.log(error);
             });
@@ -144,17 +133,14 @@ class Post extends Component {
 
 
     likeClickHandler = () => {
-        const url = "http://127.0.0.1:5000/post/" + this.props.postId + "/like";
-        const requestHeaders = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
+        const url = "/post/" + this.props.postId + "/like";
         let httpMethod;
         if (this.state.isLiked) {
             httpMethod = 'DELETE';
         } else {
             httpMethod = 'POST'
         }
-        axios({method: httpMethod, url: url, headers: requestHeaders})
+        axios({method: httpMethod, url: url})
             .then(response => {
                 this.setState({
                     likeCnt: this.state.isLiked ? this.state.likeCnt - 1 : this.state.likeCnt + 1,
@@ -167,11 +153,8 @@ class Post extends Component {
     };
 
     dislikeClickHandler = () => {
-        const url = "http://127.0.0.1:5000/post/" + this.props.postId + "/dislike";
-        const requestHeaders = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        axios({method: 'POST', url: url, headers: requestHeaders})
+        const url = "/post/" + this.props.postId + "/dislike";
+        axios({method: 'POST', url: url})
             .then(response => {
                 if (response.data.success) {
                     this.setState({dislikeClicked: true});
@@ -187,14 +170,11 @@ class Post extends Component {
     };
 
     commentPostHandler = () => {
-        const url = "http://127.0.0.1:5000/post/" + this.props.postId + "/comment";
-        const headers = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
+        const url = "/post/" + this.props.postId + "/comment";
         const requestData = {
             content: this.state.commentInput,
         };
-        axios({method: 'POST', url: url, headers: headers, data: requestData})
+        axios({method: 'POST', url: url, data: requestData})
             .then(response => {
                 const newComment = {
                     commentId: response.data.commentId,
@@ -267,7 +247,7 @@ class Post extends Component {
 
         let audioDiv = null;
         if (this.state.audioReady) {
-            audioDiv = <audio src={"http://127.0.0.1:5000/clip/" + this.props.postId}
+            audioDiv = <audio src={BASE_URL + "/clip/" + this.props.postId}
                               ref={this.audioRef} onTimeUpdate={this.initProgressBar}
                               onEnded={this.onAudioEnd}/>;
         }

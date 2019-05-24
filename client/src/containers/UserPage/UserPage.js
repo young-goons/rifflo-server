@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import axios from 'axios';
 
+import axios from '../../shared/axios';
 import SiteHeader from '../SiteHeader/SiteHeader';
 import AuthPage from '../AuthPage/AuthPage';
 import UserPageHeader from './UserPageHeader/UserPageHeader';
@@ -77,7 +77,7 @@ class UserPage extends Component {
     }
 
     getUserId = () => {
-        const userExistsUrl = "http://127.0.0.1:5000/user/id/username/" + this.props.match.params.username;
+        const userExistsUrl = "/user/id/username/" + this.props.match.params.username;
         axios({method: 'GET', url: userExistsUrl})
             .then(response => {
                 if (response.data.userId) {
