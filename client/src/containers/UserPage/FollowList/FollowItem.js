@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { List, Image } from 'semantic-ui-react';
-import axios from 'axios';
 
+import axios from '../../../shared/axios';
+import { BASE_URL } from "../../../shared/config";
 import styles from './FollowList.module.css';
 import defaultProfileImage from '../../../resources/defaultProfileImage.jpg';
 
@@ -13,13 +14,10 @@ class FollowItem extends Component {
     };
 
     componentDidMount() {
-        const headers = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
         if (!this.state.username) {
-            const url = "http://127.0.0.1:5000/user/" + this.props.userId + "/info";
+            const url = "/user/" + this.props.userId + "/info";
             console.log(url);
-            axios({method: 'GET', url: url, headers: headers})
+            axios({method: 'GET', url: url})
                 .then(response => {
                     this.setState({username: response.data.user.username});
                 })
@@ -28,18 +26,18 @@ class FollowItem extends Component {
                 });
         }
         if (!this.state.profileImgSrc) {
-            const url = "http://127.0.0.1:5000/user/" + this.props.userId + "/profile/image";
-            axios({method: 'GET', url: url, headers: headers})
+            const url = "/user/" + this.props.userId + "/profile/image";
+            axios({method: 'GET', url: url})
                 .then(response => {
-                    this.setState({profileImgSrc: url + "?" + Date.now()});
+                    this.setState({profileImgSrc: BASE_URL + url + "?" + Date.now()});
                 })
                 .catch(error => {
                     console.log(error);
                 });
         }
         if (!this.state.postCnt) {
-            const url = "http://127.0.0.1:5000/user/" + this.props.userId + "/posts";
-            axios({method: 'GET', url: url, headers: headers})
+            const url = "/user/" + this.props.userId + "/posts";
+            axios({method: 'GET', url: url})
                 .then(response => {
                     this.setState({postCnt: response.data.postIdArr.length});
                 })

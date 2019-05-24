@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import axios from 'axios';
 
+import axios from '../../shared/axios';
 import SiteHeader from '../SiteHeader/SiteHeader';
 import AuthPage from '../AuthPage/AuthPage';
 import Post from './Post/Post';
@@ -41,7 +41,7 @@ class FullPost extends Component {
     };
 
     loadPost = () => {
-        const url = "http://127.0.0.1:5000/post/" + this.props.match.params.postId;
+        const url = "/post/" + this.props.match.params.postId;
         axios({method: 'GET', url: url})
             .then(response => {
                 console.log(response.data);

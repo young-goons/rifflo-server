@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../../shared/axios';
 
 import * as actionTypes from './actionTypes';
 
@@ -44,11 +44,8 @@ export const loadAuthUserInfo = (userInfo) => {
 
 export const loadAuthUser = (user_id) => {
     return dispatch => {
-        const url = "http://127.0.0.1:5000/user/" + user_id + "/info";
-        const headers = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        axios({method: 'GET', url: url, headers: headers})
+        const url = "/user/" + user_id + "/info";
+        axios({method: 'GET', url: url})
             .then(response => {
                 dispatch(loadAuthUserInfo(response.data.user));
             })
@@ -60,7 +57,7 @@ export const loadAuthUser = (user_id) => {
 
 export const auth = (email, password) => {
     return dispatch => {
-        let url = "http://127.0.0.1:5000/signin";
+        let url = "/signin";
         const user = {
             email: email,
             password: password
@@ -71,11 +68,8 @@ export const auth = (email, password) => {
                     window.localStorage.setItem('accessToken', response.data.user.access_token);
                     window.localStorage.setItem('refreshToken', response.data.user.refresh_token);
                     console.log(response);
-                    url =  "http://127.0.0.1:5000/user/" + response.data.user.user_id + "/info";
-                    const headers = {
-                        'Authorization': 'Bearer ' + response.data.user.access_token
-                    };
-                    return axios({method: 'GET', url: url, headers: headers});
+                    url =  "/user/" + response.data.user.user_id + "/info";
+                    return axios({method: 'GET', url: url});
                 } else {
                     dispatch(wrongPassword());
                     return;
@@ -95,7 +89,7 @@ export const auth = (email, password) => {
 
 export const authFacebook = (accessToken) => {
     return dispatch => {
-        let url = "http://127.0.0.1:5000/signin/facebook";
+        let url = "/signin/facebook";
         const headers = {
             'Facebook-Access-Token': accessToken
         };
@@ -105,11 +99,8 @@ export const authFacebook = (accessToken) => {
                     window.localStorage.setItem('accessToken', response.data.user.access_token);
                     window.localStorage.setItem('refreshToken', response.data.user.refresh_token);
                     console.log(response);
-                    url =  "http://127.0.0.1:5000/user/" + response.data.user.user_id + "/info";
-                    const requestHeaders = {
-                        'Authorization': 'Bearer ' + response.data.user.access_token
-                    };
-                    return axios({method: 'GET', url: url, headers: requestHeaders})
+                    url =  "/user/" + response.data.user.user_id + "/info";
+                    return axios({method: 'GET', url: url})
                 } else {
                     console.log("Facebook authentication failed");
                     return;
@@ -133,11 +124,8 @@ export const authFacebook = (accessToken) => {
  */
 export const authRefresh = (callback) => {
     return dispatch => {
-        const url = "http://127.0.0.1:5000/refresh";
-        const headers = {
-            'Authorization': 'Bearer ' + localStorage.getItem('refreshToken')
-        };
-        axios({method: 'GET', url: url, headers: headers})
+        const url = "/refresh";
+        axios({method: 'GET', url: url})
             .then(response => {
                 window.localStorage.setItem('accessToken', response.data.access_token)
                 dispatch(authSuccess());

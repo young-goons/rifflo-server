@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import FacebookLogin from 'react-facebook-login';
 import { Button, Form, Grid, Message, Icon, Image, Segment, Modal } from 'semantic-ui-react';
 
+import axios from '../../shared/axios';
 import { auth, authFacebook } from '../../store/actions/auth';
 import styles from './AuthPage.module.css';
 import FacebookModal from "./FacebookModal/FacebookModal";
@@ -30,7 +30,7 @@ class SignInPage extends Component {
     };
 
     signInHandler = () => {
-        const emailExistsUrl = "http://127.0.0.1:5000/user/id/email/" + this.state.email;
+        const emailExistsUrl = "/user/id/email/" + this.state.email;
         axios({method: 'GET', url: emailExistsUrl})
             .then(response => {
                 if (response.data.userId) {
@@ -44,7 +44,7 @@ class SignInPage extends Component {
     };
 
     facebookResponse = (response) => {
-        const facebookIdExistsUrl = "http://127.0.0.1:5000/user/id/facebook/" + response.userID;
+        const facebookIdExistsUrl = "/user/id/facebook/" + response.userID;
         const facebookAccessToken = response.accessToken;
         const facebookEmail = response.email;
         this.setState({facebookAccessToken});

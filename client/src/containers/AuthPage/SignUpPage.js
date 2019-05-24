@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import { Button, Form, Grid, Icon, Image, Segment, Message, Modal } from 'semantic-ui-react';
 
+import axios from '../../shared/axios';
 import styles from './AuthPage.module.css';
 import { auth, authFacebook } from "../../store/actions/auth";
 import FacebookLogin from "react-facebook-login";
@@ -57,14 +57,14 @@ class SignUpPage extends Component {
     signUpHandler = () => {
         if (this.state.password === this.state.passwordConfirm) {
             this.setState({passwordMatchWarning: false});
-            const url = "http://127.0.0.1:5000/signup";
+            const url = "/signup";
             const newUser = {
                 email: this.state.email,
                 username: this.state.username,
                 password: this.state.password
             };
-            const emailExistsUrl = "http://127.0.0.1:5000/user/id/email/" + this.state.email;
-            const usernameExistsUrl = "http://127.0.0.1:5000/user/id/username/" + this.state.username;
+            const emailExistsUrl = "/user/id/email/" + this.state.email;
+            const usernameExistsUrl = "/user/id/username/" + this.state.username;
             axios({method: 'GET', url: emailExistsUrl})
                 .then(response => {
                     if (response.data.userId) {
@@ -100,7 +100,7 @@ class SignUpPage extends Component {
     };
 
     facebookResponse = (response) => {
-        const facebookIdExistsUrl = "http://127.0.0.1:5000/user/id/facebook/" + response.userID;
+        const facebookIdExistsUrl = "/user/id/facebook/" + response.userID;
         const facebookAccessToken = response.accessToken;
         const facebookEmail = response.email;
         this.setState({facebookAccessToken});

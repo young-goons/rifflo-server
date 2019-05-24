@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../../shared/axios';
 
 import * as actionTypes from './actionTypes';
 
@@ -27,7 +27,7 @@ export const postShareFail = (error) => {
 
 export const sharePost = (songFile, clipRange, songInfo, content, tags) => {
     return dispatch => {
-        let url = "http://127.0.0.1:5000/post";
+        let url = "/post";
         let formData = new FormData();
         formData.append('songFile', songFile);
         formData.append('track', songInfo['track']);
@@ -42,7 +42,6 @@ export const sharePost = (songFile, clipRange, songInfo, content, tags) => {
         formData.append('content', content);
         formData.append('tags', tags);
         const requestHeaders = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken'),
             'Content-Type': 'multipart/form-data'
         };
         let newPostId;

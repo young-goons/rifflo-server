@@ -1,5 +1,11 @@
 import axios from 'axios';
 
-export default axios.create({
-    baseUrl: "http://127.0.0.1:5000/"
+import { BASE_URL } from './config';
+
+const instance = axios.create({
+    baseURL: BASE_URL,
 });
+
+instance.defaults.headers.common['Authorization'] = 'Bearer ' + window.localStorage.getItem('accessToken');
+
+export default instance;

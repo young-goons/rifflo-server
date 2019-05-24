@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Grid, Image, Input, Icon } from 'semantic-ui-react';
-import axios from 'axios';
 
+import axios from '../../../shared/axios';
 import styles from './Post.module.css';
 import { convertDateToStr } from "../../../shared/dateUtils";
 import profileImg from '../../../resources/defaultProfileImage.jpg';
@@ -25,7 +25,7 @@ class Post extends Component {
     }
 
     loadComments = () => {
-        const url = "http://127.0.0.1:5000/post/" + this.props.postId + "/comment";
+        const url = "/post/" + this.props.postId + "/comment";
         axios({method: 'GET', url: url, params: {preview: false}})
             .then(response => {
                 console.log(response.data);
@@ -41,11 +41,8 @@ class Post extends Component {
     };
 
     loadLikes = () => {
-        const url = "http://127.0.0.1:5000/post/" + this.props.postId + "/like";
-        const headers = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        axios({method: 'GET', url: url, headers: headers})
+        const url = "/post/" + this.props.postId + "/like";
+        axios({method: 'GET', url: url})
             .then(response => {
                 this.setState({
                     likeCnt: response.data.users.length,
@@ -58,17 +55,14 @@ class Post extends Component {
     };
 
     likeClickHandler = () => {
-        const url = "http://127.0.0.1:5000/post/" + this.props.postId + "/like";
-        const requestHeaders = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
+        const url = "/post/" + this.props.postId + "/like";
         let httpMethod;
         if (this.state.isLiked) {
             httpMethod = 'DELETE';
         } else {
             httpMethod = 'POST'
         }
-        axios({method: httpMethod, url: url, headers: requestHeaders})
+        axios({method: httpMethod, url: url})
             .then(response => {
                 this.setState({
                     likeCnt: this.state.isLiked ? this.state.likeCnt - 1 : this.state.likeCnt + 1,
@@ -81,11 +75,8 @@ class Post extends Component {
     };
 
     dislikeClickHandler = () => {
-        const url = "http://127.0.0.1:5000/post/" + this.props.postId + "/dislike";
-        const requestHeaders = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        axios({method: 'POST', url: url, headers: requestHeaders})
+        const url = "/post/" + this.props.postId + "/dislike";
+        axios({method: 'POST', url: url})
             .then(response => {
                 alert("Song added to skip list. (Go to my page to edit the list of disliked songs");
             })
@@ -99,14 +90,11 @@ class Post extends Component {
     };
 
     commentPostHandler = () => {
-        const url = "http://127.0.0.1:5000/post/" + this.props.postId + "/comment";
-        const headers = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
+        const url = "/post/" + this.props.postId + "/comment";
         const requestData = {
             content: this.state.commentInput,
         };
-        axios({method: 'POST', url: url, headers: headers, data: requestData})
+        axios({method: 'POST', url: url, data: requestData})
             .then(response => {
                 const newComment = {
                     commentId: response.data.commentId,

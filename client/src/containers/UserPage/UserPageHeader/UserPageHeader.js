@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Grid, Button, Label, Modal, Icon } from 'semantic-ui-react';
-import axios from 'axios';
 
+import axios from '../../../shared/axios';
 import styles from './UserPageHeader.module.css';
 import defaultProfileImage from '../../../resources/defaultProfileImage.jpg';
 import defaultHeaderImage from '../../../resources/defaultHeaderImage.jpg';
@@ -62,11 +62,8 @@ class UserPageHeader extends Component {
     }
 
     getFollowers = (userId) => {
-        const headers = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        const url = "http://127.0.0.1:5000/user/" + userId + "/followers";
-        axios({method: 'GET', url: url, headers: headers})
+        const url = "/user/" + userId + "/followers";
+        axios({method: 'GET', url: url})
             .then(response => {
                 this.setState({
                     followerArr: response.data.followerArr,
@@ -80,11 +77,8 @@ class UserPageHeader extends Component {
     };
 
     getFollowing = (userId) => {
-        const headers = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
-        const url = "http://127.0.0.1:5000/user/" + userId + "/following";
-        axios({method: 'GET', url: url, headers: headers})
+        const url = "/user/" + userId + "/following";
+        axios({method: 'GET', url: url})
             .then(response => {
                 this.setState({
                     followingArr: response.data.followingArr,
@@ -97,17 +91,14 @@ class UserPageHeader extends Component {
     };
 
     followClickHandler = () => {
-        let url = "http://127.0.0.1:5000/user/follow/" + this.props.userId;
-        const headers = {
-            'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-        };
+        let url = "/user/follow/" + this.props.userId;
         let httpMethod;
         if (this.state.isFollowed) {
             httpMethod = 'DELETE';
         } else {
             httpMethod = 'POST';
         }
-        axios({method: httpMethod, url: url, headers: headers})
+        axios({method: httpMethod, url: url})
             .then(response => {
                 const newFollowerArr = [...this.state.followerArr];
                 if (this.state.isFollowed) {

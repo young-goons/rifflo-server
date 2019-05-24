@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Button, Input, Message, Grid } from 'semantic-ui-react';
 import { connect } from 'react-redux';
-import axios from 'axios';
 
+import axios from '../../../../shared/axios';
 import styles from './EditInfoModal.module.css';
 import { loadUser } from '../../../../store/actions/user';
 import { loadAuthUser } from "../../../../store/actions/auth";
@@ -51,11 +51,8 @@ class EditInfoModal extends Component {
 
     componentDidUpdate() {
         if (this.state.needUpdate) {
-            const url = "http://127.0.0.1:5000/user/" + this.props.userId + "/info";
-            const requestHeaders = {
-                'Authorization': 'Bearer ' + window.localStorage.getItem('accessToken')
-            };
-            axios({method: 'PUT', url: url, headers: requestHeaders, data: this.state.updatedUserInfo})
+            const url = "/user/" + this.props.userId + "/info";
+            axios({method: 'PUT', url: url, data: this.state.updatedUserInfo})
                 .then(response => {
                     if (response.data.newUsername) {
                         this.props.history.push("/" + response.data.newUsername);
@@ -83,7 +80,7 @@ class EditInfoModal extends Component {
 
     updateClickHandler = () => {
         if (this.state.username !== this.props.username) { // update username
-            const usernameExistsUrl = "http://127.0.0.1:5000/user/id/username/" + this.state.username;
+            const usernameExistsUrl = "/user/id/username/" + this.state.username;
             axios({method: 'GET', url: usernameExistsUrl})
                 .then(response => {
                     console.log(response);
