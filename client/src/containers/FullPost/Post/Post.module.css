@@ -2,12 +2,13 @@
     display: inline-block;
     width: 600px;
     border: 1px solid gray;
+    margin-top: 10%;
 
-    transform: translateY(30%);
-    -ms-transform: translateY(30%);
-    -moz-transform: translateY(30%);
-    -webkit-transform: translateY(30%);
-    -o-transform: translateY(30%);
+    /*transform: translateY(30%);*/
+    /*-ms-transform: translateY(30%);*/
+    /*-moz-transform: translateY(30%);*/
+    /*-webkit-transform: translateY(30%);*/
+    /*-o-transform: translateY(30%);*/
 }
 
 .headerInfoColumn {
@@ -15,8 +16,19 @@
     margin-top:0.2em;
 }
 
+.profileImgColumn {
+    margin-left: 15px;
+}
+
+.profileImgDiv {
+    margin-top: 10px;
+    width: 65px;
+    border: 1px solid black;
+}
+
 .usernameRow {
-    margin-top: 0.6em;
+    margin-top: 15px;
+    margin-left: -15px;
 }
 
 .usernameSpan {
@@ -31,10 +43,11 @@
     margin-top: 10px;
     font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
     font-size: 1.2rem;
+    margin-left: -15px;
 }
 
 .songInfoRow {
-    margin-top: -10px;
+    margin-top: 0px;
     font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
     font-size: 1.3rem;
     font-weight: 700;
@@ -49,18 +62,20 @@
 }
 
 .tagsRow {
-    margin-top: -1.5em;
+    margin-top: -20px;
+    font-size: 0.8rem;
 }
 
 .tagsSpan {
     font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
     font-weight: 700;
     font-size: 1.5em;
-    color: deepskyblue;
+    color: lightskyblue;
 }
 
 .contentRow {
-    margin-top: -1.5em;
+    margin-top: -23px;
+    font-size: 0.8rem;
 }
 
 .contentSpan {
@@ -83,37 +98,6 @@
 
 .commentArrRow {
     margin-top: -1.2em;
-}
-
-.commentRow {
-    margin-bottom: 15px;
-}
-
-.commentUsernameSpan {
-    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-    font-weight: 700;
-    font-size: 1.2em;
-    padding-right: 0.6em;
-}
-
-.commentContentSpan {
-    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-    font-weight: 400;
-    font-size: 1.2em;
-}
-
-.commentDiv {
-    margin-bottom: 2px;
-}
-
-.dateSpan {
-    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-    margin-right: 15px;
-}
-
-.replySpan {
-    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-    color: gray;
 }
 
 .commentInputRow {

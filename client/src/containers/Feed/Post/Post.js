@@ -165,10 +165,6 @@ class Post extends Component {
             })
     };
 
-    commentClickHandler = () => {
-        alert("show full post");
-    };
-
     commentPostHandler = () => {
         const url = "/post/" + this.props.postId + "/comment";
         const requestData = {
@@ -306,8 +302,8 @@ class Post extends Component {
                     <Grid>
                         <Grid.Column width={3} className={styles.profileImgColumn}>
                             <a href={"/" + this.props.username}>
-                            <Image className={styles.profileImgDiv}
-                                   src={this.state.profileImgSrc ? this.state.profileImgSrc : profileImg} />
+                                <Image className={styles.profileImgDiv}
+                                       src={this.state.profileImgSrc ? this.state.profileImgSrc : profileImg} />
                             </a>
                         </Grid.Column>
                         <Grid.Column width={13} className={styles.headerInfoColumn}>
@@ -378,13 +374,15 @@ class Post extends Component {
                         </Grid.Row>
                         <Grid.Row className={styles.commentHeaderRow}>
                             <Grid.Column>
-                                <Icon
-                                    name="comment outline" size="large" className={styles.actionIcon}
-                                    onClick={this.commentClickHandler}
-                                />
-                                <span className={styles.actionLabel}
-                                    onClick={this.commentClickHandler}
-                                >{this.state.commentCnt} {this.state.commentCnt <= 1 ? "comment" : "comments"}</span>
+                                <a href={"/post/" + this.props.postId}>
+                                    <Icon
+                                        name="comment outline" size="large" className={styles.actionIcon}
+                                        onClick={this.commentClickHandler}
+                                    />
+                                    <span className={styles.actionLabel + " " + styles.actionSpan}
+                                        onClick={this.commentClickHandler}
+                                    >{this.state.commentCnt} {this.state.commentCnt <= 1 ? "comment" : "comments"}</span>
+                                </a>
                             </Grid.Column>
                         </Grid.Row>
                         { commentPreviewRow }

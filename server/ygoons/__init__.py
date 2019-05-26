@@ -16,7 +16,7 @@ except ImportError:
     from ygoons import default_config as config
 
 from ygoons import constants
-from ygoons.modules import user, post, clip, auth
+from ygoons.modules import user, post, clip, auth, comment
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -27,6 +27,7 @@ app.register_blueprint(user.blueprint)
 app.register_blueprint(post.blueprint)
 app.register_blueprint(clip.blueprint)
 app.register_blueprint(auth.blueprint)
+app.register_blueprint(comment.blueprint)
 
 # Set up JWT
 app.config['JWT_SECRET_KEY'] = config.JWT_SECRET_KEY

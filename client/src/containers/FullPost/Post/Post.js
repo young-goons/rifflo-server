@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { Grid, Image, Input, Icon } from 'semantic-ui-react';
 
 import axios from '../../../shared/axios';
+import { BASE_URL } from "../../../shared/config";
 import styles from './Post.module.css';
+import Comment from './Comment/Comment';
 import { convertDateToStr } from "../../../shared/dateUtils";
 import profileImg from '../../../resources/defaultProfileImage.jpg';
 
@@ -12,7 +14,8 @@ class Post extends Component {
         commentCnt: null,
         commentArr: null,
         likeCnt: null,
-        isLiked: null
+        isLiked: null,
+        profileImgSrc: null
     };
 
     componentDidMount() {
@@ -21,6 +24,16 @@ class Post extends Component {
         }
         if (this.state.likeCnt === null && this.state.isLiked === null) {
             this.loadLikes();
+        }
+        if (!this.state.profileImgSrc) {
+            const url = "/user/" + this.props.userId + "/profile/image";
+            axios({method: 'GET', url})
+                .then(response => {
+                    this.setState({profileImgSrc: BASE_URL + url + "?" + Date.now()});
+                })
+                .catch(error => {
+                    console.log(error);
+                });
         }
     }
 
@@ -120,22 +133,11 @@ class Post extends Component {
             if (this.state.commentArr.length > 0) {
                 const commentArrDiv = this.state.commentArr.map((comment, idx) => {
                     return (
-                        <Grid.Row key={idx} className={styles.commentRow}>
-                            <div className={styles.commentDiv}>
-                                <span className={styles.commentUsernameSpan}>
-                                    <a href={"/" + comment.username}>{comment.username}</a>
-                                </span>
-                                <span className={styles.commentContentSpan}>{comment.commentContent}</span>
-                            </div>
-                            <div>
-                                <span className={styles.dateSpan}>
-                                    {convertDateToStr(comment.commentDate)}
-                                </span>
-                                <span className={styles.replySpan}>
-                                    Reply
-                                </span>
-                            </div>
-                        </Grid.Row>
+                        <Comment
+                            key={idx}
+                            comment={comment}
+                            userId={this.props.userId}
+                            authUsername={this.props.currUsername}/>
                     )
                 });
                 commentArrRow = (
@@ -152,7 +154,10 @@ class Post extends Component {
             <div className={styles.postContainerDiv}>
                 <Grid>
                     <Grid.Column width={3} className={styles.profileImgColumn}>
-                        <Image src={profileImg} className={styles.profileImgDiv}/>
+                        <a href={"/" + this.props.username}>
+                            <Image className={styles.profileImgDiv}
+                                   src={this.state.profileImgSrc ? this.state.profileImgSrc : profileImg}/>
+                        </a>
                     </Grid.Column>
                     <Grid.Column width={13} textAlign="left" className={styles.headerInfoColumn}>
                         <Grid.Row className={styles.usernameRow}>
@@ -186,24 +191,23 @@ class Post extends Component {
                     <Grid.Row className={styles.actionRow}>
                         <Grid.Column width={6}>
                             <Icon
-                                name={this.state.isLiked ? "heart" : "heart outline"} size="large" className={styles.actionIcon}
-                                onClick={this.likeClickHandler}
+                                name={this.state.isLiked ? "heart" : "heart outline"} size="large"
+                                color={this.state.isLiked ? "red" : "black"}
+                                onClick={this.likeClickHandler} className={styles.actionIcon}
                             />
                             <span className={styles.actionLabel}>
                                     {this.state.likeCnt} {this.state.likeCnt <= 1 ? "Like" : "Likes"}
                             </span>
                         </Grid.Column>
                         <Grid.Column width={5}>
-                            <Icon
-                                name="comments" size="large"
-                            />
+                            <Icon name="comments" size="large" color="grey" />
                             <span>
                                 {this.state.commentCnt} {this.state.commentCnt <= 1 ? "Comment" : "Comments"}
                             </span>
                         </Grid.Column>
                         <Grid.Column width={5} textAlign="right">
                             <Icon
-                                name="warning circle" size="large" className={styles.actionIcon}
+                                name="warning circle" size="large" className={styles.actionIcon} color="yellow"
                                 onClick={this.dislikeClickHandler}
                             />
                             <span className={styles.actionLabel}>Not My Taste</span>
