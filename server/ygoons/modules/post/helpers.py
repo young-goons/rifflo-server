@@ -9,19 +9,19 @@ def get_post_data(id_list):
     with flask.g.pymysql_db.cursor() as cursor:
         fmt_str = ','.join(['%s'] * len(id_list))
         sql = '''
-                SELECT
-                    post_id, user_id, username, upload_date, content, tags,
-                    song_id, clip_path, song_name, artist,
-                    spotify_url, applemusic_url, youtube_url, soundcloud_url, bandcamp_url, other_url
-                FROM (
-                    SELECT * FROM tbl_post
-                    WHERE post_id IN (%s)
-                ) tbl_post_id
-                NATURAL JOIN (
-                    SELECT user_id, username FROM tbl_user
-                ) tbl_user_id
-                NATURAL JOIN tbl_song_info
-                ''' % fmt_str
+        SELECT
+            post_id, user_id, username, upload_date, content, tags,
+            song_id, clip_path, song_name, artist,
+            spotify_url, applemusic_url, youtube_url, soundcloud_url, bandcamp_url, other_url
+        FROM (
+            SELECT * FROM tbl_post
+            WHERE post_id IN (%s)
+        ) tbl_post_id
+        NATURAL JOIN (
+            SELECT user_id, username FROM tbl_user
+        ) tbl_user_id
+        NATURAL JOIN tbl_song_info
+        ''' % fmt_str
         cursor.execute(sql, tuple(id_list))
         query_result = cursor.fetchall()
     post_dict = {}

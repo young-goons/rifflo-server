@@ -71,7 +71,7 @@
 }
 
 .commentHeaderRow {
-    margin-top: -1em;
+    margin-top: -25px;
 }
 
 .dateRow {
@@ -82,7 +82,7 @@
     color: lightslategray;
 }
 
-.playIcon, .actionIcon  {
+.playIcon, .actionIcon, .actionSpan  {
     cursor: pointer;
 }
 

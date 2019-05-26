@@ -1,0 +1,103 @@
+.commentRow {
+    margin-bottom: 15px;
+}
+
+.containerDiv {
+    display: flex;
+}
+
+.commentDiv {
+    margin-top: 5px;
+}
+
+.commentContentDiv {
+    margin-bottom: 2px;
+}
+
+.profileImgDiv {
+    margin-top: 5px;
+    margin-right: 10px;
+}
+
+.profileImg {
+    width: 40px;
+}
+
+.commentHeader {
+    display: inline-block;
+}
+
+.commentUsernameSpan {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 1.2em;
+    padding-right: 0.6em;
+}
+
+.commentContentSpan {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 400;
+    font-size: 1.2em;
+}
+
+.dateSpan {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    margin-right: 15px;
+}
+
+.replySpan {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    margin-right: 10px;
+}
+
+.replySpan:hover {
+    cursor: pointer;
+}
+
+.replyArrRowDiv {
+    margin-left: 70px;
+}
+
+.replyDiv {
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 400;
+    margin-top: 5px;
+}
+
+.usernameSpan {
+    font-weight: 700;
+    margin-right: 10px;
+}
+
+.replyDateSpan {
+    color: lightslategray;
+}
+
+.replyOptionDiv {
+    margin-left: 70px;
+    margin-top: 3px;
+    margin-bottom: -3px;
+}
+
+.showPrevSpan {
+    margin-right: 10px;
+    color: gray;
+}
+
+.showPrevSpan:hover {
+    cursor: pointer;
+}
+
+.writeReplySpan {
+    color: gray;
+}
+
+.writeReplySpan:hover {
+    cursor: pointer;
+}
+
+.inputDiv {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    margin-left: 70px;
+}

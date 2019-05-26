@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Sticky, Grid, Search, Icon } from 'semantic-ui-react';
+import { Sticky, Grid, Search, Icon, Image } from 'semantic-ui-react';
 
 import styles from './SiteHeader.module.css';
 import { signOut } from '../../store/actions/auth';
-import { resetUser } from '../../store/actions/user';
+import {loadUserProfileImage, resetUser} from '../../store/actions/user';
 
 class SiteHeader extends Component {
     state = {
-        searchString: ''
+        searchString: '',
     };
+
+    componentDidMount() {
+        this.props.onLoadUserProfileImage(this.props.userInfo.userId);
+    }
 
     signOutClickHandler = () => {
         this.props.onSignOut();
@@ -17,6 +21,7 @@ class SiteHeader extends Component {
     };
 
     render() {
+        console.log(this.props);
         return (
             <Sticky context={this.props.contextRef} >
                 <div className={styles.stickyDiv}>
@@ -28,16 +33,18 @@ class SiteHeader extends Component {
                             <Search size="tiny" placeholder="Search Users & Playlists"/>
                         </Grid.Column>
                         <Grid.Column width={4}>
-                            <Grid>
-                                <Grid.Column width={3}>
-                                    <Icon name="music" size="large"/>
-                                </Grid.Column>
+                            <Grid verticalAlign="middle">
                                 <Grid.Column width={3}>
                                     <Icon name="newspaper outline" size="large"/>
                                 </Grid.Column>
                                 <Grid.Column width={3}>
-                                    <a href={"/" + this.props.userInfo.username}>
-                                        <Icon name="user outline" size="large" />
+                                    <Image circular size="big" className={styles.userImage}
+                                           href={"/" + this.props.userInfo.username}
+                                           src={this.props.profileImgSrc ? this.props.profileImgSrc : null} />
+                                </Grid.Column>
+                                <Grid.Column width={3}>
+                                    <a href="/people/suggested">
+                                        <Icon name="add user" size="large"/>
                                     </a>
                                 </Grid.Column>
                                 <Grid.Column width={3} className={styles.settingsColumn}>
@@ -64,11 +71,18 @@ class SiteHeader extends Component {
     }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapStateToProps = state => {
     return {
-        onSignOut: () => dispatch(signOut()),
-        onResetUser: () => dispatch(resetUser())
+        profileImgSrc: state.user.profileImgSrc
     };
 };
 
-export default connect(null, mapDispatchToProps)(SiteHeader);
+const mapDispatchToProps = dispatch => {
+    return {
+        onSignOut: () => dispatch(signOut()),
+        onResetUser: () => dispatch(resetUser()),
+        onLoadUserProfileImage: (userId) => dispatch(loadUserProfileImage(userId))
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SiteHeader);

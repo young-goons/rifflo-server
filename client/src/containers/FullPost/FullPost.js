@@ -44,8 +44,6 @@ class FullPost extends Component {
         const url = "/post/" + this.props.match.params.postId;
         axios({method: 'GET', url: url})
             .then(response => {
-                console.log(response.data);
-                console.log(response.data.posts[this.props.match.params.postId]);
                 // this.setState(post: response.data.)
                 const post = response.data.posts[this.props.match.params.postId];
                 if (post) {
@@ -69,6 +67,7 @@ class FullPost extends Component {
                 postPageDiv = (
                     <Post
                         postId={this.state.post.postId}
+                        userId={this.state.post.userId}
                         username={this.state.post.username}
                         songName={this.state.post.songName}
                         artist={this.state.post.artist}

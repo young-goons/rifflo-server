@@ -176,8 +176,8 @@ CREATE TABLE tbl_reply
     reply_id    INT AUTO_INCREMENT,
     comment_id  INT NOT NULL,
     user_id     INT NOT NULL,
-    reply_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     content     VARCHAR(100) NOT NULL,
+    reply_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY(reply_id),
 
