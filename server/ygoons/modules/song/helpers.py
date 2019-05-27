@@ -3,16 +3,16 @@
 import flask
 
 
-def get_similar_songs(partial_song_name):
+def get_similar_songs(partial_title, partial_artist):
     with flask.g.pymysql_db.cursor() as cursor:
         sql = 'SELECT song_name, artist ' \
               'FROM tbl_song_info ' \
-              'WHERE song_name LIKE %s'
-        cursor.execute(sql, (partial_song_name + '%', ))
+              'WHERE song_name LIKE %s AND artist LIKE %s'
+        cursor.execute(sql, (partial_title + '%', partial_artist + '%'))
         query_result = cursor.fetchall()
 
     if len(query_result) < 1:
-        return None
+        return ()
 
     similar_songs = []
     for item in query_result:

@@ -21,11 +21,12 @@ def get_search_results():
     Fetches search results for a substring of a song.
 
     INPUT:
-        key: search term
+        title_key: search term for title
+        artist_key: search term for artist
         numresults: number of results to display
     OUTPUT:
         List of size `numresults` of potential matches, ordered in their
-        closeness to `key`. Each match is a tuple of (title, artist).
+        closeness to (title_key, artist_key). Each match is a tuple of (title, artist).
 
     TODO:
         helper function to select "substring%" song names
@@ -33,13 +34,15 @@ def get_search_results():
         eventually do metaphone matching (for misspellings)
         eventually sort by popularity as well
     """
-    key = request.args.get('key', '')
+    title_key = request.args.get('title', '')
+    artist_key = request.args.get('artist', '')
     num_results = request.args.get('numresults', DEFAULT_NUM_RESULTS)
 
     # TODO: move to helper function
     results = []
-    if len(key) > 3:
-        similar_songs = get_similar_songs(key)
+    if len(title_key) > 3 or len(artist_key) > 3:
+        similar_songs = get_similar_songs(title_key, artist_key)
+        # Fuzzy match song names
         songs = [s[1] for s in similar_songs]
         temp = fw.process(key, songs, limit=num_results)
         for t, score in temp:
