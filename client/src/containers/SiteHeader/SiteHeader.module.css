@@ -5,6 +5,10 @@
     background: ghostwhite;
 }
 
+.centerColumn {
+    margin-right: -50px;
+}
+
 .dropdownContent {
     display: none;
     position: absolute;
@@ -12,6 +16,7 @@
     width: 90px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 5;
+    right: 10px;
 }
 
 .dropdownItemSpan{
@@ -27,10 +32,53 @@
     cursor: pointer;
 }
 
-.settingsColumn:hover {
+.settingsItem:hover {
     cursor: pointer;
 }
 
-.settingsColumn:hover .dropdownContent {
+.settingsItem:hover .dropdownContent {
     display: block;
 }
+
+.settingsColumn {
+    margin-left: -14px;
+}
+
+.menuList {
+
+}
+
+.activityItem {
+    margin-right: -10px;
+}
+
+.userImageItem {
+    margin-right: -13px;
+}
+
+.addUserItem {
+    margin-right: 7px;
+}
+/*.menuDiv {*/
+/*    display: flex;*/
+/*    width: 100%;*/
+/*    vertical-align: middle;*/
+/*    text-align: center;*/
+/*}*/
+
+/*.activityDiv {*/
+/*    width: 25%;*/
+/*    vertical-align: middle;*/
+/*}*/
+
+/*.userImageDiv {*/
+/*    width: 25%;*/
+/*}*/
+
+/*.userImage {*/
+/*    width: 25px;*/
+/*}*/
+
+/*.addUserDiv {*/
+/*    width: 25%;*/
+/*}*/

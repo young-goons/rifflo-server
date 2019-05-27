@@ -98,9 +98,8 @@ export const authFacebook = (accessToken) => {
                 if (response.data.user) {
                     window.localStorage.setItem('accessToken', response.data.user.access_token);
                     window.localStorage.setItem('refreshToken', response.data.user.refresh_token);
-                    console.log(response);
                     url =  "/user/" + response.data.user.user_id + "/info";
-                    return axios({method: 'GET', url: url})
+                    return axios({method: 'GET', url: url});
                 } else {
                     console.log("Facebook authentication failed");
                     return;
@@ -109,7 +108,6 @@ export const authFacebook = (accessToken) => {
             .then(response => {
                 if (response) {
                     dispatch(loadAuthUserInfo(response.data.user));
-                    console.log(response.data.user);
                 }
             })
             .catch(error => {
