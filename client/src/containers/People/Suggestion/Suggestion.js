@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Grid, Image, Button, List } from 'semantic-ui-react';
 
 import axios from '../../../shared/axios';
+import AuthPage from '../../AuthPage/AuthPage';
 import styles from './Suggestion.module.css';
 import { loadAuthUser } from "../../../store/actions/auth";
 import SiteHeader from "../../SiteHeader/SiteHeader";
@@ -10,22 +11,35 @@ import SuggestedUser from './SuggestedUser/SuggestedUser';
 
 class Suggestion extends Component {
     state = {
+        authUserId: this.props.authUserId,
         suggestArr: null
     };
 
     componentDidMount() {
-        if (!this.props.authUserInfo) {
-            this.props.onLoadAuthUser(this.props.authUserId);
+        if (this.state.authUserId) {
+            if (!this.props.authUserInfo) {
+                this.props.onLoadAuthUser(this.props.authUserId);
+            }
         }
-        if (!this.state.suggestArr) {
-            const url = "/user/suggest_follow";
-            axios({method: 'GET', url: url})
-                .then(response => {
-                    this.setState({suggestArr: response.data.userIdArr});
-                })
-                .catch(error => {
-                    console.log(error);
-                });
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.authUserInfo) {
+            if (!this.state.suggestArr) {
+                const url = "/user/suggest_follow";
+                axios({method: 'GET', url: url})
+                    .then(response => {
+                        this.setState({suggestArr: response.data.userIdArr});
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            }
+        } else {
+            this.setState({
+                authUserId: null,
+                suggestArr: null
+            })
         }
     }
 
@@ -81,7 +95,6 @@ class Suggestion extends Component {
                 )
             }
         }
-
         if (this.props.authUserInfo) {
             const siteHeader = <SiteHeader contextRef={this.contextRef} userInfo={this.props.authUserInfo}/>;
             if (this.state.suggestArr) {
@@ -103,9 +116,13 @@ class Suggestion extends Component {
                     { suggestionDiv }
                 </div>
             )
+        } else if (this.state.authUserId) {
+            renderDiv = <div></div>;
+        } else {
+            renderDiv = <AuthPage />;
         }
         return (
-            <div>
+            <div className={styles.containerDiv}>
                 { renderDiv }
             </div>
         );

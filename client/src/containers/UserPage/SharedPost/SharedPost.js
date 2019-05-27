@@ -231,12 +231,12 @@ class SharedPost extends Component {
                     <Grid.Column width={2} verticalAlign="middle" textAlign="right" className={styles.clipPlayColumn}>
                         { playIcon }
                     </Grid.Column>
-                    <Grid.Column width={5} verticalAlign="middle" className={styles.progressBarColumn}>
+                    <Grid.Column width={4} verticalAlign="middle" className={styles.progressBarColumn}>
                         <div className={styles.progressDiv}>
                             <progress value={this.state.progressPercent} max="1" className={styles.progressBar}/>
                         </div>
                     </Grid.Column>
-                    <Grid.Column width={3} verticalAlign="middle" textAlign="left"
+                    <Grid.Column width={4} verticalAlign="middle" textAlign="center"
                                  className={styles.postLikeCommentColumn}>
                         <div className={styles.postLikeDiv}>
                             <a href={"/post/" + this.props.postId}>

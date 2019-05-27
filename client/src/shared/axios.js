@@ -6,6 +6,10 @@ const instance = axios.create({
     baseURL: BASE_URL,
 });
 
-instance.defaults.headers.common['Authorization'] = 'Bearer ' + window.localStorage.getItem('accessToken');
+instance.interceptors.request.use(config => {
+    const accessToken = localStorage.getItem('accessToken');
+    config.headers.Authorization =  accessToken ? `Bearer ${accessToken}` : '';
+    return config;
+});
 
 export default instance;

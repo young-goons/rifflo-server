@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Sticky, Grid, Search, Icon, Image } from 'semantic-ui-react';
+import { Sticky, Grid, Search, Icon, Image, List } from 'semantic-ui-react';
 
 import axios from '../../shared/axios';
 import { BASE_URL } from "../../shared/config";
 import styles from './SiteHeader.module.css';
 import { signOut } from '../../store/actions/auth';
-import { loadUserProfileImage, resetUser } from '../../store/actions/user';
+import { resetUser } from '../../store/actions/user';
 import defaultProfileImg from '../../resources/defaultProfileImage.jpg';
 
 class SiteHeader extends Component {
@@ -35,7 +35,6 @@ class SiteHeader extends Component {
     };
 
     render() {
-        console.log(this.props);
         return (
             <Sticky context={this.props.contextRef} >
                 <div className={styles.stickyDiv}>
@@ -43,25 +42,25 @@ class SiteHeader extends Component {
                         <Grid.Column width={4} textAlign="right">
                             <a href="/">App Name</a>
                         </Grid.Column>
-                        <Grid.Column width={8}>
+                        <Grid.Column width={8} className={styles.centerColumn}>
                             <Search size="tiny" placeholder="Search Users & Playlists"/>
                         </Grid.Column>
                         <Grid.Column width={4}>
-                            <Grid verticalAlign="middle">
-                                <Grid.Column width={3}>
+                            <List horizontal className={styles.menuList}>
+                                <List.Item className={styles.activityItem}>
                                     <Icon name="newspaper outline" size="large"/>
-                                </Grid.Column>
-                                <Grid.Column width={3}>
-                                    <Image circular size="big" className={styles.userImage}
+                                </List.Item>
+                                <List.Item className={styles.userImageItem}>
+                                    <Image avatar className={styles.userImage} size="tiny"
                                            href={"/" + this.props.userInfo.username}
                                            src={this.state.profileImgSrc ? this.state.profileImgSrc : defaultProfileImg} />
-                                </Grid.Column>
-                                <Grid.Column width={3}>
+                                </List.Item>
+                                <List.Item className={styles.addUserItem}>
                                     <a href="/people/suggested">
                                         <Icon name="add user" size="large"/>
                                     </a>
-                                </Grid.Column>
-                                <Grid.Column width={3} className={styles.settingsColumn}>
+                                </List.Item>
+                                <List.Item className={styles.settingsItem}>
                                     <Icon name="setting" size="large" className={styles.settingsIcon}/>
                                     <div className={styles.dropdownContent}>
                                         <span
@@ -75,8 +74,8 @@ class SiteHeader extends Component {
                                             <a href="/contact">Contact</a>
                                         </span>
                                     </div>
-                                </Grid.Column>
-                            </Grid>
+                                </List.Item>
+                            </List>
                         </Grid.Column>
                     </Grid>
                 </div>
@@ -85,18 +84,11 @@ class SiteHeader extends Component {
     }
 }
 
-const mapStateToProps = state => {
-    return {
-        profileImgSrc: state.user.profileImgSrc
-    };
-};
-
 const mapDispatchToProps = dispatch => {
     return {
         onSignOut: () => dispatch(signOut()),
         onResetUser: () => dispatch(resetUser()),
-        onLoadUserProfileImage: (userId) => dispatch(loadUserProfileImage(userId))
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(SiteHeader);
+export default connect(null, mapDispatchToProps)(SiteHeader);
