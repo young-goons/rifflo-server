@@ -24,6 +24,12 @@ export const loadUserProfileImageSuccess = (imageSrc) => {
     };
 };
 
+export const loadUserProfileImageFail = () => {
+    return {
+        type: actionTypes.LOAD_USER_PROFILE_IMAGE_FAIL
+    };
+};
+
 export const deleteUserProfileImageSuccess = () => {
     return {
         type: actionTypes.DELETE_USER_PROFILE_IMAGE_SUCCESS,
@@ -35,6 +41,12 @@ export const loadUserHeaderImageSuccess = (imageSrc) => {
     return {
         type: actionTypes.LOAD_USER_HEADER_IMAGE_SUCCESS,
         headerImgSrc: imageSrc
+    };
+};
+
+export const loadUserHeaderImageFail = () => {
+    return {
+        type: actionTypes.LOAD_USER_HEADER_IMAGE_FAIL
     };
 };
 
@@ -126,7 +138,7 @@ export const loadUserProfileImage = (userId) => {
                 dispatch(loadUserProfileImageSuccess(BASE_URL + url + "?" + Date.now()));
             })
             .catch(error => {
-                console.log(error);
+                dispatch(loadUserProfileImageFail());
             })
     };
 };
@@ -169,7 +181,7 @@ export const loadUserHeaderImage = (userId) => {
                 dispatch(loadUserHeaderImageSuccess(BASE_URL + url + "?" + Date.now()));
             })
             .catch(error => {
-                console.log(error);
+                dispatch(loadUserHeaderImageFail());
             })
     };
 };

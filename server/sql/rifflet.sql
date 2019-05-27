@@ -280,6 +280,21 @@ CREATE TABLE tbl_full_song_history
 
 -- Create user stop history table (songs that user did not hear until the end)
 
+-- Create table to record user's ignoring other users in user suggestion
+CREATE TABLE tbl_user_ignore
+(
+    user_id         INT,
+    ignored_user_id  INT,
+    ignore_date     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY(user_id, ignored_user_id),
+
+    FOREIGN KEY(user_id) REFERENCES tbl_user(user_id)
+      ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(ignored_user_id) REFERENCES tbl_user(user_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 CREATE TABLE tbl_user_svd
 (
     user_id INT,

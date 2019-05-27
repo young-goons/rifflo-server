@@ -27,7 +27,7 @@ class Post extends Component {
         }
         if (!this.state.profileImgSrc) {
             const url = "/user/" + this.props.userId + "/profile/image";
-            axios({method: 'GET', url})
+            axios({method: 'GET', url: url})
                 .then(response => {
                     this.setState({profileImgSrc: BASE_URL + url + "?" + Date.now()});
                 })

@@ -2,17 +2,31 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Sticky, Grid, Search, Icon, Image } from 'semantic-ui-react';
 
+import axios from '../../shared/axios';
+import { BASE_URL } from "../../shared/config";
 import styles from './SiteHeader.module.css';
 import { signOut } from '../../store/actions/auth';
-import {loadUserProfileImage, resetUser} from '../../store/actions/user';
+import { loadUserProfileImage, resetUser } from '../../store/actions/user';
+import defaultProfileImg from '../../resources/defaultProfileImage.jpg';
 
 class SiteHeader extends Component {
     state = {
         searchString: '',
+        profileImgSrc: null
     };
 
     componentDidMount() {
-        this.props.onLoadUserProfileImage(this.props.userInfo.userId);
+        if (!this.state.profileImgSrc) {
+            console.log(this.props);
+            const url = "/user/" + this.props.userInfo.userId + "/profile/image";
+            axios({method: 'GET', url: url})
+                .then(response => {
+                    this.setState({profileImgSrc: BASE_URL + url + "?" + Date.now()});
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+        }
     }
 
     signOutClickHandler = () => {
@@ -40,7 +54,7 @@ class SiteHeader extends Component {
                                 <Grid.Column width={3}>
                                     <Image circular size="big" className={styles.userImage}
                                            href={"/" + this.props.userInfo.username}
-                                           src={this.props.profileImgSrc ? this.props.profileImgSrc : null} />
+                                           src={this.state.profileImgSrc ? this.state.profileImgSrc : defaultProfileImg} />
                                 </Grid.Column>
                                 <Grid.Column width={3}>
                                     <a href="/people/suggested">

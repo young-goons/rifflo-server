@@ -36,10 +36,6 @@ class FullPost extends Component {
         }
     }
 
-    commentInputHandler = (event) => {
-        this.setState({comment: event.target.value});
-    };
-
     loadPost = () => {
         const url = "/post/" + this.props.match.params.postId;
         axios({method: 'GET', url: url})
