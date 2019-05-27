@@ -1,0 +1,29 @@
+.suggestionPageDiv {
+    text-align: center;
+    height: 100%;
+}
+
+.suggestionHeader {
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+.suggestionDiv {
+    display: inline-block;
+    width: 600px;
+    border: 1px solid gray;
+    margin-top: 10%;
+    padding-bottom: 10px;
+}
+
+.noSuggestionDiv {
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-size: 1.2rem;
+    text-align: center;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}

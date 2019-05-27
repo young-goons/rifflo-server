@@ -254,6 +254,25 @@ def get_followers(user_id):
     return make_response(jsonify({'followerArr': follower_list}), 200)
 
 
+@blueprint.route('/user/ignore/<int:user_id>', methods=['POST'])
+@jwt_required
+def user_ignore(user_id):
+    curr_user = get_jwt_identity()
+    curr_user_id = curr_user['userId']
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = '''
+        INSERT INTO tbl_user_ignore (user_id, ignored_user_id)
+        VALUES (%s, %s)
+        '''
+        affected_row_cnt = cursor.execute(sql, (curr_user_id, user_id))
+
+    if affected_row_cnt == 1:
+        flask.g.pymysql_db.commit()
+        return make_response(jsonify({'success': True}), 200)
+    else:
+        return make_response(jsonify({'msg': "User unfollow failed"}), 400)
+
+
 @blueprint.route('/user/history/played/<int:post_id>', methods=['POST'])
 @jwt_required
 def upload_play_history(post_id):
