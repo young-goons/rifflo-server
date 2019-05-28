@@ -1,7 +1,7 @@
 # Helper functions for user module
 
 import flask
-from ygoons.modules.user import follow_suggest
+from ygoons.modules.user import feed, follow_suggest
 
 
 def get_user_data(user_id, private=False):
@@ -242,6 +242,11 @@ def get_user_disliked(user_id):
         dislike_list.append(dislike_dict)
 
     return dislike_list
+
+
+def get_user_feed(user_id):
+    post_id_list = feed.get_feed_suggest(user_id, flask.g.pymysql_db)
+    return post_id_list
 
 
 def get_user_suggest_follow(user_id):
