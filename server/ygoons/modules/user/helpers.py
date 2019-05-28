@@ -248,6 +248,7 @@ def get_user_feed(user_id):
     post_id_list = feed.get_feed_suggest(user_id, flask.g.pymysql_db)
     return post_id_list
 
+
 def get_user_suggest_follow(user_id):
     user_id_list = follow_suggest.get_suggest_follow(user_id,
                                                      flask.g.pymysql_db)

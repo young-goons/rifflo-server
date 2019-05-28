@@ -2,6 +2,7 @@ import numpy as np
 import sys
 from ygoons.modules.user import svd
 
+
 def get_feed_suggest(user_id, cnx):
     """Suggest posts on feed.
     Args:
@@ -36,8 +37,8 @@ def get_feed_suggest(user_id, cnx):
         friend_posts = cursor.fetchall()
 
     cand_id_list = _select_popularity(friend_posts=friend_posts,
-                                          top_posts=top_posts,
-                                          limit=1000)
+                                      top_posts=top_posts,
+                                      limit=1000)
 
     # Reorder using SVD features
     clf = svd.SVD()
