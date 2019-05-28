@@ -80,7 +80,8 @@ def _sort_similarity(user_id, cands, cnx):
 
 
 def _get_degree_2(user_id, cnx):
-    """Get all users of degree 2 follow that are not currently followed.
+    """Get all users of degree 2 follow that are not currently followed
+    or ignored.
     Example:
         this user (follows) user B (follows) user B
         AND user (does NOT follow) user B
@@ -101,12 +102,14 @@ def _get_degree_2(user_id, cnx):
         WHERE a.follower_id = %s
         AND b.followed_id NOT IN
             (SELECT followed_id FROM tbl_follow WHERE follower_id = %s)
+        AND b.followed_id NOT IN
+            (SELECT ignored_user_id FROM tbl_user_ignore WHERE user_id = %s)
         AND b.followed_id != %s
     ) tbl_all_followed
     GROUP BY followed_id
     ORDER BY num_mutual DESC
     '''
     with cnx.cursor() as cursor:
-        cursor.execute(sql, (user_id, user_id, user_id))
+        cursor.execute(sql, (user_id, user_id, user_id, user_id))
         res = cursor.fetchall()
     return list(map(lambda x: x[0], res))

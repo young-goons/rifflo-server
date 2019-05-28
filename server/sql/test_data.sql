@@ -85,6 +85,12 @@ INSERT INTO tbl_like(post_id, user_id) VALUES
     (4, 2),
     (4, 6);
 
+INSERT INTO tbl_user_ignore(user_id, ignored_user_id) VALUES
+    (1, 8),
+    (7, 3),
+    (8, 5),
+    (9, 4);
+
 INSERT INTO tbl_comment(comment_id, post_id, user_id, comment_date, content) VALUES
     (1, 1, 1, '2019-05-23 00:00:00', 'comment1'),
     (2, 1, 3, '2019-05-23 00:02:00', 'comment2'),
