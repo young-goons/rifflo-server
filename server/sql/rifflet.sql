@@ -7,6 +7,8 @@ DROP VIEW IF EXISTS view_comment_count;
 DROP VIEW IF EXISTS view_follower_count;
 DROP VIEW IF EXISTS view_following_count;
 
+DROP TABLE IF EXISTS tbl_post_report;
+DROP TABLE IF EXISTS tbl_user_ignore;
 DROP TABLE IF EXISTS tbl_user_svd;
 DROP TABLE IF EXISTS tbl_post_svd;
 DROP TABLE IF EXISTS tbl_user_bias;
