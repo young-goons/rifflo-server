@@ -285,6 +285,11 @@ def upload_full_song_history(post_id):
 def get_user_profile_image(user_id):
     query_result = helpers.get_profile_picture_path(user_id)
     if query_result is not None:
+        # TODO(daniel): use this URL instead of the filesystem
+        url = helpers.s3.generate_presigned_url(
+            'get_object',
+            Params={'Bucket':'rifflo-storage', 'Key':query_result}, ExpiresIn=100)
+
         file_name = query_result.split('/')[-1]
         file_path = '/'.join(query_result.split('/')[:-1])
         return send_from_directory(file_path, file_name, mimetype='image/jpeg')
@@ -305,15 +310,16 @@ def upload_user_profile_image(user_id):
 
     image = request.files['file']
 
-    if not os.path.isdir(
-            os.path.join(app.config["IMAGE_STORAGE_PATH"], str(user_id))):
-        os.makedirs(os.path.join(app.config["IMAGE_STORAGE_PATH"],
-                                 str(user_id)),
-                    exist_ok=True)
-    image_file_path = os.path.join(app.config['IMAGE_STORAGE_PATH'],
-                                   str(user_id),
+    image_file_path = os.path.join(str(user_id),
                                    secure_filename(image.filename))
-    image.save(image_file_path)
+    helpers.s3.upload_fileobj(
+        image,
+        app.config['S3_BUCKET'],
+        image_file_path,
+        ExtraArgs={
+            "ContentType": image.content_type
+        }
+    )
 
     row_cnt = helpers.upload_profile_picture(user_id, image_file_path)
     if row_cnt == 1:
