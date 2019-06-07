@@ -290,7 +290,6 @@ def get_user_profile_image(user_id):
             'get_object',
             Params={'Bucket':app.config['S3_BUCKET_IMAGE'], 'Key':query_result},
             ExpiresIn=100)
-        print(url)
         return make_response(jsonify({'url': url}), 200)
     else:
         return make_response(jsonify({'msg': "user_id is not found"}), 400)
@@ -342,13 +341,6 @@ def delete_user_profile_image(user_id):
                 'msg': "Authorization failed",
                 'success': False
             }), 400)
-
-    image_path = helpers.get_profile_picture_path(user_id)
-    if image_path is None:
-        return make_response(
-            jsonify({'msg': "Profile picture does not exist"}), 400)
-    else:
-        os.remove(image_path)
 
     row_cnt = helpers.delete_profile_picture(user_id)
     if row_cnt == 1:
@@ -418,13 +410,6 @@ def delete_user_header_image(user_id):
                 'msg': "Authorization failed",
                 'success': False
             }), 400)
-
-    image_path = helpers.get_header_picture_path(user_id)
-    if image_path is None:
-        return make_response(jsonify({'msg': "Header image does not exist"}),
-                             200)
-    else:
-        os.remove(image_path)
 
     row_cnt = helpers.delete_header_picture(user_id)
     if row_cnt == 1:

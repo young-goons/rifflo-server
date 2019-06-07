@@ -70,6 +70,12 @@ def upload_post():
                          1000):int(float(request.form['clipEnd']) * 1000)]
     clip_name = file.filename[:-4] + "_" + request.form[
         'clipStart'] + "_" + request.form['clipEnd'] + file.filename[-4:]
+
+    clip_path = os.path.join(str(user_id), secure_filename(clip_name))
+
+    
+
+
     if not os.path.isdir(
             os.path.join(app.config["CLIP_STORAGE_PATH"], str(user_id))):
         os.makedirs(os.path.join(app.config["CLIP_STORAGE_PATH"],
@@ -80,6 +86,8 @@ def upload_post():
 
     if not os.path.exists(clip_file_path):
         clip.export(clip_file_path, format=file_format)
+
+
 
     if request.form['date']:
         release_date = request.form['date']
