@@ -1,4 +1,4 @@
-# young-goons [![Build Status](https://travis-ci.com/joshc/young-goons.svg)](https://travis-ci.com/joshc/young-goons)
+# young-goons [![Build Status](https://travis-ci.com/young-goons/young-goons.svg)](https://travis-ci.com/young-goons/young-goons)
 
 ## Prerequisites
 
