@@ -5,12 +5,10 @@ from ygoons.modules.user import feed, follow_suggest
 import boto3
 from ygoons.config import S3_KEY, S3_SECRET
 
-s3 = boto3.client(
-    "s3",
-    aws_access_key_id=S3_KEY,
-    aws_secret_access_key=S3_SECRET,
-    region_name="us-west-2"
-)
+s3 = boto3.client("s3",
+                  aws_access_key_id=S3_KEY,
+                  aws_secret_access_key=S3_SECRET,
+                  region_name="us-west-2")
 
 
 def get_user_data(user_id, private=False):

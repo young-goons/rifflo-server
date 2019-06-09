@@ -138,12 +138,10 @@ class SongUploader extends Component {
         player.currentTime = this.state.startTime;
         player.play();
         this.setState({isPlaying: true});
-        console.log(this.audioRef.current.duration);
     };
 
     pauseClickHandler = () => {
         const player = this.audioRef.current;
-        console.log(player.currentTime);
         player.pause();
         this.setState({
             startTime: player.currentTime,

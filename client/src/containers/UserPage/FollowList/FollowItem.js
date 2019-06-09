@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { List, Image } from 'semantic-ui-react';
 
 import axios from '../../../shared/axios';
-import { BASE_URL } from "../../../shared/config";
 import styles from './FollowList.module.css';
 import defaultProfileImage from '../../../resources/defaultProfileImage.jpg';
 
@@ -29,7 +28,7 @@ class FollowItem extends Component {
             const url = "/user/" + this.props.userId + "/profile/image";
             axios({method: 'GET', url: url})
                 .then(response => {
-                    this.setState({profileImgSrc: BASE_URL + url + "?" + Date.now()});
+                    this.setState({profileImgSrc: response.data.url + "&" + Date.now()});
                 })
                 .catch(error => {
                     console.log(error);

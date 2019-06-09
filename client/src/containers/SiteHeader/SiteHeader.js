@@ -16,7 +16,6 @@ class SiteHeader extends Component {
 
     componentDidMount() {
         if (!this.state.profileImgSrc) {
-            console.log(this.props);
             const url = "/user/" + this.props.userInfo.userId + "/profile/image";
             axios({method: 'GET', url: url})
                 .then(response => {

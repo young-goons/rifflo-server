@@ -43,7 +43,7 @@ def upload_post():
     """
     user = get_jwt_identity()
     user_id = user['userId']
-    file = request.files['songFile']
+    song_file = request.files['songFile']
 
     # file is saved in SONG_STORAGE_PATH/userid/.mp3
     if not os.path.isdir(
@@ -51,54 +51,56 @@ def upload_post():
         os.makedirs(os.path.join(app.config["SONG_STORAGE_PATH"],
                                  str(user_id)),
                     exist_ok=True)
-    song_file_path = os.path.join(app.config["SONG_STORAGE_PATH"],
-                                  str(user_id), secure_filename(file.filename))
+    song_local_path = os.path.join(app.config["SONG_STORAGE_PATH"],
+                                   str(user_id),
+                                   secure_filename(song_file.filename))
+    song_s3_path = os.path.join(str(user_id),
+                                secure_filename(song_file.filename))
+
     # TODO: instead of checking if the filename is the same, not insert into table if
     #       the song_name already exists
-    if not os.path.exists(song_file_path):
-        file.save(song_file_path)
+    if not os.path.exists(song_local_path):
+        song_file.save(song_local_path)
 
     # cut the audio file and save it to the storage
-    if file.filename[-4:] == ".mp3":
+    if song_file.filename[-4:] == ".mp3":
         file_format = 'mp3'
-    elif file.filename[-4:] == ".wav":
+    elif song_file.filename[-4:] == ".wav":
         file_format = 'wav'
 
     # TODO: directly used the file passed on instead of reading it from the local? (maybe not necessary)
-    full_song = AudioSegment.from_file(song_file_path, format=file_format)
+    full_song = AudioSegment.from_file(song_local_path, format=file_format)
     clip = full_song[int(float(request.form['clipStart']) *
                          1000):int(float(request.form['clipEnd']) * 1000)]
-    clip_name = file.filename[:-4] + "_" + request.form[
-        'clipStart'] + "_" + request.form['clipEnd'] + file.filename[-4:]
-
-    clip_path = os.path.join(str(user_id), secure_filename(clip_name))
-
-    
-
+    clip_name = song_file.filename[:-4] + "_" + request.form[
+        'clipStart'] + "_" + request.form['clipEnd'] + song_file.filename[-4:]
+    clip_s3_path = os.path.join(str(user_id), secure_filename(clip_name))
 
     if not os.path.isdir(
             os.path.join(app.config["CLIP_STORAGE_PATH"], str(user_id))):
         os.makedirs(os.path.join(app.config["CLIP_STORAGE_PATH"],
                                  str(user_id)),
                     exist_ok=True)
-    clip_file_path = os.path.join(app.config["CLIP_STORAGE_PATH"],
-                                  str(user_id), secure_filename(clip_name))
-
-    if not os.path.exists(clip_file_path):
-        clip.export(clip_file_path, format=file_format)
-
-
+    clip_local_path = os.path.join(app.config["CLIP_STORAGE_PATH"],
+                                   str(user_id), secure_filename(clip_name))
+    if not os.path.exists(clip_local_path):
+        clip.export(clip_local_path, format=file_format)
 
     if request.form['date']:
         release_date = request.form['date']
     else:
         release_date = None
 
+    if request.form['date']:
+        song_album = request.form['album']
+    else:
+        song_album = None
+
     with flask.g.pymysql_db.cursor() as cursor:
         sql = "INSERT INTO tbl_song_info (song_name, artist, release_date, album) " \
               "VALUES (%s, %s, %s, %s)"
         cursor.execute(sql, (request.form['track'], request.form['artist'],
-                             release_date, request.form['album']))
+                             release_date, song_album))
         song_id = cursor.lastrowid
         post_id = None
         if song_id:
@@ -108,11 +110,26 @@ def upload_post():
             cursor.execute(
                 sql, (user_id, request.form['content'], request.form['tags'],
                       song_id, request.form['clipStart'],
-                      request.form['clipEnd'], clip_file_path, song_file_path))
+                      request.form['clipEnd'], clip_s3_path, song_s3_path))
             post_id = cursor.lastrowid
 
     if song_id and post_id:
+        # upload song to s3
+        with open(song_local_path, 'rb') as data:
+            helpers.s3.upload_fileobj(song_file,
+                                      app.config['S3_BUCKET_SONG'],
+                                      song_s3_path,
+                                      ExtraArgs={"ContentType": file_format})
+        # upload clip to s3
+        with open(clip_local_path, 'rb') as data:
+            helpers.s3.upload_fileobj(data,
+                                      app.config['S3_BUCKET_CLIP'],
+                                      clip_s3_path,
+                                      ExtraArgs={"ContentType": file_format})
+
         flask.g.pymysql_db.commit()
+        os.remove(song_local_path)
+        os.remove(clip_local_path)
         return make_response(jsonify({
             'postId': post_id,
             'songId': song_id

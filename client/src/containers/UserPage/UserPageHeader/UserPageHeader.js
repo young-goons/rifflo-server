@@ -72,7 +72,6 @@ class UserPageHeader extends Component {
             })
             .catch(error => {
                 console.log(error);
-                alert(error);
             });
     };
 
@@ -86,7 +85,6 @@ class UserPageHeader extends Component {
             })
             .catch(error => {
                 console.log(error);
-                alert(error);
             });
     };
 

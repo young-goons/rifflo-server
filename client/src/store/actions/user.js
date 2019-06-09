@@ -1,7 +1,6 @@
 import * as actionTypes from './actionTypes';
 
 import axios from '../../shared/axios';
-import { BASE_URL } from "../../shared/config";
 
 export const loadUserPostsSuccess = (postArr) => {
     return {
