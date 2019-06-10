@@ -19,8 +19,13 @@ def get_clip(post_id):
         cursor.execute(sql, (post_id, ))
         query_result = cursor.fetchone()
     if query_result is not None:
-        file_name = query_result[0].split('/')[-1]
-        file_path = '/'.join(query_result[0].split('/')[:-1])
-        return send_from_directory(file_path, file_name, mimetype="audio/mpeg")
+        url = app.config['S3'].generate_presigned_url(
+            'get_object',
+            Params={
+                'Bucket': app.config['S3_BUCKET_CLIP'],
+                'Key': query_result[0]
+            },
+            ExpiresIn=100)
+        return make_response(jsonify({'url': url}), 200)
     else:
         return make_response(jsonify({'msg': 'Post id not found'}), 400)

@@ -26,7 +26,6 @@ class Feed extends Component {
     componentDidMount() {
         if (this.state.authUserId) {
             if (!this.props.authUserInfo) {
-                console.log("loading user info");
                 this.props.onLoadAuthUser(this.state.authUserId);
             }
         }
@@ -59,7 +58,6 @@ class Feed extends Component {
         console.log("load feed");
         axios({method: 'GET', url: url})
             .then(response => {
-                console.log(response.data);
                 let updatedState;
                 if (isNewLoad) {
                     updatedState = {
@@ -108,7 +106,6 @@ class Feed extends Component {
         const postArr = [];
         axios({method: 'GET', url: url})
             .then(response => {
-                console.log(response);
                 for (let i = 0; i < postIdArr.length; i++) {
                     if (postIdArr[i] in response.data.posts) {
                         postArr.push(response.data.posts[postIdArr[i]]);

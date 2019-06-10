@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { Sticky, Grid, Search, Icon, Image, List } from 'semantic-ui-react';
 
 import axios from '../../shared/axios';
-import { BASE_URL } from "../../shared/config";
 import styles from './SiteHeader.module.css';
 import { signOut } from '../../store/actions/auth';
 import { resetUser } from '../../store/actions/user';
@@ -17,11 +16,10 @@ class SiteHeader extends Component {
 
     componentDidMount() {
         if (!this.state.profileImgSrc) {
-            console.log(this.props);
             const url = "/user/" + this.props.userInfo.userId + "/profile/image";
             axios({method: 'GET', url: url})
                 .then(response => {
-                    this.setState({profileImgSrc: BASE_URL + url + "?" + Date.now()});
+                    this.setState({profileImgSrc: response.data.url + "&" + Date.now()});
                 })
                 .catch(error => {
                     console.log(error);

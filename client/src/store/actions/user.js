@@ -1,7 +1,6 @@
 import * as actionTypes from './actionTypes';
 
 import axios from '../../shared/axios';
-import { BASE_URL } from "../../shared/config";
 
 export const loadUserPostsSuccess = (postArr) => {
     return {
@@ -135,7 +134,8 @@ export const loadUserProfileImage = (userId) => {
         let url = "/user/" + userId + "/profile/image";
         axios({method: 'GET', url: url})
             .then(response => {
-                dispatch(loadUserProfileImageSuccess(BASE_URL + url + "?" + Date.now()));
+                console.log(response.data);
+                dispatch(loadUserProfileImageSuccess(response.data.url + "&" + Date.now()));
             })
             .catch(error => {
                 dispatch(loadUserProfileImageFail());
@@ -152,7 +152,8 @@ export const uploadUserProfileImage = (userId, formData) => {
         };
         axios({method: 'POST', url: url, headers: requestHeaders, data: formData})
             .then(response => {
-                dispatch(loadUserProfileImageSuccess(BASE_URL + url + "?" + Date.now()));
+                console.log(response);
+                dispatch(loadUserProfileImageSuccess(response.data.url + "&" + Date.now()));
             })
             .catch(error => {
                 console.log(error);
@@ -178,7 +179,7 @@ export const loadUserHeaderImage = (userId) => {
         let url = "/user/" + userId + "/header/image";
         axios({method: 'GET', url: url})
             .then(response => {
-                dispatch(loadUserHeaderImageSuccess(BASE_URL + url + "?" + Date.now()));
+                dispatch(loadUserHeaderImageSuccess(response.data.url));
             })
             .catch(error => {
                 dispatch(loadUserHeaderImageFail());
@@ -195,7 +196,7 @@ export const uploadUserHeaderImage = (userId, formData) => {
         };
         axios({method: 'POST', url: url, headers: requestHeaders, data: formData})
             .then(response => {
-                dispatch(loadUserHeaderImageSuccess(BASE_URL + url + "?" + Date.now()));
+                dispatch(loadUserHeaderImageSuccess(response.data.url));
             })
             .catch(error => {
                 console.log(error);

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {Grid, List, Image, Button} from 'semantic-ui-react';
 
 import axios from '../../../../shared/axios';
-import { BASE_URL } from "../../../../shared/config";
 import styles from './SuggestedUser.module.css';
 import profileImg from '../../../../resources/defaultProfileImage.jpg';
 
@@ -43,7 +42,7 @@ class SuggestedUser extends Component {
         const url = "/user/" + userId + "/profile/image";
         axios({method: 'GET', url: url})
             .then(response => {
-                this.setState({profileImgSrc: BASE_URL + url + "?" + Date.now()});
+                this.setState({profileImgSrc: response.data.url + "&" + Date.now()});
             })
             .catch(error => {
                 this.setState({profileImgSrc: null})
