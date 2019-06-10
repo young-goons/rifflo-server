@@ -1,4 +1,4 @@
-# young-goons [![Build Status](https://travis-ci.org/young-goons/rifflo.svg)](https://travis-ci.com/young-goons/rifflo)
+# young-goons [![Build Status](https://travis-ci.com/young-goons/rifflo.svg?branch=master)](https://travis-ci.com/young-goons/rifflo)
 
 ## Prerequisites
 
