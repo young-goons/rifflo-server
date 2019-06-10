@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Icon, Button } from 'semantic-ui-react';
 
+import axios from '../../../shared/axios';
 import { uploadSong } from '../../../store/actions/upload';
 import { getEndTimeStr, getCurrentTimeStr,
-    getCurrentTimeFloatStr, convertTimeStrToTime } from "../../../shared/musicUtils";
+         getCurrentTimeFloatStr, convertTimeStrToTime } from "../../../shared/musicUtils";
 import { DEFAULT_CLIP_LENGTH } from "../../../shared/config";
 import SongInfoEditor from "./SongInfoEditor";
 import styles from './SongUploader.module.css';
@@ -20,6 +21,7 @@ class SongUploader extends Component {
             artist: '',
             album: '',
             releaseDate: '',
+            spotifyUrl: '',
             youtubeUrl: '',
             soundcloudUrl: '',
             bandcampUrl: '',
@@ -40,9 +42,25 @@ class SongUploader extends Component {
     audioRef = React.createRef();
 
     trackInputHandler = (event) => {
+        if (event.target.value.length > 3) {
+            const url = "/song";
+            const params = {
+                title: event.target.value,
+                // artist: this.state.songInfo.artist,
+                numResults: 5
+            };
+            // axios({method: 'GET', url: url, params: params})
+            //     .then(response => {
+            //         console.log(response.data);
+            //     })
+            //     .catch(error => {
+            //         console.log(error);
+            //     });
+        }
         this.setState({
             songInfo: { ...this.state.songInfo, track: event.target.value }
         });
+
     };
 
     artistInputHandler = (event) => {
@@ -60,6 +78,12 @@ class SongUploader extends Component {
     releaseDateInputHandler = (event) => {
         this.setState({
             songInfo: { ...this.state.songInfo, releaseDate: event.target.value }
+        });
+    };
+
+    spotifyUrlHandler = (event) => {
+        this.setState({
+            songInfo: { ...this.state.songInfo, spotifyUrl: event.target.value }
         });
     };
 
@@ -263,6 +287,8 @@ class SongUploader extends Component {
                     albumInputHandler={this.albumInputHandler}
                     releaseDate={this.state.songInfo.releaseDate}
                     releaseDateInputHandler={this.releaseDateInputHandler}
+                    spotifyUrl={this.state.songInfo.spotifyUrl}
+                    spotifyUrlHandler={this.spotifyUrlHandler}
                     youtubeUrl={this.state.songInfo.youtubeUrl}
                     youtubeUrlHandler={this.youtubeUrlHandler}
                     soundcloudUrl={this.state.songInfo.soundcloudUrl}
