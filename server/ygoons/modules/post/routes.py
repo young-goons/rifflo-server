@@ -116,16 +116,18 @@ def upload_post():
     if song_id and post_id:
         # upload song to s3
         with open(song_local_path, 'rb') as data:
-            helpers.s3.upload_fileobj(song_file,
-                                      app.config['S3_BUCKET_SONG'],
-                                      song_s3_path,
-                                      ExtraArgs={"ContentType": file_format})
+            app.config['S3'].upload_fileobj(
+                song_file,
+                app.config['S3_BUCKET_SONG'],
+                song_s3_path,
+                ExtraArgs={"ContentType": file_format})
         # upload clip to s3
         with open(clip_local_path, 'rb') as data:
-            helpers.s3.upload_fileobj(data,
-                                      app.config['S3_BUCKET_CLIP'],
-                                      clip_s3_path,
-                                      ExtraArgs={"ContentType": file_format})
+            app.config['S3'].upload_fileobj(
+                data,
+                app.config['S3_BUCKET_CLIP'],
+                clip_s3_path,
+                ExtraArgs={"ContentType": file_format})
 
         flask.g.pymysql_db.commit()
         os.remove(song_local_path)

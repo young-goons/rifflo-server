@@ -7,6 +7,7 @@ from flask import request, jsonify, make_response, send_from_directory
 from flask import current_app as app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
+import boto3
 
 from ygoons.modules.user import blueprint, helpers, feed, svd
 
@@ -286,7 +287,7 @@ def get_user_profile_image(user_id):
     query_result = helpers.get_profile_picture_path(user_id)
     if query_result is not None:
         # TODO(daniel): use this URL instead of the filesystem
-        url = helpers.s3.generate_presigned_url(
+        url = app.config['S3'].generate_presigned_url(
             'get_object',
             Params={
                 'Bucket': app.config['S3_BUCKET_IMAGE'],
@@ -313,19 +314,19 @@ def upload_user_profile_image(user_id):
 
     image_file_path = os.path.join(str(user_id),
                                    secure_filename(image.filename))
-    helpers.s3.upload_fileobj(image,
-                              app.config['S3_BUCKET_IMAGE'],
-                              image_file_path,
-                              ExtraArgs={"ContentType": image.content_type})
+    app.config['S3'].upload_fileobj(
+        image,
+        app.config['S3_BUCKET_IMAGE'],
+        image_file_path,
+        ExtraArgs={"ContentType": image.content_type})
 
-    url = helpers.s3.generate_presigned_url('get_object',
-                                            Params={
-                                                'Bucket':
-                                                app.config['S3_BUCKET_IMAGE'],
-                                                'Key':
-                                                image_file_path
-                                            },
-                                            ExpiresIn=100)
+    url = app.config['S3'].generate_presigned_url(
+        'get_object',
+        Params={
+            'Bucket': app.config['S3_BUCKET_IMAGE'],
+            'Key': image_file_path
+        },
+        ExpiresIn=100)
 
     row_cnt = helpers.upload_profile_picture(user_id, image_file_path)
     if row_cnt == 1:
@@ -358,7 +359,7 @@ def delete_user_profile_image(user_id):
 def get_user_header_image(user_id):
     query_result = helpers.get_header_picture_path(user_id)
     if query_result is not None:
-        url = helpers.s3.generate_presigned_url(
+        url = app.config['S3'].generate_presigned_url(
             'get_object',
             Params={
                 'Bucket': app.config['S3_BUCKET_IMAGE'],
@@ -386,19 +387,19 @@ def upload_user_header_image(user_id):
 
     image_file_path = os.path.join(str(user_id),
                                    secure_filename(image.filename))
-    helpers.s3.upload_fileobj(image,
-                              app.config['S3_BUCKET_IMAGE'],
-                              image_file_path,
-                              ExtraArgs={"ContentType": image.content_type})
+    app.config['S3'].upload_fileobj(
+        image,
+        app.config['S3_BUCKET_IMAGE'],
+        image_file_path,
+        ExtraArgs={"ContentType": image.content_type})
 
-    url = helpers.s3.generate_presigned_url('get_object',
-                                            Params={
-                                                'Bucket':
-                                                app.config['S3_BUCKET_IMAGE'],
-                                                'Key':
-                                                image_file_path
-                                            },
-                                            ExpiresIn=100)
+    url = app.config['S3'].generate_presigned_url(
+        'get_object',
+        Params={
+            'Bucket': app.config['S3_BUCKET_IMAGE'],
+            'Key': image_file_path
+        },
+        ExpiresIn=100)
 
     row_cnt = helpers.upload_header_picture(user_id, image_file_path)
     if row_cnt == 1:

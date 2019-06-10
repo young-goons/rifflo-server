@@ -19,7 +19,7 @@ def get_clip(post_id):
         cursor.execute(sql, (post_id, ))
         query_result = cursor.fetchone()
     if query_result is not None:
-        url = helpers.s3.generate_presigned_url(
+        url = app.config['S3'].generate_presigned_url(
             'get_object',
             Params={
                 'Bucket': app.config['S3_BUCKET_CLIP'],

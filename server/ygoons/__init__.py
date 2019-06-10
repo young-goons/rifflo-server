@@ -8,6 +8,7 @@ from flask_jwt_extended import JWTManager
 from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 jwt_required, jwt_refresh_token_required,
                                 get_jwt_identity)
+import boto3
 import pymysql
 
 try:
@@ -40,6 +41,10 @@ app.config['S3_BUCKET_CLIP'] = config.S3_BUCKET_CLIP
 app.config['S3_BUCKET_SONG'] = config.S3_BUCKET_SONG
 app.config['S3_SECRET'] = config.S3_SECRET
 app.config['S3_KEY'] = config.S3_KEY
+app.config['S3'] = boto3.client("s3",
+                                aws_access_key_id=config.S3_KEY,
+                                aws_secret_access_key=config.S3_SECRET,
+                                region_name="us-west-2")
 jwt = JWTManager(app)
 
 
