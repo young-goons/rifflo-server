@@ -38,7 +38,7 @@ class SiteHeader extends Component {
                 <div className={styles.stickyDiv}>
                     <Grid verticalAlign="middle">
                         <Grid.Column width={4} textAlign="right">
-                            <a href="/">App Name</a>
+                            <a href="/">Rifflo</a>
                         </Grid.Column>
                         <Grid.Column width={8} className={styles.centerColumn}>
                             <Search size="tiny" placeholder="Search Users & Playlists"/>
