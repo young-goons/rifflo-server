@@ -15,3 +15,6 @@ IMAGE_STORAGE_PATH = '../../storage/image_storage'
 
 S3_KEY = 'S3_DUMMY_ACCESS_KEY'
 S3_SECRET = 'S3_DUMMY_SECRET_KEY'
+S3_BUCKET_IMAGE = 'rifflo-image-storage'
+S3_BUCKET_CLIP = 'rifflo-clip-storage'
+S3_BUCKET_SONG = 'rifflo-song-storage'
