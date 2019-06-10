@@ -5,7 +5,7 @@ import axios from '../../../../shared/axios';
 import styles from './Comment.module.css';
 import { convertDateToStr } from "../../../../shared/dateUtils";
 import profileImg from '../../../../resources/defaultProfileImage.jpg';
-import { BASE_URL, DEFAULT_REPLY_LOAD_NUM } from "../../../../shared/config";
+import { DEFAULT_REPLY_LOAD_NUM } from "../../../../shared/config";
 
 class Comment extends Component {
     state = {
@@ -25,7 +25,7 @@ class Comment extends Component {
             const url = "/user/" + this.props.comment.userId + "/profile/image";
             axios({method: 'GET', url: url})
                 .then(response => {
-                    this.setState({profileImgSrc: BASE_URL + url + "?" + Date.now()});
+                    this.setState({profileImgSrc: response.data.url + "&" + Date.now()});
                 })
                 .catch(error => {
                     console.log(error);

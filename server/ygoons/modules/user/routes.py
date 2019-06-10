@@ -7,6 +7,7 @@ from flask import request, jsonify, make_response, send_from_directory
 from flask import current_app as app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
+import boto3
 
 from ygoons.modules.user import blueprint, helpers, feed, svd
 
@@ -285,9 +286,15 @@ def upload_full_song_history(post_id):
 def get_user_profile_image(user_id):
     query_result = helpers.get_profile_picture_path(user_id)
     if query_result is not None:
-        file_name = query_result.split('/')[-1]
-        file_path = '/'.join(query_result.split('/')[:-1])
-        return send_from_directory(file_path, file_name, mimetype='image/jpeg')
+        # TODO(daniel): use this URL instead of the filesystem
+        url = app.config['S3'].generate_presigned_url(
+            'get_object',
+            Params={
+                'Bucket': app.config['S3_BUCKET_IMAGE'],
+                'Key': query_result
+            },
+            ExpiresIn=100)
+        return make_response(jsonify({'url': url}), 200)
     else:
         return make_response(jsonify({'msg': "user_id is not found"}), 400)
 
@@ -305,20 +312,27 @@ def upload_user_profile_image(user_id):
 
     image = request.files['file']
 
-    if not os.path.isdir(
-            os.path.join(app.config["IMAGE_STORAGE_PATH"], str(user_id))):
-        os.makedirs(os.path.join(app.config["IMAGE_STORAGE_PATH"],
-                                 str(user_id)),
-                    exist_ok=True)
-    image_file_path = os.path.join(app.config['IMAGE_STORAGE_PATH'],
-                                   str(user_id),
+    image_file_path = os.path.join(str(user_id),
                                    secure_filename(image.filename))
-    image.save(image_file_path)
+    app.config['S3'].upload_fileobj(
+        image,
+        app.config['S3_BUCKET_IMAGE'],
+        image_file_path,
+        ExtraArgs={"ContentType": image.content_type})
+
+    url = app.config['S3'].generate_presigned_url(
+        'get_object',
+        Params={
+            'Bucket': app.config['S3_BUCKET_IMAGE'],
+            'Key': image_file_path
+        },
+        ExpiresIn=100)
 
     row_cnt = helpers.upload_profile_picture(user_id, image_file_path)
     if row_cnt == 1:
         flask.g.pymysql_db.commit()
-    return make_response(jsonify({'success': True}), 200)
+
+    return make_response(jsonify({'url': url}), 200)
 
 
 @blueprint.route('/user/<int:user_id>/profile/image', methods=['DELETE'])
@@ -331,13 +345,6 @@ def delete_user_profile_image(user_id):
                 'msg': "Authorization failed",
                 'success': False
             }), 400)
-
-    image_path = helpers.get_profile_picture_path(user_id)
-    if image_path is None:
-        return make_response(
-            jsonify({'msg': "Profile picture does not exist"}), 400)
-    else:
-        os.remove(image_path)
 
     row_cnt = helpers.delete_profile_picture(user_id)
     if row_cnt == 1:
@@ -352,9 +359,15 @@ def delete_user_profile_image(user_id):
 def get_user_header_image(user_id):
     query_result = helpers.get_header_picture_path(user_id)
     if query_result is not None:
-        file_name = query_result.split('/')[-1]
-        file_path = '/'.join(query_result.split('/')[:-1])
-        return send_from_directory(file_path, file_name, mimetype='image/jpeg')
+        url = app.config['S3'].generate_presigned_url(
+            'get_object',
+            Params={
+                'Bucket': app.config['S3_BUCKET_IMAGE'],
+                'Key': query_result
+            },
+            ExpiresIn=100)
+        return make_response(jsonify({'url': url}), 200)
+
     else:
         return make_response(jsonify({'msg': "user_id is not found"}), 400)
 
@@ -372,20 +385,26 @@ def upload_user_header_image(user_id):
 
     image = request.files['file']
 
-    if not os.path.isdir(
-            os.path.join(app.config["IMAGE_STORAGE_PATH"], str(user_id))):
-        os.makedirs(os.path.join(app.config["IMAGE_STORAGE_PATH"],
-                                 str(user_id)),
-                    exist_ok=True)
-    image_file_path = os.path.join(app.config['IMAGE_STORAGE_PATH'],
-                                   str(user_id),
+    image_file_path = os.path.join(str(user_id),
                                    secure_filename(image.filename))
-    image.save(image_file_path)
+    app.config['S3'].upload_fileobj(
+        image,
+        app.config['S3_BUCKET_IMAGE'],
+        image_file_path,
+        ExtraArgs={"ContentType": image.content_type})
+
+    url = app.config['S3'].generate_presigned_url(
+        'get_object',
+        Params={
+            'Bucket': app.config['S3_BUCKET_IMAGE'],
+            'Key': image_file_path
+        },
+        ExpiresIn=100)
 
     row_cnt = helpers.upload_header_picture(user_id, image_file_path)
     if row_cnt == 1:
         flask.g.pymysql_db.commit()
-    return make_response(jsonify({'success': True}), 200)
+    return make_response(jsonify({'url': url}), 200)
 
 
 @blueprint.route('/user/<int:user_id>/header/image', methods=['DELETE'])
@@ -398,13 +417,6 @@ def delete_user_header_image(user_id):
                 'msg': "Authorization failed",
                 'success': False
             }), 400)
-
-    image_path = helpers.get_header_picture_path(user_id)
-    if image_path is None:
-        return make_response(jsonify({'msg': "Header image does not exist"}),
-                             200)
-    else:
-        os.remove(image_path)
 
     row_cnt = helpers.delete_header_picture(user_id)
     if row_cnt == 1:

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Grid, Image, Input, Icon } from 'semantic-ui-react';
 
 import axios from '../../../shared/axios';
-import { BASE_URL } from "../../../shared/config";
 import styles from './Post.module.css';
 import Comment from './Comment/Comment';
 import { convertDateToStr } from "../../../shared/dateUtils";
@@ -29,7 +28,7 @@ class Post extends Component {
             const url = "/user/" + this.props.userId + "/profile/image";
             axios({method: 'GET', url: url})
                 .then(response => {
-                    this.setState({profileImgSrc: BASE_URL + url + "?" + Date.now()});
+                    this.setState({profileImgSrc: response.data.url + "&" + Date.now()});
                 })
                 .catch(error => {
                     console.log(error);

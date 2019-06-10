@@ -72,7 +72,6 @@ class UserPageHeader extends Component {
             })
             .catch(error => {
                 console.log(error);
-                alert(error);
             });
     };
 
@@ -86,7 +85,6 @@ class UserPageHeader extends Component {
             })
             .catch(error => {
                 console.log(error);
-                alert(error);
             });
     };
 
@@ -155,7 +153,7 @@ class UserPageHeader extends Component {
         let headerImgModal, headerImg;
         let editInfoModal, editInfoIcon;
         let userInfoModal, userInfoIcon;
-        if (this.props.authUserId !== this.props.userId) {
+        if (this.props.userId && this.props.authUserId !== this.props.userId) {
             followButtonDiv = (
                 <div className={styles.followButtonDiv}>
                     <Button as='div' labelPosition='right' size='large' compact className={styles.followButton}>

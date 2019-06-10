@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Grid, Image, Modal, Icon, Container, Input, Dropdown, Message } from 'semantic-ui-react';
 
 import axios from '../../../shared/axios';
-import { BASE_URL } from "../../../shared/config";
 import styles from './Post.module.css';
 import profileImg from '../../../resources/defaultProfileImage.jpg';
 import FullSongModal from './FullSongModal/FullSongModal';
@@ -18,7 +17,7 @@ class Post extends Component {
         isFollowed: null,
         followerCnt: null,
         commentPreviewArr: null,
-        audioReady: false,
+        audioUrl: null,
         startedPlaying: false,
         isPlayed: false,
         isPlaying: false,
@@ -60,14 +59,13 @@ class Post extends Component {
                     console.log(error);
                 });
         }
-        if (!this.state.audioReady) {
+        if (!this.state.audioUrl) {
             url = "/clip/" + this.props.postId;
             axios({method: 'GET', url: url})
                 .then(response => {
-                    this.setState({audioReady: true});
+                    this.setState({audioUrl: response.data.url});
                 })
                 .catch(error => {
-                    console.log(error);
                     console.log(error);
                 });
         }
@@ -75,7 +73,7 @@ class Post extends Component {
             url = "/user/" + this.props.userId + "/profile/image";
             axios({method: 'GET', url})
                 .then(response => {
-                    this.setState({profileImgSrc: BASE_URL + url + "?" + Date.now()});
+                    this.setState({profileImgSrc: response.data.url + "&" + Date.now()});
                 })
                 .catch(error => {
                     console.log(error);
@@ -242,8 +240,8 @@ class Post extends Component {
         }
 
         let audioDiv = null;
-        if (this.state.audioReady) {
-            audioDiv = <audio src={BASE_URL + "/clip/" + this.props.postId}
+        if (this.state.audioUrl) {
+            audioDiv = <audio src={this.state.audioUrl}
                               ref={this.audioRef} onTimeUpdate={this.initProgressBar}
                               onEnded={this.onAudioEnd}/>;
         }
@@ -284,7 +282,7 @@ class Post extends Component {
         }
 
         let reportModal;
-        if (this.state.audioReady) {
+        if (this.state.audioUrl) {
             reportModal = (
                 <Modal open={this.state.reportModalOpen} onClose={this.reportHandleClose} size="tiny">
                     <ReportModal

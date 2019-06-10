@@ -1,6 +1,7 @@
 # Helper functions for user module
 
 import flask
+
 from ygoons.modules.user import feed, follow_suggest
 
 

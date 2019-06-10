@@ -31,24 +31,34 @@ class SongInfoEditor extends Component {
                                value={this.props.artist} onChange={this.props.artistInputHandler}/>
                     </Grid.Column>
                 </Grid.Row>
+                {/*<Grid.Row className={styles.inputRow}>*/}
+                {/*    <Grid.Column width="3" verticalAlign="middle" textAlign="center" className={styles.labelColumn}>*/}
+                {/*        <span className={styles.labelSpan}>Album</span>*/}
+                {/*    </Grid.Column>*/}
+                {/*    <Grid.Column width="12" className={styles.inputColumn}>*/}
+                {/*        <Input fluid size="small" type="text" className={styles.songInfoInput}*/}
+                {/*               placeholder="Name of the Album"*/}
+                {/*               value={this.props.album} onChange={this.props.albumInputHandler}/>*/}
+                {/*    </Grid.Column>*/}
+                {/*</Grid.Row>*/}
+                {/*<Grid.Row className={styles.inputRow}>*/}
+                {/*    <Grid.Column width="3" verticalAlign="middle" textAlign="center" className={styles.labelColumn}>*/}
+                {/*        <span className={styles.labelSpan}>Date</span>*/}
+                {/*    </Grid.Column>*/}
+                {/*    <Grid.Column width="12" className={styles.inputColumn}>*/}
+                {/*        <Input fluid size="small" type="text" className={styles.songInfoInput}*/}
+                {/*               placeholder="Date of Song Release (MM.DD.YYYY)"*/}
+                {/*               value={this.props.releaseDate} onChange={this.props.releaseDateInputHandler}/>*/}
+                {/*    </Grid.Column>*/}
+                {/*</Grid.Row>*/}
                 <Grid.Row className={styles.inputRow}>
                     <Grid.Column width="3" verticalAlign="middle" textAlign="center" className={styles.labelColumn}>
-                        <span className={styles.labelSpan}>Album</span>
+                        <span className={styles.labelSpan}>Spotify</span>
                     </Grid.Column>
                     <Grid.Column width="12" className={styles.inputColumn}>
                         <Input fluid size="small" type="text" className={styles.songInfoInput}
-                               placeholder="Name of the Album"
-                               value={this.props.album} onChange={this.props.albumInputHandler}/>
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row className={styles.inputRow}>
-                    <Grid.Column width="3" verticalAlign="middle" textAlign="center" className={styles.labelColumn}>
-                        <span className={styles.labelSpan}>Date</span>
-                    </Grid.Column>
-                    <Grid.Column width="12" className={styles.inputColumn}>
-                        <Input fluid size="small" type="text" className={styles.songInfoInput}
-                               placeholder="Date of Song Release (MM.DD.YYYY)"
-                               value={this.props.releaseDate} onChange={this.props.releaseDateInputHandler}/>
+                               placeholder="Spotify URL of the Song"
+                               value={this.props.spotifyUrl} onChange={this.props.spotifyUrlHandler}/>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row className={styles.inputRow}>

@@ -10,7 +10,8 @@ import flask
 from flask import request, jsonify, make_response
 
 from ygoons.modules.song import blueprint, helpers
-import fuzzywuzzy as fw
+# import fuzzywuzzy as fw
+from fuzzywuzzy import process
 
 DEFAULT_NUM_RESULTS = 10
 
@@ -41,10 +42,10 @@ def get_search_results():
     # TODO: move to helper function
     results = []
     if len(title_key) > 3 or len(artist_key) > 3:
-        similar_songs = get_similar_songs(title_key, artist_key)
+        similar_songs = helpers.get_similar_songs(title_key, artist_key)
         # Fuzzy match song names
         songs = [s[1] for s in similar_songs]
-        temp = fw.process(key, songs, limit=num_results)
+        temp = process(title_key, songs, limit=num_results)
         for t, score in temp:
             for s in similar_songs:
                 if s[0] == t:

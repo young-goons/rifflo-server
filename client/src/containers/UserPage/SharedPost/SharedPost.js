@@ -3,11 +3,10 @@ import { Grid, Icon } from 'semantic-ui-react';
 
 import styles from './SharedPost.module.css';
 import axios from '../../../shared/axios';
-import { BASE_URL } from "../../../shared/config";
 
 class SharedPost extends Component {
     state = {
-        audioReady: false,
+        audioUrl: null,
         isPlayed: false,
         isPlaying: false,
         progressPercent: 0,
@@ -18,11 +17,11 @@ class SharedPost extends Component {
     audioRef = React.createRef();
 
     componentDidMount() {
-        if (!this.state.audioReady) {
+        if (!this.state.audioUrl) {
             const url = "/clip/" + this.props.postId;
             axios({method: 'GET', url: url})
                 .then(response => {
-                    this.setState({audioReady: true});
+                    this.setState({audioUrl: response.data.url});
                 })
                 .catch(error => {
                     console.log(error);
@@ -127,8 +126,8 @@ class SharedPost extends Component {
 
     render () {
         let audioDiv = null;
-        if (this.state.audioReady) {
-            audioDiv = <audio src={BASE_URL + "/clip/" + this.props.postId}
+        if (this.state.audioUrl) {
+            audioDiv = <audio src={this.state.audioUrl}
                               ref={this.audioRef} onTimeUpdate={this.initProgressBar}
                               onEnded={this.onAudioEnd}/>
         }
