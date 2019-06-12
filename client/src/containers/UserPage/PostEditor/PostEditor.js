@@ -48,8 +48,8 @@ class PostEditor extends Component {
     // TODO: error handling (if the content is too long)
     sharePostHandler = () => {
         if (this.state.isSongUploaded) {
-            this.props.onSharePost(this.props.songFile, this.props.clipRange, this.props.songInfo,
-                                   this.state.content, this.state.tags);
+            this.props.onSharePost(this.props.songFile, this.props.clipRange, this.props.songId,
+                                   this.props.songInfo, this.state.content, this.state.tags);
             this.setState({isSongUploaded: false, content: '', tags: ''});
         } else {
             alert("Song not uploaded");
@@ -164,6 +164,7 @@ const mapStateToProps = state => {
     return {
         songFile: state.upload.songFile,
         clipRange: state.upload.clipRange,
+        songId: state.upload.songId,
         songInfo: state.upload.songInfo,
         newPostId: state.upload.newPostId
     };
@@ -171,7 +172,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onSharePost: (songFile, clipRange, songInfo, postContent, tags) => dispatch(sharePost(songFile, clipRange, songInfo, postContent, tags))
+        onSharePost: (songFile, clipRange, songId, songInfo, postContent, tags) => dispatch(sharePost(songFile, clipRange, songId, songInfo, postContent, tags))
     };
 };
 

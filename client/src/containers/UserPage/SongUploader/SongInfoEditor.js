@@ -16,7 +16,7 @@ class SongInfoEditor extends Component {
                     <Grid.Column width="12" className={styles.inputColumn}>
                         <Input fluid size="small" type="text" className={styles.songInfoInput}
                                error={this.props.track === '' ? true : false}
-                               placeholder="Name of the Track (Required)"
+                               placeholder="Name of the Track (Required)" required
                                value={this.props.track} onChange={this.props.trackInputHandler}/>
                     </Grid.Column>
                 </Grid.Row>
@@ -27,7 +27,7 @@ class SongInfoEditor extends Component {
                     <Grid.Column width="12" className={styles.inputColumn}>
                         <Input fluid size="small" type="text" className={styles.songInfoInput}
                                error={this.props.artist === '' ? true : false}
-                               placeholder="Name of the Artist (Required)"
+                               placeholder="Name of the Artist (Required)" required
                                value={this.props.artist} onChange={this.props.artistInputHandler}/>
                     </Grid.Column>
                 </Grid.Row>

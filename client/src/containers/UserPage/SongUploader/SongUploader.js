@@ -28,6 +28,7 @@ class SongUploader extends Component {
             applemusicUrl: '',
             termsChecked: false
         },
+        songId: null,
         candidateArr: [],
         candidateBoxOn: false,
         src: null,
@@ -46,33 +47,42 @@ class SongUploader extends Component {
 
     trackInputHandler = (event) => {
         if (event.target.value.length > 3) {
-            const url = "/song";
-            const params = {
-                title: event.target.value,
-                // artist: this.state.songInfo.artist,
-                numResults: 10
-            };
-            axios({method: 'GET', url: url, params: params})
-                .then(response => {
-                    this.setState({
-                        candidateBoxOn: true,
-                        candidateArr: response.data.results
-                    });
-                })
-                .catch(error => {
-                    console.log(error);
-                });
+            this.getCandidates(event.target.value, this.state.songInfo.artist);
         }
         this.setState({
-            songInfo: { ...this.state.songInfo, track: event.target.value }
+            songInfo: { ...this.state.songInfo, track: event.target.value },
+            songId: null
         });
 
     };
 
     artistInputHandler = (event) => {
+        if (this.state.songInfo.track.length > 3) {
+            this.getCandidates(this.state.songInfo.track, event.target.value);
+        }
         this.setState({
-            songInfo: { ...this.state.songInfo, artist: event.target.value }
+            songInfo: { ...this.state.songInfo, artist: event.target.value },
+            songId: null
         });
+    };
+
+    getCandidates = (title, artist) => {
+        const url = "/song";
+        const params = {
+            title: title,
+            artist: artist,
+            numResults: 10
+        };
+        axios({method: 'GET', url: url, params: params})
+            .then(response => {
+                this.setState({
+                    candidateBoxOn: true,
+                    candidateArr: response.data.results
+                });
+            })
+            .catch(error => {
+                console.log(error);
+            });
     };
 
     albumInputHandler = (event) => {
@@ -237,7 +247,7 @@ class SongUploader extends Component {
                 applemusicUrl: candidateInfo.applemusicUrl ? candidateInfo.applemusicUrl : '',
             },
             candidateBoxOn: false,
-
+            songId: candidateInfo.songId
         })
     };
 
@@ -256,7 +266,7 @@ class SongUploader extends Component {
                 startTime: this.state.startTime,
                 endTime: this.state.endTime
             };
-            this.props.onUploadSong(this.state.songFile, clipRange, this.state.songInfo);
+            this.props.onUploadSong(this.state.songFile, clipRange, this.state.songId, this.state.songInfo);
         }
     };
 
@@ -387,7 +397,7 @@ class SongUploader extends Component {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onUploadSong: (songFile, clipRange, songInfo) => dispatch(uploadSong(songFile, clipRange, songInfo))
+        onUploadSong: (songFile, clipRange, songId, songInfo) => dispatch(uploadSong(songFile, clipRange, songId, songInfo))
     };
 };
 

@@ -11,9 +11,9 @@ from pydub import AudioSegment
 
 from ygoons.modules.post import blueprint, helpers
 
-AudioSegment.converter = '/usr/bin/ffmpeg'
-AudioSegment.ffmpeg = '/usr/bin/ffmpeg'
-AudioSegment.ffprobe = '/usr/bin/ffprobe'
+#AudioSegment.converter = '/usr/bin/ffmpeg'
+#AudioSegment.ffmpeg = '/usr/bin/ffmpeg'
+#AudioSegment.ffprobe = '/usr/bin/ffprobe'
 
 
 # TODO - error handling
@@ -48,13 +48,8 @@ def upload_post():
     user = get_jwt_identity()
     user_id = user['userId']
     song_file = request.files['songFile']
+    song_id = request.args.get('songId')
 
-    # assume SONG_STORAGE_PATH already exists
-    # if not os.path.isdir(
-    #         os.path.join(app.config["SONG_STORAGE_PATH"], str(user_id))):
-    #     os.makedirs(os.path.join(app.config["SONG_STORAGE_PATH"],
-    #                              str(user_id)),
-    #                 exist_ok=True)
     if not os.path.isdir(app.config["SONG_STORAGE_PATH"]):
         os.makedirs(app.config["SONG_STORAGE_PATH"], exist_ok=True)
     song_local_path = os.path.join(
@@ -82,11 +77,6 @@ def upload_post():
         'clipStart'] + "_" + request.form['clipEnd'] + song_file.filename[-4:]
     clip_s3_path = os.path.join(str(user_id), secure_filename(clip_name))
 
-    # if not os.path.isdir(
-    #         os.path.join(app.config["CLIP_STORAGE_PATH"], str(user_id))):
-    #     os.makedirs(os.path.join(app.config["CLIP_STORAGE_PATH"],
-    #                              str(user_id)),
-    #                 exist_ok=True)
     if not os.path.isdir(app.config["CLIP_STORAGE_PATH"]):
         os.makedirs(app.config["CLIP_STORAGE_PATH"], exist_ok=True)
     clip_local_path = os.path.join(
@@ -95,23 +85,10 @@ def upload_post():
     if not os.path.exists(clip_local_path):
         clip.export(clip_local_path, format=file_format)
 
-    if request.form['date']:
-        release_date = request.form['date']
-    else:
-        release_date = None
-
-    if request.form['date']:
-        song_album = request.form['album']
-    else:
-        song_album = None
+    song_id = helpers.upload_song_info(song_id, request.form)
+    post_id = None
 
     with flask.g.pymysql_db.cursor() as cursor:
-        sql = "INSERT INTO tbl_song_info (song_name, artist, release_date, album) " \
-              "VALUES (%s, %s, %s, %s)"
-        cursor.execute(sql, (request.form['track'], request.form['artist'],
-                             release_date, song_album))
-        song_id = cursor.lastrowid
-        post_id = None
         if song_id:
             sql = "INSERT INTO tbl_post " \
                   "(user_id, content, tags, song_id, clip_start_time, clip_end_time, clip_path, song_path) " \

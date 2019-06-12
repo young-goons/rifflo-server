@@ -51,13 +51,14 @@ def get_search_results():
             for idx, s in enumerate(similar_songs):
                 if s[0] == t:
                     results.append({
-                        'title': s[0],
-                        'artist': s[1],
-                        'spotifyUrl': s[2],
-                        'applemusicUrl': s[3],
-                        'youtubeUrl': s[4],
-                        'soundcloudUrl': s[5],
-                        'bandcampUrl': s[6]
+                        'songId': s[0],
+                        'title': s[1],
+                        'artist': s[2],
+                        'spotifyUrl': s[3],
+                        'applemusicUrl': s[4],
+                        'youtubeUrl': s[5],
+                        'soundcloudUrl': s[6],
+                        'bandcampUrl': s[7]
                     })
                     rm_idx_list.append(idx)
                     if len(results) > num_results:

@@ -3,6 +3,7 @@ import * as actionTypes from '../actions/actionTypes';
 const initialState = {
     songFile: null,
     clipRange: null,
+    songId: null,
     songInfo: null,
     newPostId: null,
     postShareError: null
@@ -13,7 +14,8 @@ const uploadSong = (state, action) => {
         ...state,
         songFile: action.songFile,
         clipRange: action.clipRange,
-        songInfo: action.songInfo,
+        songId: action.songId,
+        songInfo: action.songInfo
     };
 };
 
@@ -22,6 +24,7 @@ const postShareSuccess = (state, action) => {
         ...state,
         songFile: null,
         clipRange: null,
+        songId: null,
         songInfo: null,
         newPostId: action.newPostId,
         postShareError: null,
