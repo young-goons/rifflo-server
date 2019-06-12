@@ -11,7 +11,7 @@ class SongInfoEditor extends Component {
             <Grid className={styles.songInfoInputDiv}>
                 <Grid.Row className={styles.inputRow}>
                     <Grid.Column width="3" verticalAlign="middle" textAlign="center" className={styles.labelColumn}>
-                        <span className={styles.labelSpan}>Track</span>
+                        <span className={styles.labelSpan}>Title</span>
                     </Grid.Column>
                     <Grid.Column width="12" className={styles.inputColumn}>
                         <Input fluid size="small" type="text" className={styles.songInfoInput}

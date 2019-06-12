@@ -20,6 +20,7 @@
     width: 92%;
     margin-left: 25px;
     margin-top: -5px;
+    display: block;
 }
 
 .progressDiv {
@@ -63,10 +64,11 @@
 
 .timeInputDiv {
     margin-top: 25px;
-    float: left;
+    margin-left: 40px;
+    /*float: left;*/
     display: block;
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     font-size: 1.1em;
 }
 
@@ -117,4 +119,30 @@
 
 .buttonDiv {
     margin: 10px 25px 15px;
+}
+
+.candidateBoxDiv {
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    margin: 10px 50px 30px 40px;
+}
+
+.candidateBoxLabelRow {
+    margin-top: -10px;
+    margin-bottom: -5px;
+}
+
+.candidateBox {
+    height: 90px;
+    border: 1px solid slategrey;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+.candidateRow {
+    margin-top: -10px;
+    margin-bottom: -10px;
+}
+
+.candidateInfoSpan:hover {
+    cursor: pointer;
 }

@@ -14,7 +14,7 @@
 * Default values: DB_HOST='localhost', DB_PORT=3306, DB_USER='root', DB_PASSWORD=[mysql password],
 DB_NAME='app_dv', JWT_SECRET_KEY='jwt_secret_key', JWT_ACCESS_TOKEN_EXPIRES=datetime.timedelta(days=1)
 2. Connect to MySQL server with `mysql -u root -p`.
-3. Create and use the database with `SOURCE sql/rifflet.sql`.
+3. Create and use the database with `SOURCE sql/rifflo.sql`.
 4. Insert dummy values to the table `SOURCE sql/data.sql`.
 5. References
 [Creating a Web App from Scratch Using Flask and MySQL](https://code.tutsplus.com/tutorials/creating-a-web-app-from-scratch-using-python-flask-and-mysql--cms-22972)

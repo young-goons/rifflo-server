@@ -11,7 +11,7 @@ SET NAMES utf8mb4;
 ALTER DATABASE ygoons_test CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 -- Create the database schema.
-SOURCE sql/rifflet.sql
+SOURCE sql/rifflo.sql
 
 -- Populate with test data.
 SOURCE sql/test_data.sql

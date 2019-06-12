@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Icon, Button } from 'semantic-ui-react';
+import { Grid, Icon, Button } from 'semantic-ui-react';
 
 import axios from '../../../shared/axios';
 import { uploadSong } from '../../../store/actions/upload';
@@ -25,8 +25,11 @@ class SongUploader extends Component {
             youtubeUrl: '',
             soundcloudUrl: '',
             bandcampUrl: '',
+            applemusicUrl: '',
             termsChecked: false
         },
+        candidateArr: [],
+        candidateBoxOn: false,
         src: null,
         songFile: null,
         startTime: 0,
@@ -36,7 +39,7 @@ class SongUploader extends Component {
         currentTimeStr: '00:00',
         progressPercent: 0,
         audioLength: null,
-        isPlaying: false
+        isPlaying: false,
     };
 
     audioRef = React.createRef();
@@ -47,15 +50,18 @@ class SongUploader extends Component {
             const params = {
                 title: event.target.value,
                 // artist: this.state.songInfo.artist,
-                numResults: 5
+                numResults: 10
             };
-            // axios({method: 'GET', url: url, params: params})
-            //     .then(response => {
-            //         console.log(response.data);
-            //     })
-            //     .catch(error => {
-            //         console.log(error);
-            //     });
+            axios({method: 'GET', url: url, params: params})
+                .then(response => {
+                    this.setState({
+                        candidateBoxOn: true,
+                        candidateArr: response.data.results
+                    });
+                })
+                .catch(error => {
+                    console.log(error);
+                });
         }
         this.setState({
             songInfo: { ...this.state.songInfo, track: event.target.value }
@@ -102,6 +108,12 @@ class SongUploader extends Component {
     bandcampUrlHandler = (event) => {
         this.setState({
             songInfo: { ...this.state.songInfo, bandCampUrl: event.target.value }
+        });
+    };
+
+    applemusicUrlHandler = (event) => {
+        this.setState({
+            songInfo: { ...this.state.songInfo, applemusicUrl: event.target.value }
         });
     };
 
@@ -211,6 +223,24 @@ class SongUploader extends Component {
         });
     };
 
+    candidateClickHandler = (idx) => {
+        const candidateInfo = this.state.candidateArr[idx];
+        this.setState({
+            songInfo: {
+                ...this.state.songInfo,
+                track: candidateInfo.title,
+                artist: candidateInfo.artist,
+                spotifyUrl: candidateInfo.spotifyUrl ? candidateInfo.spotifyUrl : '',
+                youtubeUrl: candidateInfo.youtubeUrl ? candidateInfo.youtubeUrl: '',
+                soundcloudUrl: candidateInfo.soundCloudUrl ? candidateInfo.soundCloudUrl : '',
+                bandcampUrl: candidateInfo.bandcampUrl ? candidateInfo.bandcampUrl : '',
+                applemusicUrl: candidateInfo.applemusicUrl ? candidateInfo.applemusicUrl : '',
+            },
+            candidateBoxOn: false,
+
+        })
+    };
+
     uploadClickHandler = () => {
         console.log(this.state.songInfo);
         if (!this.state.songInfo.track || !this.state.songInfo.artist) {
@@ -268,6 +298,50 @@ class SongUploader extends Component {
                 );
             }
         }
+
+        let candidateBox, candidateDivArr;
+        if (this.state.candidateArr) {
+            candidateDivArr = this.state.candidateArr.map((candidate, idx) => {
+                return (
+                    <Grid.Row key={idx} className={styles.candidateRow}>
+                        <Grid.Column width={8}>
+                            <span
+                                className={styles.candidateInfoSpan}
+                                onClick={() => this.candidateClickHandler(idx)}
+                            > {candidate.title}
+                            </span>
+                        </Grid.Column>
+                        <Grid.Column width={8}>
+                            <span
+                                className={styles.candidateInfoSpan}
+                                onClick={() => this.candidateClickHandler(idx)}
+                            > {candidate.artist}
+                            </span>
+                        </Grid.Column>
+                    </Grid.Row>
+                );
+            });
+        }
+        if (this.state.candidateBoxOn) {
+            candidateBox = (
+                <div className={styles.candidateBoxDiv}>
+                    <Grid>
+                        <Grid.Row textAlign="left" className={styles.candidateBoxLabelRow}>
+                            <Grid.Column width={8}>
+                                Title
+                            </Grid.Column>
+                            <Grid.Column width={8}>
+                                Artist
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
+                    <Grid className={styles.candidateBox}>
+                        { candidateDivArr }
+                    </Grid>
+                </div>
+            );
+        }
+
         return (
             <div className={styles.songUploadDiv}>
                 <div className={styles.fileUploaderDiv}>
@@ -278,6 +352,7 @@ class SongUploader extends Component {
                 <div className={styles.audioPlayDiv}>
                     { progressDiv }
                 </div>
+                { candidateBox }
                 <SongInfoEditor
                     track={this.state.songInfo.track}
                     trackInputHandler={this.trackInputHandler}
@@ -295,6 +370,8 @@ class SongUploader extends Component {
                     soundcloudUrlHandler={this.soundcloudUrlHandler}
                     bandcampUrl={this.state.songInfo.bandcampUrl}
                     bandcampUrlHandler={this.bandcampUrlHandler}
+                    applemusicUrl={this.state.songInfo.applemusicUrl}
+                    applemusicUrlHandler={this.applemusicUrlHandler}
                     termsChecked={this.state.songInfo.termsChecked}
                     termsCheckHandler={this.termsCheckHandler}
                 />
