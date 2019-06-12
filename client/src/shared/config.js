@@ -6,5 +6,5 @@ export const DEFAULT_FOLLOW_LOAD_NUM = 20; // number of followers/following to l
 
 export const DEFAULT_REPLY_LOAD_NUM = 5; // number of replies to load at once
 
-export const BASE_URL = "http://127.0.0.1:5000";
-// export const BASE_URL = "http://rifflo-env.zcmw2p87ac.us-west-2.elasticbeanstalk.com";
+// export const BASE_URL = "http://127.0.0.1:5000";
+export const BASE_URL = "http://rifflo-env.zcmw2p87ac.us-west-2.elasticbeanstalk.com";

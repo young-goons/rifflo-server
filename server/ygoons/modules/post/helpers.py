@@ -58,21 +58,25 @@ def upload_song_info(song_id, request_form):
             FROM tbl_song_info
             WHERE song_name = %s AND artist = %s
             '''
-            cursor.execute(sql, (request_form['track'], request_form['artist']))
+            cursor.execute(sql,
+                           (request_form['track'], request_form['artist']))
             query_result = cursor.fetchone()
         if query_result is not None:
             song_id = query_result[0]
 
-    if song_id is None: # insert into tbl_song_info
+    if song_id is None:  # insert into tbl_song_info
         with flask.g.pymysql_db.cursor() as cursor:
             sql = '''
             INSERT INTO tbl_song_info (
                 song_name, artist, spotify_url, youtube_url, applemusic_url, soundcloud_url, bandcamp_url
             ) VALUES (%s, %s, %s, %s, %s, %s, %s)
             '''
-            cursor.execute(sql, (request_form['track'], request_form['artist'], request_form['spotifyUrl'],
-                                 request_form['youtubeUrl'], request_form['applemusicUrl'],
-                                 request_form['soundcloudUrl'], request_form['bandcampUrl']))
+            cursor.execute(
+                sql,
+                (request_form['track'], request_form['artist'],
+                 request_form['spotifyUrl'], request_form['youtubeUrl'],
+                 request_form['applemusicUrl'], request_form['soundcloudUrl'],
+                 request_form['bandcampUrl']))
             song_id = cursor.lastrowid
     else:  # update song info in tbl_song_info only for empty columns
         with flask.g.pymysql_db.cursor() as cursor:
@@ -122,7 +126,8 @@ def upload_song_info(song_id, request_form):
                 bandcamp_url = %s
             WHERE song_id = %s
             '''
-            cursor.execute(sql, (spotify_url, youtube_url, applemusic_url, soundcloud_url, bandcamp_url, song_id))
+            cursor.execute(sql, (spotify_url, youtube_url, applemusic_url,
+                                 soundcloud_url, bandcamp_url, song_id))
     return song_id
 
 
