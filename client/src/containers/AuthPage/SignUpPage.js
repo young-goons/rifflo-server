@@ -2,12 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { Button, Form, Grid, Icon, Image, Segment, Message, Modal } from 'semantic-ui-react';
+import FacebookLogin from "react-facebook-login";
 
 import axios from '../../shared/axios';
 import styles from './AuthPage.module.css';
 import { auth, authFacebook } from "../../store/actions/auth";
-import FacebookLogin from "react-facebook-login";
 import FacebookModal from './FacebookModal/FacebookModal';
+import { validateUsername } from "../../shared/inputUtils";
 
 class SignUpPage extends Component {
     state = {
@@ -18,6 +19,8 @@ class SignUpPage extends Component {
         passwordMatchWarning: false,
         usernameExists: false,
         emailExists: false,
+        validUsername: true,
+        invalidUsernameMessage: null,
         facebookModalOpen: false
     };
 
@@ -28,8 +31,11 @@ class SignUpPage extends Component {
     };
 
     usernameInputHandler = (event) => {
+        const usernameValidityObj = validateUsername(event.target.value);
         this.setState({
-            username: event.target.value
+            username: event.target.value,
+            validUsername: usernameValidityObj.valid,
+            invalidUsernameMessage: usernameValidityObj.msg
         });
     };
 
@@ -55,7 +61,7 @@ class SignUpPage extends Component {
 
     // TODO: check email format and email confirmation(?)
     signUpHandler = () => {
-        if (this.state.password === this.state.passwordConfirm) {
+        if (this.state.password === this.state.passwordConfirm && this.state.validUsername) {
             this.setState({passwordMatchWarning: false});
             const url = "/signup";
             const newUser = {
@@ -122,7 +128,15 @@ class SignUpPage extends Component {
             authRedirect = <Redirect to="/"/>;
         }
         let warningDiv = <div></div>;
-        if (this.state.passwordMatchWarning) {
+        if (!this.state.validUsername) {
+            warningDiv = (
+                <div className={styles.authWarningDiv}>
+                    <Message attached="bottom" negative>
+                        { this.state.invalidUsernameMessage }
+                    </Message>
+                </div>
+            )
+        } else if (this.state.passwordMatchWarning) {
             warningDiv = (
                 <div className={styles.authWarningDiv}>
                     <Message attached="bottom" negative>
@@ -165,6 +179,7 @@ class SignUpPage extends Component {
                                 icon="mail"
                                 iconPosition="left"
                                 placeholder="Email address"
+                                type="email"
                                 value={this.state.email}
                                 onChange={this.emailInputHandler}
                             />

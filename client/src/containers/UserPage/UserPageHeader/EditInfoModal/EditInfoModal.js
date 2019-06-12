@@ -6,19 +6,27 @@ import axios from '../../../../shared/axios';
 import styles from './EditInfoModal.module.css';
 import { loadUser } from '../../../../store/actions/user';
 import { loadAuthUser } from "../../../../store/actions/auth";
+import { validateUsername } from "../../../../shared/inputUtils";
 
 class EditInfoModal extends Component {
     state = {
         username: this.props.username,
         name: '',
         location: '',
+        validUsername: true,
+        invalidUsernameMessage: null,
         usernameExists: false,
         needUpdate: false,
         updatedUserInfo: null
     };
 
     usernameInputHandler = (event) => {
-        this.setState({username: event.target.value});
+        const usernameValidityObj = validateUsername(event.target.value);
+        this.setState({
+            username: event.target.value,
+            validUsername: usernameValidityObj.valid,
+            invalidUsernameMessage: usernameValidityObj.msg
+        });
     };
 
     nameInputHandler = (event) => {
@@ -79,7 +87,7 @@ class EditInfoModal extends Component {
     };
 
     updateClickHandler = () => {
-        if (this.state.username !== this.props.username) { // update username
+        if (this.state.username !== this.props.username && this.state.validUsername) { // update username
             const usernameExistsUrl = "/user/id/username/" + this.state.username;
             axios({method: 'GET', url: usernameExistsUrl})
                 .then(response => {
@@ -112,7 +120,16 @@ class EditInfoModal extends Component {
 
     render() {
         let warningDiv;
-        if (this.state.usernameExists) {
+        if (!this.state.validUsername) {
+            warningDiv = (
+                <div className={styles.authWarningDiv}>
+                    <Message attached="bottom" negative>
+                        { this.state.invalidUsernameMessage }
+                    </Message>
+                </div>
+            )
+
+        } else if (this.state.usernameExists) {
             warningDiv = (
                 <div className={styles.authWarningDiv}>
                     <Message attached="bottom" negative>
