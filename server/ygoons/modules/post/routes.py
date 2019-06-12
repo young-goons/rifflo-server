@@ -11,9 +11,9 @@ from pydub import AudioSegment
 
 from ygoons.modules.post import blueprint, helpers
 
-#AudioSegment.converter = '/usr/bin/ffmpeg'
-#AudioSegment.ffmpeg = '/usr/bin/ffmpeg'
-#AudioSegment.ffprobe = '/usr/bin/ffprobe'
+AudioSegment.converter = '/usr/bin/ffmpeg'
+AudioSegment.ffmpeg = '/usr/bin/ffmpeg'
+AudioSegment.ffprobe = '/usr/bin/ffprobe'
 
 
 # TODO - error handling
