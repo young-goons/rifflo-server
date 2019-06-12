@@ -15,6 +15,7 @@ AudioSegment.converter = '/usr/bin/ffmpeg'
 AudioSegment.ffmpeg = '/usr/bin/ffmpeg'
 AudioSegment.ffprobe = '/usr/bin/ffprobe'
 
+
 # TODO - error handling
 #      - add option to include or exclude music clips
 #      - empty id_list - return null
@@ -56,8 +57,9 @@ def upload_post():
     #                 exist_ok=True)
     if not os.path.isdir(app.config["SONG_STORAGE_PATH"]):
         os.makedirs(app.config["SONG_STORAGE_PATH"], exist_ok=True)
-    song_local_path = os.path.join(app.config["SONG_STORAGE_PATH"],
-                                   str(user_id) + "_" + secure_filename(song_file.filename))
+    song_local_path = os.path.join(
+        app.config["SONG_STORAGE_PATH"],
+        str(user_id) + "_" + secure_filename(song_file.filename))
     song_s3_path = os.path.join(str(user_id),
                                 secure_filename(song_file.filename))
 
@@ -87,8 +89,9 @@ def upload_post():
     #                 exist_ok=True)
     if not os.path.isdir(app.config["CLIP_STORAGE_PATH"]):
         os.makedirs(app.config["CLIP_STORAGE_PATH"], exist_ok=True)
-    clip_local_path = os.path.join(app.config["CLIP_STORAGE_PATH"],
-                                   str(user_id) + "_" + secure_filename(clip_name))
+    clip_local_path = os.path.join(
+        app.config["CLIP_STORAGE_PATH"],
+        str(user_id) + "_" + secure_filename(clip_name))
     if not os.path.exists(clip_local_path):
         clip.export(clip_local_path, format=file_format)
 
