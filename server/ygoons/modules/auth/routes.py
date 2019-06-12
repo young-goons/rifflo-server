@@ -8,6 +8,7 @@ from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 get_jwt_identity)
 
 from ygoons.authentication import hash_password, verify_password
+from ygoons.utils import validate_username
 
 from ygoons.modules.auth import blueprint, helpers
 
@@ -36,6 +37,9 @@ def sign_up():
     email = request.args.get('email')
     username = request.args.get('username')
     password = request.args.get('password')
+    if not validate_username(username):
+        return make_response(jsonify({'msg': "Invalid username"}), 400)
+
     with flask.g.pymysql_db.cursor() as cursor:
         sql = "INSERT INTO tbl_user (email, username, password) " \
               "VALUES (%s, %s, %s)"
@@ -103,6 +107,9 @@ def sign_up_facebook():
     if facebook_id is None:
         return make_response(
             jsonify({'msg': 'Error during Facebook authentication'}))
+
+    if not validate_username(username):
+        return make_response(jsonify({'msg': "Invalid username"}), 400)
 
     # for facebook auth, fill password with randomly generated string
     # TODO: check if this is a good practice

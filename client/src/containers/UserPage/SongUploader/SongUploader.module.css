@@ -136,6 +136,7 @@
     border: 1px solid slategrey;
     overflow: scroll;
     overflow-x: hidden;
+    word-wrap: break-word;
 }
 
 .candidateRow {
