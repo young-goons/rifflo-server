@@ -75,7 +75,6 @@ def sign_in():
         'username': query_result[0][1],
     }
 
-    print(query_result)
     # validate user password
     stored_password = query_result[0][2]
     if verify_password(stored_password, password):
@@ -107,7 +106,6 @@ def sign_up_facebook():
 
     # for facebook auth, fill password with randomly generated string
     # TODO: check if this is a good practice
-    print(int(facebook_id))
     password = binascii.b2a_hex(os.urandom(96)).decode('ascii')
     with flask.g.pymysql_db.cursor() as cursor:
         sql = "INSERT INTO tbl_user (email, username, password, facebook_id) " \

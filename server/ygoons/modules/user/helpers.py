@@ -220,7 +220,7 @@ def get_user_disliked(user_id):
             FROM tbl_dislike
             WHERE user_id = %s
         ) tbl_user_dislike
-        NATURAL JOIN  tbl_post
+        NATURAL JOIN tbl_post
         NATURAL JOIN tbl_song_info
         ORDER BY dislike_date DESC
         '''

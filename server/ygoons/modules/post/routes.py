@@ -11,6 +11,9 @@ from pydub import AudioSegment
 
 from ygoons.modules.post import blueprint, helpers
 
+AudioSegment.converter = '/usr/bin/ffmpeg'
+AudioSegment.ffmpeg = '/usr/bin/ffmpeg'
+AudioSegment.ffprobe = '/usr/bin/ffprobe'
 
 # TODO - error handling
 #      - add option to include or exclude music clips
@@ -45,15 +48,16 @@ def upload_post():
     user_id = user['userId']
     song_file = request.files['songFile']
 
-    # file is saved in SONG_STORAGE_PATH/userid/.mp3
-    if not os.path.isdir(
-            os.path.join(app.config["SONG_STORAGE_PATH"], str(user_id))):
-        os.makedirs(os.path.join(app.config["SONG_STORAGE_PATH"],
-                                 str(user_id)),
-                    exist_ok=True)
+    # assume SONG_STORAGE_PATH already exists
+    # if not os.path.isdir(
+    #         os.path.join(app.config["SONG_STORAGE_PATH"], str(user_id))):
+    #     os.makedirs(os.path.join(app.config["SONG_STORAGE_PATH"],
+    #                              str(user_id)),
+    #                 exist_ok=True)
+    if not os.path.isdir(app.config["SONG_STORAGE_PATH"]):
+        os.makedirs(app.config["SONG_STORAGE_PATH"], exist_ok=True)
     song_local_path = os.path.join(app.config["SONG_STORAGE_PATH"],
-                                   str(user_id),
-                                   secure_filename(song_file.filename))
+                                   str(user_id) + "_" + secure_filename(song_file.filename))
     song_s3_path = os.path.join(str(user_id),
                                 secure_filename(song_file.filename))
 
@@ -76,13 +80,15 @@ def upload_post():
         'clipStart'] + "_" + request.form['clipEnd'] + song_file.filename[-4:]
     clip_s3_path = os.path.join(str(user_id), secure_filename(clip_name))
 
-    if not os.path.isdir(
-            os.path.join(app.config["CLIP_STORAGE_PATH"], str(user_id))):
-        os.makedirs(os.path.join(app.config["CLIP_STORAGE_PATH"],
-                                 str(user_id)),
-                    exist_ok=True)
+    # if not os.path.isdir(
+    #         os.path.join(app.config["CLIP_STORAGE_PATH"], str(user_id))):
+    #     os.makedirs(os.path.join(app.config["CLIP_STORAGE_PATH"],
+    #                              str(user_id)),
+    #                 exist_ok=True)
+    if not os.path.isdir(app.config["CLIP_STORAGE_PATH"]):
+        os.makedirs(app.config["CLIP_STORAGE_PATH"], exist_ok=True)
     clip_local_path = os.path.join(app.config["CLIP_STORAGE_PATH"],
-                                   str(user_id), secure_filename(clip_name))
+                                   str(user_id) + "_" + secure_filename(clip_name))
     if not os.path.exists(clip_local_path):
         clip.export(clip_local_path, format=file_format)
 
