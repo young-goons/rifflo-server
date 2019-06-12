@@ -39,10 +39,14 @@ class UserPage extends Component {
         }
     }
 
+
     componentWillReceiveProps(nextProps) {
         if (nextProps.authUserInfo) {
             if (!nextProps.postArr && !nextProps.newPostId) { // upon sign in
-                this.setState({authUserInfo: nextProps.authUserInfo});
+                this.setState({
+                    authUserId: nextProps.authUserInfo.userId,
+                    authUserInfo: nextProps.authUserInfo
+                });
                 this.getUserId();
             } else if (nextProps.postArr && !nextProps.newPostId) { // upon loading initial post
                 this.setState({postArr: nextProps.postArr});
@@ -81,10 +85,8 @@ class UserPage extends Component {
         axios({method: 'GET', url: userExistsUrl})
             .then(response => {
                 if (response.data.userId) {
-                    console.log("userid begin set");
                     this.setState({isUserPageLoaded: true, userId: response.data.userId});
                 } else {
-                    console.log('userid does not exist');
                     this.setState({isUserPageLoaded: true, authUserInfo: null});
                 }
             })

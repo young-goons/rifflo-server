@@ -76,7 +76,14 @@ CREATE TABLE tbl_song_info
     other_url       VARCHAR(200),
 
     PRIMARY KEY(song_id)
-);-- CHARACTER SET=utf8;
+);
+
+-- CREATE TABLE tbl_song_info_history
+-- (
+--     song_id  INT,
+--     date  DATE DEFAULT CURRENT_TIMESTAMP,
+--
+-- )
 
 -- Create post table.
 CREATE TABLE tbl_post

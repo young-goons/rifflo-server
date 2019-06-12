@@ -108,6 +108,7 @@ class SignInPage extends Component {
                                 fluid
                                 icon="mail"
                                 iconPosition="left"
+                                type="email"
                                 placeholder="Email address"
                                 value={this.state.email}
                                 onChange={this.emailInputHandler}

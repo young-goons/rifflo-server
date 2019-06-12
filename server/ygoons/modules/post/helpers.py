@@ -50,6 +50,87 @@ def get_post_data(id_list):
     return post_dict
 
 
+def upload_song_info(song_id, request_form):
+    if song_id is None:  # check if the input song exists or not
+        with flask.g.pymysql_db.cursor() as cursor:
+            sql = '''
+            SELECT song_id
+            FROM tbl_song_info
+            WHERE song_name = %s AND artist = %s
+            '''
+            cursor.execute(sql,
+                           (request_form['track'], request_form['artist']))
+            query_result = cursor.fetchone()
+        if query_result is not None:
+            song_id = query_result[0]
+
+    if song_id is None:  # insert into tbl_song_info
+        with flask.g.pymysql_db.cursor() as cursor:
+            sql = '''
+            INSERT INTO tbl_song_info (
+                song_name, artist, spotify_url, youtube_url, applemusic_url, soundcloud_url, bandcamp_url
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+            '''
+            cursor.execute(
+                sql,
+                (request_form['track'], request_form['artist'],
+                 request_form['spotifyUrl'], request_form['youtubeUrl'],
+                 request_form['applemusicUrl'], request_form['soundcloudUrl'],
+                 request_form['bandcampUrl']))
+            song_id = cursor.lastrowid
+    else:  # update song info in tbl_song_info only for empty columns
+        with flask.g.pymysql_db.cursor() as cursor:
+            sql = '''
+            SELECT spotify_url, youtube_url, applemusic_url, soundcloud_url, bandcamp_url
+            FROM tbl_song_info
+            WHERE song_id = %s
+            '''
+            cursor.execute(sql, (song_id, ))
+            query_result = cursor.fetchone()
+
+        if query_result is None:
+            return None
+        if query_result[0] is None or query_result[0] == '':
+            spotify_url = request_form['spotifyUrl']
+        else:
+            spotify_url = query_result[0]
+
+        if query_result[1] is None or query_result[1] == '':
+            youtube_url = request_form['youtubeUrl']
+        else:
+            youtube_url = query_result[1]
+
+        if query_result[2] is None or query_result[2] == '':
+            applemusic_url = request_form['applemusicUrl']
+        else:
+            applemusic_url = query_result[2]
+
+        if query_result[3] is None or query_result[3] == '':
+            soundcloud_url = request_form['soundcloudUrl']
+        else:
+            soundcloud_url = query_result[3]
+
+        if query_result[4] is None or query_result[4] == '':
+            bandcamp_url = request_form['bandcampUrl']
+        else:
+            bandcamp_url = query_result[4]
+
+        with flask.g.pymysql_db.cursor() as cursor:
+            sql = '''
+            UPDATE tbl_song_info
+            SET
+                spotify_url = %s,
+                youtube_url = %s,
+                applemusic_url = %s,
+                soundcloud_url = %s,
+                bandcamp_url = %s
+            WHERE song_id = %s
+            '''
+            cursor.execute(sql, (spotify_url, youtube_url, applemusic_url,
+                                 soundcloud_url, bandcamp_url, song_id))
+    return song_id
+
+
 def get_comment_data(post_id):
     with flask.g.pymysql_db.cursor() as cursor:
         sql = '''

@@ -25,7 +25,6 @@ class SharedPost extends Component {
                 })
                 .catch(error => {
                     console.log(error);
-                    alert(error);
                 });
         }
         if (!this.state.likeCnt) {
@@ -55,7 +54,7 @@ class SharedPost extends Component {
     }
 
     songPlayHandler = () => {
-        if (!this.state.isPlayed &&
+        if (!this.state.isPlayed && this.state.audioUrl &&
             (this.props.isClipPlaying === null || this.props.isClipPlaying === this.props.postId)) {
             this.audioRef.current.play();
             this.setState({isPlaying: true});
@@ -133,7 +132,7 @@ class SharedPost extends Component {
         }
 
         let playIcon;
-        if (!this.state.isPlayed &&
+        if (!this.state.isPlayed && this.state.audioUrl &&
             (this.props.isClipPlaying === null || this.props.isClipPlaying === this.props.postId)) { // can be played
             if (this.state.isPlaying) {
                 playIcon = <Icon name="pause circle outline" size="big" onClick={this.songPauseHandler} className={styles.playIcon}/>
