@@ -2,3 +2,12 @@
 .idea
 .DS_Store
 *.pyc
+
+musicvenv/
+*.pem
+.coverage
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

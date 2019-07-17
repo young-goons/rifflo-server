@@ -1,3 +1,5 @@
+# young-goons [![Build Status](https://travis-ci.com/young-goons/rifflo-server.svg?branch=master)](https://travis-ci.com/young-goons/rifflo-server)
+
 # Set Up
 
 * Make sure ffmpeg is installed (`brew install ffmpeg` for Mac)
