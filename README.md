@@ -1,33 +1,52 @@
-# young-goons [![Build Status](https://travis-ci.com/young-goons/rifflo.svg?branch=master)](https://travis-ci.com/young-goons/rifflo)
+# Set Up
 
-## Prerequisites
+* Make sure ffmpeg is installed (`brew install ffmpeg` for Mac)
+* Set up `config.py` (example below)
+    * DB_HOST = 'localhost'
+    * DB_PORT = 3306
+    * DB_USER = 'root'
+    * DB_PASSWORD = [MYSQL_ROOT_PASSWORD]
+    * DB_NAME = 'app_dev'
+    * JWT_SECRET_KEY = [JWT_SECRET KEY]
+    * JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(days=1)
+    * SONG_STORAGE_PATH = [PATH_TO_STORE_SONGS]
+    * CLIP_STORAGE_PATH = [PATH_TO_STORE_CLIPS]
 
-* npm (for macOS, run "brew install node" on terminal)
+# Usage
 
-  Run "npm install" in the client directory to install every dependency in package.json
+Execute `run.py` to start the server
 
-* MySQL (8.0.15-community)
+# Resources
 
-* Python packages
+## Flask
 
-  Activate virtual environment (https://docs.python.org/3/tutorial/venv.html),
-  move to server directory, and install packages using "pip install -r requirements.txt"
-  
-## Notes
+* https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
+* https://codeburst.io/jwt-authorization-in-flask-c63c1acf4eeb
 
-### Downloading packages
+# Authentication
 
-* npm (client)
+* https://www.vitoshacademy.com/hashing-passwords-in-python/
 
-  Whenever you download a package, use "npm install --save <package name>"
-  so that the downloaded package name is saved to package.json
-  
-* Python (server)
+# Makefile
 
-  Always work on the virtual environment you set up for this project.
-  After you download/update a package using pip, run "pip freeze > requirements.txt"
-  and push the requirements.txt file to the repo.
+* make update-packages: update virtual environment
+* make update-reqs: update requirements.txt
+* make lint: style formatting
+* make test: initialize test database, run pytest
 
-* ffmpeg (for audio processing in the backend)
+# Set up test database
 
-    brew install ffmpeg
+1. Log in to MySQL as root: `mysql -u root -p`
+2. `SOURCE sql/setup.sql;`
+3. `SOURCE sql/reset.sql;`
+4. `make test` from the terminal to make sure everything works.
+
+# Testing
+
+* Implement tests in tests/modules/{module_name}. Declare test functions as 
+  test_{function_name}(tester), where tester is in ygoons.testing.fixtures 
+  and initializes the database connection.
+
+# TODOs
+
+* check if same username and email exists
