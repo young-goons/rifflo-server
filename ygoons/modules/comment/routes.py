@@ -7,7 +7,7 @@ from flask import request, jsonify, make_response
 from flask import current_app as app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
-from pydub import AudioSegment
+# from pydub import AudioSegment
 
 from ygoons.modules.comment import blueprint, helpers
 

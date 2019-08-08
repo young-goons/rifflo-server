@@ -16,7 +16,6 @@ try:
 except ImportError:
     from ygoons import default_config as config
 
-from ygoons import constants
 from ygoons.modules import user, post, clip, auth, comment, song
 
 # Initialize Flask app
@@ -46,6 +45,11 @@ app.config['S3'] = boto3.client("s3",
                                 aws_access_key_id=config.S3_KEY,
                                 aws_secret_access_key=config.S3_SECRET,
                                 region_name="us-west-2")
+app.config['COGNITO'] = boto3.client("cognito-idp")
+
+app.config['COGNITO_USER_POOL_ID'] = config.COGNITO_USER_POOL_ID
+app.config['COGNITO_CLIENT_ID'] = config.COGNITO_CLIENT_ID
+
 jwt = JWTManager(app)
 
 

@@ -25,39 +25,16 @@ DROP TABLE IF EXISTS tbl_bookmark;
 DROP TABLE IF EXISTS tbl_follow;
 DROP TABLE IF EXISTS tbl_post;
 DROP TABLE IF EXISTS tbl_song_info;
-DROP TABLE IF EXISTS tbl_user_info;
 DROP TABLE IF EXISTS tbl_user;
 
-
--- Create user table.
 CREATE TABLE tbl_user
 (
-    user_id      INT AUTO_INCREMENT,
-    email        VARCHAR(50) NOT NULL UNIQUE,
-    username     VARCHAR(20) NOT NULL UNIQUE,
-
-    -- first 256 bits (64 characters) correspond to salt
-    -- and the remaining 512 bits (128 characters) correspond to the hash
-    password     CHAR(192) NOT NULL,
-
-    -- Facebook id if the user linked account with Facebook
-    facebook_id  VARCHAR(30) UNIQUE,
-
-    join_date    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    PRIMARY KEY(user_id)
-);
-
-CREATE TABLE tbl_user_info
-(
-    user_id                  INT PRIMARY KEY,
-    name                     VARCHAR(50),
-    location                 VARCHAR(100),
-    profile_picture_path     VARCHAR(200),
-    header_picture_path      VARCHAR(200),
-
-    FOREIGN KEY (user_id) REFERENCES tbl_user(user_id)
-      ON DELETE CASCADE ON UPDATE CASCADE
+    user_id       VARCHAR(50) PRIMARY KEY,
+    email         VARCHAR(50) NOT NULL UNIQUE,
+    username      VARCHAR(50) NOT NULL UNIQUE,
+    username_set  BOOLEAN DEFAULT FALSE,
+    name          VARCHAR(30),
+    location      VARCHAR(100)
 );
 
 -- Create song table.
@@ -89,7 +66,7 @@ CREATE TABLE tbl_song_info
 CREATE TABLE tbl_post
 (
     post_id          INT AUTO_INCREMENT,
-    user_id          INT NOT NULL,
+    user_id          VARCHAR(50) NOT NULL,
     upload_date      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     content          VARCHAR(100),
     tags             VARCHAR(100),
@@ -110,8 +87,8 @@ CREATE TABLE tbl_post
 -- Create follow table.
 CREATE TABLE tbl_follow
 (
-    followed_id  INT,
-    follower_id  INT,
+    followed_id  VARCHAR(50),
+    follower_id  VARCHAR(50),
     follow_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY(followed_id, follower_id),
@@ -138,7 +115,7 @@ SELECT user_id, COUNT(followed_id) AS following_cnt FROM
 CREATE TABLE tbl_like
 (
     post_id    INT,
-    user_id    INT,
+    user_id    VARCHAR(50),
     like_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY(post_id, user_id),
@@ -160,7 +137,7 @@ CREATE TABLE tbl_comment
 (
     comment_id    INT AUTO_INCREMENT,
     post_id       INT NOT NULL,
-    user_id       INT NOT NULL,
+    user_id       VARCHAR(50) NOT NULL,
     comment_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     content       VARCHAR(100) NOT NULL,
     song_path     VARCHAR(50), -- allow to embed song links (or sth like that) in comment
@@ -184,7 +161,7 @@ CREATE TABLE tbl_reply
 (
     reply_id    INT AUTO_INCREMENT,
     comment_id  INT NOT NULL,
-    user_id     INT NOT NULL,
+    user_id     VARCHAR(50) NOT NULL,
     content     VARCHAR(100) NOT NULL,
     reply_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -198,9 +175,9 @@ CREATE TABLE tbl_reply
 
 CREATE TABLE tbl_bookmark
 (
-    user_id       INT,
-    post_id       INT,
-    bookmark_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id        VARCHAR(50),
+    post_id        INT,
+    bookmark_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY(user_id, post_id),
 
@@ -213,7 +190,7 @@ CREATE TABLE tbl_bookmark
 -- Create dislike table
 CREATE TABLE tbl_dislike
 (
-    user_id       INT,
+    user_id       VARCHAR(50),
     post_id       INT,
     dislike_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -229,7 +206,7 @@ CREATE TABLE tbl_dislike
 CREATE TABLE tbl_post_report
 (
     post_id      INT,
-    user_id      INT,
+    user_id      VARCHAR(50),
     content      VARCHAR(500),
     report_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -244,7 +221,7 @@ CREATE TABLE tbl_post_report
 -- Create table to record clips that the user clicked play
 CREATE TABLE tbl_play_history
 (
-    user_id    INT,
+    user_id    VARCHAR(50),
     post_id    INT,
     play_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -259,7 +236,7 @@ CREATE TABLE tbl_play_history
 -- Create table to record clips that the user fully played
 CREATE TABLE tbl_play_full_history
 (
-    user_id    INT,
+    user_id    VARCHAR(50),
     post_id    INT,
     play_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -274,7 +251,7 @@ CREATE TABLE tbl_play_full_history
 -- Create table to record when the user clicks the full song link
 CREATE TABLE tbl_full_song_history
 (
-    user_id       INT,
+    user_id       VARCHAR(50),
     post_id       INT,
     service_type  VARCHAR(15), -- 'youtube', 'spotify', 'soundcloud', 'bandcamp'
     listen_date   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -292,9 +269,9 @@ CREATE TABLE tbl_full_song_history
 -- Create table to record user's ignoring other users in user suggestion
 CREATE TABLE tbl_user_ignore
 (
-    user_id         INT,
-    ignored_user_id  INT,
-    ignore_date     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id          VARCHAR(50),
+    ignored_user_id  VARCHAR(50),
+    ignore_date      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY(user_id, ignored_user_id),
 
@@ -306,9 +283,9 @@ CREATE TABLE tbl_user_ignore
 
 CREATE TABLE tbl_user_svd
 (
-    user_id INT,
-    latent_idx INT,
-    value DOUBLE,
+    user_id     VARCHAR(50),
+    latent_idx  INT,
+    value       DOUBLE,
 
     PRIMARY KEY(user_id, latent_idx),
 
@@ -330,8 +307,8 @@ CREATE TABLE tbl_post_svd
 
 CREATE TABLE tbl_user_bias
 (
-    user_id INT,
-    user_bias DOUBLE,
+    user_id    VARCHAR(50),
+    user_bias  DOUBLE,
 
     PRIMARY KEY(user_id),
 

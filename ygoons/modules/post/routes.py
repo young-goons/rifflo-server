@@ -7,13 +7,13 @@ from flask import request, jsonify, make_response
 from flask import current_app as app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
-from pydub import AudioSegment
+# from pydub import AudioSegment
 
 from ygoons.modules.post import blueprint, helpers
 
-AudioSegment.converter = '/usr/bin/ffmpeg'
-AudioSegment.ffmpeg = '/usr/bin/ffmpeg'
-AudioSegment.ffprobe = '/usr/bin/ffprobe'
+# AudioSegment.converter = '/usr/bin/ffmpeg'
+# AudioSegment.ffmpeg = '/usr/bin/ffmpeg'
+# AudioSegment.ffprobe = '/usr/bin/ffprobe'
 
 
 # TODO - error handling
@@ -39,92 +39,92 @@ def get_posts(id_list):
     return make_response(jsonify({'posts': post_dict}), 200)
 
 
-@blueprint.route('/post', methods=['POST'])
-@jwt_required
-def upload_post():
-    """
-    Uploads the post whose content is received from user who is identified through jwt token
-    """
-    user = get_jwt_identity()
-    user_id = user['userId']
-    song_file = request.files['songFile']
-    song_id = request.args.get('songId')
-
-    if not os.path.isdir(app.config["SONG_STORAGE_PATH"]):
-        os.makedirs(app.config["SONG_STORAGE_PATH"], exist_ok=True)
-    song_local_path = os.path.join(
-        app.config["SONG_STORAGE_PATH"],
-        str(user_id) + "_" + secure_filename(song_file.filename))
-    song_s3_path = os.path.join(str(user_id),
-                                secure_filename(song_file.filename))
-
-    # TODO: instead of checking if the filename is the same, not insert into table if
-    #       the song_name already exists
-    if not os.path.exists(song_local_path):
-        song_file.save(song_local_path)
-
-    # cut the audio file and save it to the storage
-    if song_file.filename[-4:] == ".mp3":
-        file_format = 'mp3'
-    elif song_file.filename[-4:] == ".wav":
-        file_format = 'wav'
-
-    # TODO: directly used the file passed on instead of reading it from the local? (maybe not necessary)
-    full_song = AudioSegment.from_file(song_local_path, format=file_format)
-    clip = full_song[int(float(request.form['clipStart']) *
-                         1000):int(float(request.form['clipEnd']) * 1000)]
-    clip_name = song_file.filename[:-4] + "_" + request.form[
-        'clipStart'] + "_" + request.form['clipEnd'] + song_file.filename[-4:]
-    clip_s3_path = os.path.join(str(user_id), secure_filename(clip_name))
-
-    if not os.path.isdir(app.config["CLIP_STORAGE_PATH"]):
-        os.makedirs(app.config["CLIP_STORAGE_PATH"], exist_ok=True)
-    clip_local_path = os.path.join(
-        app.config["CLIP_STORAGE_PATH"],
-        str(user_id) + "_" + secure_filename(clip_name))
-    if not os.path.exists(clip_local_path):
-        clip.export(clip_local_path, format=file_format)
-
-    song_id = helpers.upload_song_info(song_id, request.form)
-    post_id = None
-
-    with flask.g.pymysql_db.cursor() as cursor:
-        if song_id:
-            sql = "INSERT INTO tbl_post " \
-                  "(user_id, content, tags, song_id, clip_start_time, clip_end_time, clip_path, song_path) " \
-                  "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-            cursor.execute(
-                sql, (user_id, request.form['content'], request.form['tags'],
-                      song_id, request.form['clipStart'],
-                      request.form['clipEnd'], clip_s3_path, song_s3_path))
-            post_id = cursor.lastrowid
-
-    if song_id and post_id:
-        # upload song to s3
-        with open(song_local_path, 'rb') as data:
-            app.config['S3'].upload_fileobj(
-                song_file,
-                app.config['S3_BUCKET_SONG'],
-                song_s3_path,
-                ExtraArgs={"ContentType": file_format})
-        # upload clip to s3
-        with open(clip_local_path, 'rb') as data:
-            app.config['S3'].upload_fileobj(
-                data,
-                app.config['S3_BUCKET_CLIP'],
-                clip_s3_path,
-                ExtraArgs={"ContentType": file_format})
-
-        flask.g.pymysql_db.commit()
-        os.remove(song_local_path)
-        os.remove(clip_local_path)
-        return make_response(jsonify({
-            'postId': post_id,
-            'songId': song_id
-        }), 200)
-    else:
-        return make_response(jsonify({'msg': 'Error uploading post and song'}),
-                             400)
+# @blueprint.route('/post', methods=['POST'])
+# @jwt_required
+# def upload_post():
+#     """
+#     Uploads the post whose content is received from user who is identified through jwt token
+#     """
+#     user = get_jwt_identity()
+#     user_id = user['userId']
+#     song_file = request.files['songFile']
+#     song_id = request.args.get('songId')
+#
+#     if not os.path.isdir(app.config["SONG_STORAGE_PATH"]):
+#         os.makedirs(app.config["SONG_STORAGE_PATH"], exist_ok=True)
+#     song_local_path = os.path.join(
+#         app.config["SONG_STORAGE_PATH"],
+#         str(user_id) + "_" + secure_filename(song_file.filename))
+#     song_s3_path = os.path.join(str(user_id),
+#                                 secure_filename(song_file.filename))
+#
+#     # TODO: instead of checking if the filename is the same, not insert into table if
+#     #       the song_name already exists
+#     if not os.path.exists(song_local_path):
+#         song_file.save(song_local_path)
+#
+#     # cut the audio file and save it to the storage
+#     if song_file.filename[-4:] == ".mp3":
+#         file_format = 'mp3'
+#     elif song_file.filename[-4:] == ".wav":
+#         file_format = 'wav'
+#
+#     # TODO: directly used the file passed on instead of reading it from the local? (maybe not necessary)
+#     full_song = AudioSegment.from_file(song_local_path, format=file_format)
+#     clip = full_song[int(float(request.form['clipStart']) *
+#                          1000):int(float(request.form['clipEnd']) * 1000)]
+#     clip_name = song_file.filename[:-4] + "_" + request.form[
+#         'clipStart'] + "_" + request.form['clipEnd'] + song_file.filename[-4:]
+#     clip_s3_path = os.path.join(str(user_id), secure_filename(clip_name))
+#
+#     if not os.path.isdir(app.config["CLIP_STORAGE_PATH"]):
+#         os.makedirs(app.config["CLIP_STORAGE_PATH"], exist_ok=True)
+#     clip_local_path = os.path.join(
+#         app.config["CLIP_STORAGE_PATH"],
+#         str(user_id) + "_" + secure_filename(clip_name))
+#     if not os.path.exists(clip_local_path):
+#         clip.export(clip_local_path, format=file_format)
+#
+#     song_id = helpers.upload_song_info(song_id, request.form)
+#     post_id = None
+#
+#     with flask.g.pymysql_db.cursor() as cursor:
+#         if song_id:
+#             sql = "INSERT INTO tbl_post " \
+#                   "(user_id, content, tags, song_id, clip_start_time, clip_end_time, clip_path, song_path) " \
+#                   "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+#             cursor.execute(
+#                 sql, (user_id, request.form['content'], request.form['tags'],
+#                       song_id, request.form['clipStart'],
+#                       request.form['clipEnd'], clip_s3_path, song_s3_path))
+#             post_id = cursor.lastrowid
+#
+#     if song_id and post_id:
+#         # upload song to s3
+#         with open(song_local_path, 'rb') as data:
+#             app.config['S3'].upload_fileobj(
+#                 song_file,
+#                 app.config['S3_BUCKET_SONG'],
+#                 song_s3_path,
+#                 ExtraArgs={"ContentType": file_format})
+#         # upload clip to s3
+#         with open(clip_local_path, 'rb') as data:
+#             app.config['S3'].upload_fileobj(
+#                 data,
+#                 app.config['S3_BUCKET_CLIP'],
+#                 clip_s3_path,
+#                 ExtraArgs={"ContentType": file_format})
+#
+#         flask.g.pymysql_db.commit()
+#         os.remove(song_local_path)
+#         os.remove(clip_local_path)
+#         return make_response(jsonify({
+#             'postId': post_id,
+#             'songId': song_id
+#         }), 200)
+#     else:
+#         return make_response(jsonify({'msg': 'Error uploading post and song'}),
+#                              400)
 
 
 @blueprint.route('/post/<int:post_id>/like', methods=['POST'])

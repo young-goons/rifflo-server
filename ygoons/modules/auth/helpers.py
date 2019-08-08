@@ -1,6 +1,8 @@
 import os
 import requests
 
+import flask
+
 
 def get_facebook_id(user_access_token):
     try:
@@ -27,3 +29,59 @@ def get_facebook_id(user_access_token):
         facebook_id = None
 
     return facebook_id
+
+
+def init_auth_info(user_id, email):
+    default_username = user_id.replace('-', '')
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = '''
+        INSERT INTO tbl_user (user_id, email, username)
+        VALUES (%s, %s, %s)
+        '''
+        affected_row_cnt = cursor.execute(sql, (user_id, email, default_username))
+
+    print(default_username, affected_row_cnt)
+    if affected_row_cnt == 1:
+        flask.g.pymysql_db.commit()
+        return default_username
+    else:
+        return None
+
+
+def get_auth_info(user_id, email):
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = '''
+        SELECT user_id, username, username_set, email, name, location
+        FROM tbl_user
+        WHERE user_id = %s AND email = %s
+        '''
+        cursor.execute(sql, (user_id, email))
+        auth_result = cursor.fetchall()
+    print(auth_result)
+    if len(auth_result) == 0:
+        initial_username = init_auth_info(user_id, email)
+        if initial_username is None:
+            user = None
+        else:
+            user = {
+                'userId': user_id,
+                'username': initial_username,
+                'usernameSet': False,
+                'email': email,
+                'userInfo': None
+            }
+    elif len(auth_result) == 1:
+        user = {
+            'userId': auth_result[0][0],
+            'username': auth_result[0][1],
+            'usernameSet': auth_result[0][2],
+            'email': auth_result[0][3],
+            'userInfo': {
+                'name': auth_result[0][4],
+                'location': auth_result[0][5]
+            }
+        }
+    else:
+        user = None
+
+    return user

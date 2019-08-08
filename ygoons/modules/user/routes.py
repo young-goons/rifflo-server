@@ -8,6 +8,9 @@ from flask import current_app as app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
 import boto3
+from botocore.exceptions import ClientError
+
+from ygoons.utils import aws_amplify_login_required
 
 from ygoons.modules.user import blueprint, helpers, feed, svd
 
@@ -71,15 +74,39 @@ def get_user_exists_by_username(username):
     Fetches existence of user of the input username and returns user_id if exists
     :param username: username to check existence of
     """
-
-    with flask.g.pymysql_db.cursor() as cursor:
-        sql = 'SELECT user_id FROM tbl_user WHERE username = %s'
-        cursor.execute(sql, username)
-        query_result = cursor.fetchone()
-    if query_result is not None:
-        return make_response(jsonify({'userId': query_result[0]}), 200)
+    print(username)
+    query_result = app.config['COGNITO'].list_users(
+        UserPoolId=app.config['COGNITO_USER_POOL_ID'],
+        AttributesToGet=[
+            'username',
+            'preferred_username'
+        ],
+        Limit=1,
+        Filter="preferred_username='{}'".format(username)
+    )
+    print(query_result)
+    if len(query_result['Users']) == 0:
+        return make_response(jsonify({'message': 'Username already uesed'}), 400)
     else:
-        return make_response(jsonify({'userId': None}), 200)
+        user = query_result['Users'][0]
+    # response = client.list_users(
+    #     UserPoolId='string',
+    #     AttributesToGet=[
+    #         'string',
+    #     ],
+    #     Limit=123,
+    #     PaginationToken='string',
+    #     Filter='string'
+    # )
+    # with flask.g.pymysql_db.cursor() as cursor:
+    #     sql = 'SELECT user_id FROM tbl_user WHERE username = %s'
+    #     cursor.execute(sql, username)
+    #     query_result = cursor.fetchone()
+    # if query_result is not None:
+    #     return make_response(jsonify({'userId': query_result[0]}), 200)
+    # else:
+    #     return make_response(jsonify({'userId': None}), 200)
+        return make_response(jsonify({'user': user}), 200)
 
 
 @blueprint.route('/user/id/email/<string:email>', methods=['GET'])
@@ -282,21 +309,18 @@ def upload_full_song_history(post_id):
         return make_response(jsonify({'success': False}), 400)
 
 
-@blueprint.route('/user/<int:user_id>/profile/image', methods=['GET'])
+@blueprint.route('/user/<string:user_id>/profile/image', methods=['GET'])
+@aws_amplify_login_required
 def get_user_profile_image(user_id):
-    query_result = helpers.get_profile_picture_path(user_id)
-    if query_result is not None:
-        # TODO(daniel): use this URL instead of the filesystem
-        url = app.config['S3'].generate_presigned_url(
-            'get_object',
-            Params={
-                'Bucket': app.config['S3_BUCKET_IMAGE'],
-                'Key': query_result
-            },
-            ExpiresIn=100)
-        return make_response(jsonify({'url': url}), 200)
-    else:
-        return make_response(jsonify({'msg': "user_id is not found"}), 400)
+    # try:
+    url = app.config['S3'].generate_presigned_url(
+        'get_object',
+        Params={
+            'Bucket': app.config['S3_BUCKET_IMAGE'],
+            'Key': os.path.join(user_id, 'profileImage.jpeg')
+        },
+        ExpiresIn=100)
+    return make_response(jsonify({'url': url}), 200)
 
 
 @blueprint.route('/user/<int:user_id>/profile/image', methods=['POST'])
