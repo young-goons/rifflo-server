@@ -43,7 +43,6 @@ def decode_token(jwt_token):
 
 def get_identity(jwt_token):
     payload = decode_token(jwt_token)
-    print(payload)
     user = {
         'email': payload['email'],
         'user_id': payload['cognito:username'],

@@ -38,10 +38,15 @@ def init_auth_info(user_id, email):
         INSERT INTO tbl_user (user_id, email, username)
         VALUES (%s, %s, %s)
         '''
-        affected_row_cnt = cursor.execute(sql, (user_id, email, default_username))
+        tbl_user_row_cnt = cursor.execute(sql, (user_id, email, default_username))
 
-    print(default_username, affected_row_cnt)
-    if affected_row_cnt == 1:
+        sql = '''
+        INSERT INTO tbl_user_info (user_id)
+        VALUES (%s)
+        '''
+        tbl_user_info_row_cnt = cursor.execute(sql, (user_id, ))
+
+    if tbl_user_row_cnt == 1 and tbl_user_info_row_cnt == 1:
         flask.g.pymysql_db.commit()
         return default_username
     else:
@@ -52,12 +57,11 @@ def get_auth_info(user_id, email):
     with flask.g.pymysql_db.cursor() as cursor:
         sql = '''
         SELECT user_id, username, username_set, email, name, location
-        FROM tbl_user
+        FROM tbl_user NATURAL JOIN tbl_user_info
         WHERE user_id = %s AND email = %s
         '''
         cursor.execute(sql, (user_id, email))
         auth_result = cursor.fetchall()
-    print(auth_result)
     if len(auth_result) == 0:
         initial_username = init_auth_info(user_id, email)
         if initial_username is None:

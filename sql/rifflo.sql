@@ -25,6 +25,7 @@ DROP TABLE IF EXISTS tbl_bookmark;
 DROP TABLE IF EXISTS tbl_follow;
 DROP TABLE IF EXISTS tbl_post;
 DROP TABLE IF EXISTS tbl_song_info;
+DROP TABLE IF EXISTS tbl_user_info;
 DROP TABLE IF EXISTS tbl_user;
 
 CREATE TABLE tbl_user
@@ -32,9 +33,17 @@ CREATE TABLE tbl_user
     user_id       VARCHAR(50) PRIMARY KEY,
     email         VARCHAR(50) NOT NULL UNIQUE,
     username      VARCHAR(50) NOT NULL UNIQUE,
-    username_set  BOOLEAN DEFAULT FALSE,
-    name          VARCHAR(30),
-    location      VARCHAR(100)
+    username_set  BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE tbl_user_info
+(
+    user_id   VARCHAR(50) PRIMARY KEY,
+    name      VARCHAR(50),
+    location  VARCHAR(100),
+
+    FOREIGN KEY (user_id) REFERENCES tbl_user(user_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Create song table.
