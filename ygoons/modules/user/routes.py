@@ -63,9 +63,33 @@ def update_user_info(user_id):
         return make_response(jsonify({'msg': 'User Info Update Failed'}), 400)
 
 
+@blueprint.route('/user/id/<string:user_id>', methods=['GET'])
+@aws_amplify_login_required
+def get_user_info_by_id(user_id):
+    with flask.g.pymysql_db.cursor() as cursor:
+        sql = '''
+        SELECT user_id, username, username_set, email, name, location
+        FROM tbl_user NATURAL JOIN tbl_user_info
+        WHERE user_id = %s
+        '''
+        cursor.execute(sql, user_id)
+        query_result = cursor.fetchone()
+
+    if query_result is not None:
+        user_info = {
+            'username_set': query_result[2],
+            'email': query_result[3],
+            'name': query_result[4],
+            'location': query_result[5]
+        }
+        return make_response(jsonify({'username': query_result[1], 'userInfo': user_info}), 200)
+    else:
+        return make_response(jsonify({'username': None, 'userInfo': None}), 200)
+
+
 @blueprint.route('/user/username/<string:username>', methods=['GET'])
 @aws_amplify_login_required
-def get_user_by_username(username):
+def get_user_info_by_username(username):
     with flask.g.pymysql_db.cursor() as cursor:
         sql = '''
         SELECT user_id, username, username_set, email, name, location
@@ -335,7 +359,7 @@ def get_user_profile_image_post_url(user_id):
 
     try:
         res = app.config['S3'].generate_presigned_post(app.config['S3_BUCKET_IMAGE'],
-                                                   os.path.join(user_id, 'profileImage.jpeg'))
+                                                       os.path.join(user_id, 'profileImage.jpeg'))
         return make_response(jsonify({'res': res}), 200)
     except:
         return abort(400)

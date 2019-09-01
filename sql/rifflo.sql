@@ -24,6 +24,8 @@ DROP TABLE IF EXISTS tbl_comment;
 DROP TABLE IF EXISTS tbl_bookmark;
 DROP TABLE IF EXISTS tbl_follow;
 DROP TABLE IF EXISTS tbl_post;
+DROP TABLE IF EXISTS tbl_song_info_history;
+DROP TABLE IF EXISTS tbl_user_song;
 DROP TABLE IF EXISTS tbl_song_info;
 DROP TABLE IF EXISTS tbl_user_info;
 DROP TABLE IF EXISTS tbl_user;
@@ -64,12 +66,46 @@ CREATE TABLE tbl_song_info
     PRIMARY KEY(song_id)
 );
 
--- CREATE TABLE tbl_song_info_history
--- (
---     song_id  INT,
---     date  DATE DEFAULT CURRENT_TIMESTAMP,
---
--- )
+-- Create user_song table. Table that stores information about songs uploaded by users.
+CREATE TABLE tbl_user_song
+(
+    song_id      INT NOT NULL,
+    user_id      VARCHAR(50) NOT NULL,
+    song_path    VARCHAR(200) NOT NULL,
+    upload_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY(user_id, song_id, upload_date),
+
+    FOREIGN KEY (user_id) REFERENCES tbl_user(user_id)
+      ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (song_id) REFERENCES tbl_song_info(song_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Create tbl_song_info_history. Used to record history of song_info clashes.
+CREATE TABLE tbl_song_info_history
+(
+    song_id         INT NOT NULL,
+    user_id         VARCHAR(50) NOT NULL,
+    song_name       VARCHAR(900),
+    artist          VARCHAR(300),
+    release_date    DATE,
+    album           VARCHAR(50),
+    spotify_url     VARCHAR(200),
+    applemusic_url  VARCHAR(200),
+    youtube_url     VARCHAR(200),
+    soundcloud_url  VARCHAR(200),
+    bandcamp_url    VARCHAR(200),
+    other_url       VARCHAR(200),
+    update_date     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (song_id, user_id, update_date),
+
+    FOREIGN KEY (user_id) REFERENCES tbl_user(user_id)
+      ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (song_id) REFERENCES tbl_song_info(song_id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+);
 
 -- Create post table.
 CREATE TABLE tbl_post
