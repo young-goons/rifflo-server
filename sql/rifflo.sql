@@ -113,7 +113,7 @@ CREATE TABLE tbl_post
     post_id          INT AUTO_INCREMENT,
     user_id          VARCHAR(50) NOT NULL,
     upload_date      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    content          VARCHAR(100),
+    content          VARCHAR(1000),
     tags             VARCHAR(100),
     song_id          INT NOT NULL,
     clip_start_time  FLOAT(5, 2) NOT NULL, -- start time of clip in seconds

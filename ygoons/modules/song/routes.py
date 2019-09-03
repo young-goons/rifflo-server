@@ -79,7 +79,7 @@ def post_song_info():
     flask.g.pymysql_db.commit()
 
     if success:
-        return make_response(jsonify({'success': True}), 200)
+        return make_response(jsonify({'songId': song_id}), 200)
     else:
         return abort(400)
 

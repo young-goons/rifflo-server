@@ -3,6 +3,8 @@ import random
 import json
 import os
 
+import boto3
+
 import flask
 from flask import request, jsonify, make_response, send_from_directory
 from flask import current_app as app
@@ -33,6 +35,18 @@ from ygoons.utils import aws_amplify_login_required
 @blueprint.route('/clip', methods=['POST'])
 @aws_amplify_login_required
 def post_clip():
-    user_id = request.user['user_id']
     clip_info = json.loads(request.data)
-    print(clip_info)
+    lambda_client = boto3.client('lambda')
+    payload = {
+        'user_id': request.user['user_id'],
+        'song_file': secure_filename(clip_info['songFile']),
+        'start_time': clip_info['startTime'],
+        'end_time': clip_info['endTime']
+    }
+    payload = json.dumps(payload).encode('utf-8')
+    response = lambda_client.invoke(
+        FunctionName='arn:aws:lambda:us-east-1:149421292640:function:audio_segmentation',
+        InvocationType='RequestResponse',
+        Payload=payload
+    )
+    return make_response(jsonify({'success': True}), 200)
