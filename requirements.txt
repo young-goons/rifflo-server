@@ -11,7 +11,7 @@ coverage==4.5.3
 cryptography==2.6.1
 docutils==0.14
 Flask==1.0.2
-Flask-Cors==3.0.7
+Flask-Cors==3.0.9
 Flask-JWT-Extended==3.18.2
 fuzzywuzzy==0.17.0
 idna==2.8
